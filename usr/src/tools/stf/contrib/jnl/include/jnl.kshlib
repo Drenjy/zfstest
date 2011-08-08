@@ -1,0 +1,163 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)jnl.kshlib	1.4	07/04/12 SMI"
+#
+
+#
+# This is a journalizing library for shell scripts.  This script contains
+# The basics journalizing functions for assertion, logging, and results
+# reporting.
+#
+
+. ${STF_TOOLS}/include/stf.kshlib
+
+JNL_SH_LOGFILE=""
+export JNL_SH_LOGFILE
+
+# This prints a given argument to stdout with the process ID at the
+# front of each line.  This function is used commonly through this
+# file and other stf shell script libraries.
+#
+# $1 - string
+#
+jnl_print() {
+    s="$$| $1"
+    echo "$s"
+}
+
+# This prints error messages to stdout via stf_jnl_msg
+#
+# $1 - error message
+#
+jnl_error() {
+    stf_jnl_msg "Error| $1"
+}
+
+# This prints to stdout in similar fashion to stf_jnl_msg; however it uses
+# the /bin/printf command.
+#
+# $1 - printf format
+# $2 - printf values
+#
+jnl_printf() {
+    /bin/printf "$$| $1" $2
+}
+
+# This prints in words a given STF_* result code to stdout.  This is most
+# commonly used at the end of each test case.
+#
+# $1 - STF_* result code value.
+#
+jnl_result() {
+    stf_jnl_msg "[ - Result ]"
+    if [ $1 -eq $STF_PASS ] ; then
+	stf_jnl_msg "RESULT:  PASS"
+    elif [ $1 -eq $STF_FAIL ] ; then
+	stf_jnl_msg "RESULT:  FAIL"
+    elif [ $1 -eq $STF_UNRESOLVED ] ; then
+	stf_jnl_msg "RESULT:  UNRESOLVED"
+    elif [ $1 -eq $STF_NOTINUSE ] ; then
+        stf_jnl_msg "RESULT:  NOTINUSE"
+    elif [ $1 -eq $STF_UNSUPPORTED ] ; then
+        stf_jnl_msg "RESULT:  UNSUPPORTED"
+    elif [ $1 -eq $STF_UNTESTED ] ; then
+        stf_jnl_msg "RESULT:  UNTESTED"
+    elif [ $1 -eq $STF_UNINITIATED ] ; then
+        stf_jnl_msg "RESULT:  UNINITIATED"
+    elif [ $1 -eq $STF_NORESULT ] ; then
+        stf_jnl_msg "RESULT:  NORESULT"
+    elif [ $1 -eq $STF_WARNING ] ; then
+        stf_jnl_msg "RESULT:  WARNING"
+    elif [ $1 -eq $STF_TIMED_OUT ] ; then
+        stf_jnl_msg "RESULT:  TIMED_OUT"
+    elif [ $1 -eq $STF_OTHER ] ; then
+        stf_jnl_msg "RESULT:  OTHER"
+    fi
+    stf_jnl_msg ' '
+}
+
+# This prints the test script name, assertion description, and interface text
+# when a test is executed to stdout.  The function requires only 2 arguements
+# because it inherits the test script name and directory from the shell
+#
+# $1 - Description of assertion
+# $2 - Command being tested (ie: ls(1) or malloc)
+#
+jnl_assertion() {
+    stf_jnl_msg "ASSERTION:"
+    stf_jnl_msg "$0"
+    stf_jnl_msg "DESCRIPTION:"
+    stf_jnl_msg "$1"
+    stf_jnl_msg "INTERFACE:"
+    stf_jnl_msg "$2"
+    stf_jnl_msg " "
+}
+
+# This prints the test case assertion ID and description.
+#
+# $1 - Assertion ID
+# $2 - Description of assertion
+#
+jnl_assert() {
+    stf_jnl_msg "ASSERTION ID:"
+    stf_jnl_msg "- $1"
+    stf_jnl_msg "DESCRIPTION:"
+    stf_jnl_msg "- $2"
+    stf_jnl_msg " "
+}
+
+# This prints out a progress message in the stf_jnl_msg format
+#
+# $1 - Progress report string.
+#
+jnl_progress() {
+    stf_jnl_msg "[ - Progress ]"
+    stf_jnl_msg "$1"
+    stf_jnl_msg " "
+}
+
+# This should be called when an error has occured in the test.
+# It provides the necessary information to tell the user what failed in
+# the test and what was the expected result.
+#
+# $1 - name of function called
+# $2 - expected return code
+# $3 - actual return code
+# $4 - result (STF_FAIL/STF_UNRESOLVED/etc)
+#
+jnl_diagnostic() {
+    stf_jnl_msg "[ - Diagnostic ]"
+    stf_jnl_msg "Operation:"
+    stf_jnl_msg "- $1"
+    stf_jnl_msg "Expected:"
+    stf_jnl_msg "- $2"
+    stf_jnl_msg "Error:"
+    stf_jnl_msg "- $3"
+    stf_jnl_msg "Action:"
+    stf_jnl_msg "- $4"
+    stf_jnl_msg ' '
+}
+

@@ -1,0 +1,103 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)Makefile.rules.STF	1.14	09/04/17 SMI"
+#
+
+#
+# Additional rules added for various STC test suites and utilities.
+#
+
+#
+# A few additional rules for not-quite-standard languages.
+#
+.SUFFIXES: .so .awk .ksh .mk .nawk .pl .exp .psh .tcl
+
+#
+# Create [n]awk "executables" from .[n]awk files.
+#
+.awk:
+	$(CP) $< $@
+	$(CHMOD) +x $@
+
+.nawk:
+	$(CP) $< $@
+	$(CHMOD) +x $@
+
+#
+# Create PERL "executables" from .pl files.
+#
+.pl:
+	$(PERL) -c $<
+	$(CP) $< $@
+	$(CHMOD) +x $@
+
+#
+# Create ksh executables from .ksh files.
+#
+.ksh:
+	$(CP) $< $@
+	$(CHMOD) +x $@
+
+#
+# Create expect executables from .exp files.  EXPECT may be defined in
+# the environment at run time.
+#
+.exp:
+	$(RM) $@
+	$(ECHO) \#!/bin/sh > $@
+	$(ECHO) \# \\ >> $@
+	$(ECHO) exec \$${EXPECT:-/usr/bin/expect} \"\$$0\" \$${1+\"\$$@\"} \
+	    >> $@
+	$(CAT) $< >> $@
+	$(CHMOD) +x $@
+
+#
+# Create packet shell executables from .psh files.  PSH must be defined
+# in the environment at run time to be the full path of the packet shell
+# executable.
+#
+.psh:
+	$(RM) $@
+	$(ECHO) \#!/bin/sh > $@
+	$(ECHO) \# \\ >> $@
+	$(ECHO) exec \$${PSH:?} \"\$$0\" \$${1+\"\$$@\"} >> $@
+	$(CAT) $< >> $@
+	$(CHMOD) +x $@
+
+#
+# Create TCL executables from .tcl files.
+#
+.tcl:
+	$(RM) $@
+	$(CP) $< $@
+	$(CHMOD) +x $@
+
+
+# Create .so executables from a single .c file.
+#
+.c.so:
+	case $(HOST_MACH) in -sparc*) PIC="-xcode=pic13";; *);; esac; \
+	$(LINK.c) $(DYNLINK_FLAG) -G $${PIC} -o $(@) $(<)

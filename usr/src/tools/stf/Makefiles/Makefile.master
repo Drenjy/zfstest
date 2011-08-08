@@ -1,0 +1,377 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)Makefile.master	1.22	09/07/29 SMI"
+#
+
+#
+# Bug in make. According to the s9 man page, HOST_ARCH=`arch` and
+# HOST_MACH=`mach` Bug 1d 4865131 HOST_ARCH and HOST_MACH appear
+# broken (again?)
+#
+__ :sh		= /usr/bin/arch
+HOST_ARCH	= -$(__)
+
+__ :sh		= /usr/bin/uname -p
+HOST_MACH	= -$(__)
+
+#
+# Makefile.master, global definitions for the Solaris Test Collection
+#
+# STC tests can only be built from within a CodeManager workspace. However,
+# tests may be executed from the binaries kept in the proto area without
+# requiring any knowledge of the CodeManager workspace.
+#
+
+#
+# Bootstrap this ship!
+#
+# First, find and/or construct the master configuration file to be sourced in
+# by Makefile.master.
+#
+
+STF_PWD:sh	= pwd
+
+STF_MACH	= $(HOST_MACH:-%=%)
+STF_MODEL_SH	= \
+	[ "${STF_BUILD_MODE}" = "" -o \
+	"${STF_DONTBUILDMODES}" = "true" ] && echo ${STF_MACH} \
+	|| echo ${STF_BUILD_MODE} 
+STF_MODEL	= ${STF_MODEL_SH:sh}
+
+STF_SUITE_MODEL_SH	= \
+	[ "${STF_BUILD_MODE}" = "" -o \
+	"${STF_DONTBUILDMODES}" = "true" ] \
+	|| echo ${STF_BUILD_MODE}
+STF_SUITE_MODEL = ${STF_SUITE_MODEL_SH:sh}
+
+WS_ROOT_SH	= \
+	/usr/bin/ksh -p -c \
+	'd=${STF_PWD}; \
+	while [[ ! -d $${d}/src/suites ]] && \
+		[[ ! -d $${d}/closed/suites ]] && \
+		[[ ! -d $${d}/src/tools ]] && \
+		[[ ! -d $${d}/closed/tools ]] && \
+		[[ $${d:-"/"} != "/" ]]; \
+	do d=$${d%/*}; done; \
+	if [[ $${d} == "/" ]]; then \
+		print -u2 "Workspace root not found."; \
+		exit 1; \
+	fi; \
+	echo $${d%/usr};'
+WS_ROOT		= ${WS_ROOT_SH:sh}
+
+STF_TOOLS		= ${WS_ROOT}/proto/tools/stf
+STF_TOOLS_BUILD		= ${STF_TOOLS}/build
+STF_TOOLS_BIN		= ${STF_TOOLS}/bin
+STF_TOOLS_INCLUDE	= ${STF_TOOLS}/include
+STF_TOOLS_LIB		= ${STF_TOOLS}/lib
+STF_TOOLS_ETC		= ${STF_TOOLS}/etc
+
+STF_CONTRIB_BIN		= ${STF_TOOLS}/contrib/bin
+STF_CONTRIB_LIB		= ${STF_TOOLS}/contrib/lib
+STF_CONTRIB_INCLUDE	= ${STF_TOOLS}/contrib/include
+
+STF_TOOLS_MAKEFILES	= ${STF_TOOLS}/Makefiles
+
+STF_SUITE_SH	= \
+	/usr/bin/ksh -p -c \
+	'export STF_PWD; STF_PWD=${STF_PWD}; \
+	${STF_TOOLS_BUILD}/stf_getpath STF_SUITE'
+
+STF_SUITE_PROTO_SH = \
+	/usr/bin/ksh -p -c \
+	'export STF_PWD; STF_PWD=${STF_PWD}; \
+	${STF_TOOLS_BUILD}/stf_getpath STF_SUITE_PROTO'
+
+STF_SUITE	= 	${STF_SUITE_SH:sh}
+STF_SUITE_PROTO	=	${STF_SUITE_PROTO_SH:sh}
+STF_PKGARCHIVE	=	${WS_ROOT}/packages
+STF_SUITE_BIN	=	${STF_SUITE}/bin
+STF_SUITE_INCLUDE =	${STF_SUITE}/include
+STF_SUITE_LIB	=	${STF_SUITE}/lib
+STF_SUITE_ETC	=	${STF_SUITE}/etc
+
+STF_SUITE_LDPATH =	${STF_SUITE_LIB}/${STF_BUILD_MODE}:\
+			${STF_SUITE_LIB}
+
+STF_SUITE_PATH =	${STF_SUITE_BIN}/${STF_BUILD_MODE}:\
+			${STF_SUITE_BIN}
+
+STF_CONFIG_INPUTS_SH	= \
+	[ -f ${STF_SUITE_ETC}/BuildConfig.override ] && \
+	    echo ${STF_SUITE_ETC}/BuildConfig.override ; \
+	[ -f ${STF_SUITE_ETC}/BuildConfig.master ] && \
+	    echo ${STF_SUITE_ETC}/BuildConfig.master ; \
+	if [ "${STF_SUITE_ETC}" != "${STF_TOOLS_ETC}" ]; then \
+		[ -f ${STF_TOOLS_ETC}/BuildConfig.override ] && \
+		    echo ${STF_TOOLS_ETC}/BuildConfig.override; \
+		[ -f ${STF_TOOLS_ETC}/BuildConfig.master ] && \
+		    echo ${STF_TOOLS_ETC}/BuildConfig.master; \
+	fi
+
+STF_CONFIG_INPUTS	= ${STF_CONFIG_INPUTS_SH:sh}
+
+STF_SUITE_BUILD_MODES_SH	= \
+	grep STF_SUITE_BUILD_MODES ${STF_SUITE}/STF.INFO | \
+	    /usr/bin/cut -d= -f2 | /usr/bin/cut -d\" -f2 ; \
+
+STF_SUITE_BUILD_MODES	= ${STF_SUITE_BUILD_MODES_SH:sh}
+
+STF_MACH_BUILD_MODES_SH	= \
+	${STF_TOOLS_BUILD}/stf_configlookupmodes BuildModes \
+	    ${STF_MACH} "${STF_SUITE_BUILD_MODES}" ${STF_CONFIG_INPUTS}
+
+STF_MACH_BUILD_MODES	= ${STF_MACH_BUILD_MODES_SH:sh}
+
+STF_BUILD_MODES_SH	= \
+	${STF_TOOLS_BUILD}/stf_getmodelist "${STF_MACH_BUILD_MODES}" \
+	    "${STF_BUILDONLY}" "${STF_DONTBUILD}"
+
+STF_BUILD_MODES		= ${STF_BUILD_MODES_SH:sh}
+
+STF_BUILD_CONFIG_SH	= \
+	$(STF_TOOLS_BUILD)/stf_create_Makefile.config ${STF_SUITE_ETC} \
+	    "${STF_MACH_BUILD_MODES} none" "${STF_CONFIG_INPUTS}"
+
+STF_BUILD_CONFIG	= $(STF_BUILD_CONFIG_SH:sh)
+
+#
+# Including the following file will compute TBIN_REL, TEXP_REL, and all the
+# compiler paths and flag augmentations.
+#
+include $(STF_BUILD_CONFIG)$(STF_BUILD_MODE:%=.%)
+
+JOURNALFILE=	journal
+JNLNAME=	$(TRESSUITE)/$(JOURNALFILE)
+SPECFILES=	$(STF_TESTCASES:=.spec)
+
+#
+# Combine the AWK and NAWK file lists.
+#
+NAWKFILES +=	$(AWKFILES)
+
+# These definitions translate the names of various files to their 
+# counterparts inthe binary hierarchy.
+
+STF_SRC	= ${STF_PWD}
+STF_SRCDIR = ${STF_SRC:${STF_SUITE}%=%}
+STF_PROTO_SH = \
+	if [ "${STF_PROTODIR}" = "" ] ; then \
+		echo ${STF_SUITE_PROTO}${STF_SRCDIR} ; \
+	else \
+		echo ${STF_SUITE_PROTO}/${STF_PROTODIR} ; \
+	fi
+
+STF_PROTO = ${STF_PROTO_SH:sh}
+
+DIRMODE_SH= \
+	if [ "${STF_DIRMODE}" = "" ]; \
+	then echo "777" ; \
+	else echo "${STF_DIRMODE}" ; \
+	fi
+DIRMODE= ${DIRMODE_SH:sh}
+
+FILEMODE_SH= \
+	f=${STF_SRC}/`basename ${@}`; \
+	if [ "${STF_BUILD_MODE}" != "" ]; \
+	then f=${STF_SRC}/${STF_BUILD_MODE}/`basename ${@}`; \
+	fi; \
+	if [ -x "$${f}" ]; \
+	then echo "555"; \
+	else echo "444"; \
+	fi
+
+FILEMODE= ${FILEMODE_SH:sh}
+
+CAT=		/usr/bin/cat
+CUT=		/usr/bin/cut
+CHGRP=		$(ECHO)
+$(CH)CHGRP=	/usr/bin/chgrp -h
+CHOWN=		$(ECHO)
+$(CH)CHOWN=	/usr/bin/chown -h
+CHMOD=		/usr/bin/chmod -f
+CP=		/usr/bin/cp -f
+ECHO=		/usr/bin/echo
+INS=		/usr/sbin/install
+LN=		/usr/bin/ln
+MAKEIN=		$(STF_TOOLS_BUILD)/stf_makein
+MCS=		/usr/bin/mcs
+MKDIR=		/usr/bin/mkdir
+MV=		/usr/bin/mv -f
+NOP=		@exit 0
+RM=		/usr/bin/rm -f
+RMFILES=	$(STF_TOOLS_BUILD)/stf_rmfiles
+RPCGEN=		/usr/bin/rpcgen
+SH=		/usr/bin/sh
+SYMLINK=	$(LN) -s
+TOUCH=		/usr/bin/touch
+STF_GOSU=	gosu
+STF_FILEMODE=	${FILEMODE}
+STF_DIRINSMODE=	${DIRMODE}
+STF_PKGMODE=	0022
+OWNER=		$(USER)
+GROUP=		staff
+
+# modified for use within NSE environments
+
+INS.file=	$(CHMOD) +w $@; $(INS) -s -m $(STF_FILEMODE) -f $(@D) $<
+INS.dir=	$(INS) -s -d -m $(STF_DIRINSMODE) $@
+
+#
+# installs and renames at once
+#
+INS.rename=	$(INS.file); $(MV) $(@D)/$(<F) $@
+
+# In most places, assignments to these macros should be appended with +=
+# (CPPFLAGS.master allows values to be prepended to CPPFLAGS).
+#
+CFLAGS +=	$(STF_CFLAGS) 
+
+CPPFLAGS +=	-I ${STF_TOOLS_INCLUDE} \
+		-I ${STF_CONTRIB_INCLUDE} \
+		-I ${STF_SUITE_INCLUDE} \
+		${STF_CPPFLAGS}
+
+LDFLAGS +=	-L ${STF_TOOLS_LIB}/${STF_MODEL} \
+		-L ${STF_CONTRIB_LIB}/${STF_MODEL} \
+		-L ${STF_SUITE_LIB}/${STF_MODEL} \
+		$(STF_LDFLAGS) 
+
+LDLIBS +=      $(STF_LDLIBS)
+
+LINTFLAGS +=	-uax
+
+#
+# Set up Sun CC-specific compiler flag macros
+#
+CC_IN_USE_SH=		basename $(CC)
+CC_IN_USE=		$(CC_IN_USE_SH:sh)
+
+cc_OPT_FLAG=		-xO3
+cc_MT_FLAG=		-mt
+cc_DYNLINK_FLAG=	-dy -Kpic
+
+amd64_KERN_FLAG=	-xarch=amd64 -xmodel=kernel
+sparcv9_KERN_FLAG=	-xarch=sparcv9
+cc_KERN_FLAG=		-D_KERNEL $($(STF_BUILD_MODE)_KERN_FLAG)
+
+#
+# Set up gcc-specific compiler flag macros
+#
+gcc_OPT_FLAG=		-O3
+gcc_MT_FLAG=		-D_REENTRANT
+
+#
+# We explicitely set the runpath for 64-bit amd64 shared objects
+# as a workaround for gcc bug 6223255.	This can be removed
+# when this bug is fixed, however, leaving it in should be harmless,
+# based on the assumption here that we're only using gcc when
+# STF_BUILD_MODE is "amd64-gcc".
+#
+gcc_DYNLINK_FLAG=	-shared -fpic -R/usr/sfw/lib/amd64
+
+gcc_KERN_FLAG=		-D_KERNEL -m64 -mcmodel=kernel -mno-red-zone
+
+OPT_FLAG=		$($(CC_IN_USE)_OPT_FLAG)
+MT_FLAG=		$($(CC_IN_USE)_MT_FLAG)
+DYNLINK_FLAG=		$($(CC_IN_USE)_DYNLINK_FLAG)
+KERN_FLAG=		$($(CC_IN_USE)_KERN_FLAG)
+
+#
+# Before any rules, establish some "empty" targets to eliminate complaints
+# when the test SUITE does not use these targets.
+#
+
+#
+# A default just in case somebody types "make" with no parameters.
+#
+nop:
+	$(NOP)
+
+#
+# .spec files only exist in test suites themselves, but to make use of common
+# rules and Makefiles there needs to be a null target for it here.
+#
+spec:
+
+#
+# sanity target to check the code nits: lint cstyle hdrchk copyright ...
+# there is a null target here for suites that don't define their own
+#
+sanity:
+
+#
+# configure. results and execute are required targets for STC clients. However,
+# it has no meaning when building certain portions of STC itself. So, here is a
+# default target specification as a NOP to eliminate the complains when
+# portions of STC build use Makefile.master. Overrides exist in
+# Makefile.targets which put actual commands behind each target.
+#
+configure execute results:
+
+#
+# Clean and clobber need to be overridden if the test suite wants to do
+# anything with them. This can be accomplished by including Makefile.targets or
+# by including the individual target-* files, or by declaring them explicitly
+# in the test suite Makefile.
+#
+clean clobber:
+
+#
+# A test suite must do something to override this default nop for target all.
+#
+all:
+
+#
+# Wierd stuff can happen if someone "accidentally" attempts to 'make lint' but
+# the Makefile doesn't actually contain definitions for SRCLINT or a lint
+# target. So, make a default nop lint target.
+#
+lint:
+
+#
+# Establish the dependency on TBINDIR's existence.
+#
+$(STF_PROTO):
+	$(INS.dir)
+
+#
+# Create dependancies from TBIN files on their TSRC equivalents, and tell how
+# to install them.
+#
+$(STF_PROTO)/%: % ${STF_PROTO}
+	$(INS.file)
+
+include ${STF_TOOLS_MAKEFILES}/Makefile.rules.STF
+
+${BUILD_SUBDIRS_SWITCH}include ${STF_TOOLS_MAKEFILES}/target-subdirs
+include ${STF_TOOLS_MAKEFILES}/target-all
+include ${STF_TOOLS_MAKEFILES}/target-package
+include ${STF_TOOLS_MAKEFILES}/target-clean
+include ${STF_TOOLS_MAKEFILES}/target-clobber
+include ${STF_TOOLS_MAKEFILES}/target-uninstall
+include ${STF_TOOLS_MAKEFILES}/target-unpackage
+

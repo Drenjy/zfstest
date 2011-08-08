@@ -1,0 +1,348 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)backup_files.kshlib	1.5	07/04/12 SMI"
+#
+
+#
+# PUBLIC
+# backup_files file [ file ] ...
+#
+# Return codes:
+#   0 =			Successfully backed up file
+#
+# Exit Codes:
+# STF_UNRESOLVED =	Function called incorrectly
+#			
+
+jnl_assertion="$(basename $0)"
+
+. ${STF_TOOLS}/contrib/include/jnl.kshlib
+STF_BACKUP_FILES=${STF_BACKUP}/files
+STF_BACKUP_META=${STF_BACKUP}/meta
+
+# PRIVATE
+bUf_BAIL() {
+	jnl_error "file: $jnl_assertion, line: $bUf_test_line_number"
+	jnl_result $STF_UNRESOLVED
+	jnl_error "$@"
+	exit $STF_UNRESOLVED
+}
+
+# PUBLIC
+alias backup_files='eval "bUf_test_line_number=${LINENO}" ; bUf_BACKUP_FILES'
+
+# PRIVATE
+bUf_BACKUP_FILES() {
+	while [ $# -gt 0 ]; do
+		bUf_BACKUP_FILE $1
+		shift
+	done
+}
+
+#
+#
+# The 3 successful scenarios for backup up a file and their strategies are:
+#
+#	Scenario: The file is a regular file
+#	Strategy: Copy the file to $STF_BACKUP_FILES for backup
+#
+#	Scenario: The file does not exist
+#	Strategy: An empty file in $STF_BACKUP_META is touched to indicate
+#		  that the file is backed up as not existing.
+#
+#	Scenario: The file is a link to another file
+#	Strategy: The link is duplicated as a link and the contents of that
+#		  link are saved in the file in $STF_BACKUP_FILES
+#
+#
+#
+# BACKUP_FILE
+#
+
+bUf_BACKUP_FILE() {
+	typeset filename
+
+	if [ $# != 1 ]; then
+		bUf_BAIL "bUf_BACKUP_FILE <file>"
+	fi
+
+	filename=$1
+	origdir=`dirname $filename`
+
+	if [ "${origdir}" == "\." ]; then
+		bUf_BAIL "bUf_BACKUP_FILE <file>
+<file> must be an absolute pathname"
+	fi
+
+	if bUf_IS_FILE_STORED $filename; then
+		bUf_BAIL "bUf_BACKUP_FILE: $filename already backed up"
+	fi
+
+	if ! mkdir -p -m 777 ${STF_BACKUP_FILES}${origdir} \
+	    ${STF_BACKUP_META}${origdir}; then
+		bUf_BAIL "bUf_BACKUP_FILE: \"mkdir -p -m 777
+ ${STF_BACKUP_FILES}${origdir} ${STF_BACKUP_META}${origdir}\" failed"
+	fi
+
+	if [ -L "$filename" ]; then
+		ln -s `bUf_GET_LINK_TARGET $filename` \
+		    ${STF_BACKUP_META}${filename}
+		if [ $? -ne 0 ]; then
+			bUf_BAIL "bUf_BACKUP_FILE: \"ln -s 
+\`bUf_GET_LINK_TARGET $filename\` ${STF_BACKUP_META}${filename}\" failed"
+		fi
+	fi
+
+	#
+	# This is for the odd case where we're backing up a file that does not
+	# exist.  Upon restore any new file at that location will be deleted.
+	#
+	if [ ! -e $filename ]; then
+		if ! touch ${STF_BACKUP_META}${filename}; then
+			bUf_BAIL "bUf_BACKUP_FILE: \"touch 
+${STF_BACKUP_META}${filename}\" returned $?"
+		fi
+	else
+		if ! cat $filename > ${STF_BACKUP_FILES}${filename}; then
+			bUf_BAIL "bUf_BACKUP_FILE: \"cat $filename \> 
+${STF_BACKUP_FILES}${filename}\" returned $?"
+		fi
+	fi
+
+	return 0
+}
+
+#
+# PUBLIC
+# restore_all_files [ -s ]
+# restores all backed up files
+#
+# -s Restore the file, but leave it backed up
+#
+# Return codes:
+#   0 =			Successfully restored all files
+#
+# Exit Codes:
+# STF_UNRESOLVED =	Command could not complete
+#
+alias restore_all_files='eval "bUf_test_line_number=${LINENO}" ; \
+    bUf_RESTORE_ALL_FILES'
+
+bUf_RESTORE_ALL_FILES() {
+
+	#
+	# Make sure that the expected backup directories exist to avoid
+	# find(1) errors.
+	#
+	mkdir -p $STF_BACKUP_META $STF_BACKUP_FILES
+
+	#
+	# Restore all the META files first, so that links are not restored
+	# as regular files.
+	#
+	find $STF_BACKUP_META | while read metafile; do
+		file=${metafile#${STF_BACKUP_META}}
+		if [ -n "$file" -a ! -d "$file" ]; then
+			if ! bUf_RESTORE_FILES $@ "$file"; then
+				bUf_BAIL "restore_all_files(): could not restore
+ file, \"$file\""
+			fi
+		fi
+	done
+
+	#
+	# Simple data files are stored only in STF_BACKUP_FILES
+	#
+	find $STF_BACKUP_FILES | while read datafile; do
+		file=${datafile#${STF_BACKUP_FILES}}
+		if [ -n "$file" -a ! -d "$file" ]; then
+			if ! bUf_RESTORE_FILES $@ "$file"; then
+				bUf_BAIL "restore_all_files(): could not restore
+ file, \"$file\""
+			fi
+		fi
+	done
+
+	#
+	# All files have been restored, so there is nothing left backed up.
+	# It is an opportune time to remove the empty directories from
+	# $STF_BACKUP_FILES and $STF_BACKUP_META
+	#
+
+
+	if [ -z "`find $STF_BACKUP_FILES $STF_BACKUP_META -type f`" -a \
+	    -z "`find $STF_BACKUP_META -type l`" ]; then
+		if ! rm -rf $STF_BACKUP_FILES $STF_BACKUP_META; then
+			bUf_BAIL "restore_all_files(): \"rm -rf 
+$STF_BACKUP_FILES $STF_BACKUP_META\" failed."
+		fi
+	fi
+
+	return 0
+}
+
+#
+# PUBLIC
+# restore_files [ -n ] [ -s ] file [ file ... ]
+#
+# restore the list of files
+#
+# -n Don't actually restore the file.  Return 0 if restore would succeed,
+#    1 otherwise
+# -s Restore the file, but leave it backed up
+#
+# Return codes:
+#   0 =			Successfully backed up file
+#
+# Exit Codes:
+# STF_UNRESOLVED =	Function called incorrectly
+#			
+alias restore_files='eval "bUf_test_line_number=${LINENO}" ; bUf_RESTORE_FILES'
+
+bUf_RESTORE_FILES() {
+	typeset -i NOEXECUTE
+	typeset -i SAVE
+
+	set -- `getopt ns $*`
+	if [ $? != 0 ]; then
+		bUf_BAIL "restore_files [ -n ] [ -s ] file [ file ... ]"
+	fi
+
+	for i in $*; do
+		case $i in
+		-n) NOEXECUTE=1; shift;;
+		-s) SAVE=1; shift;;
+		--) shift; break;;
+		esac
+	done
+
+	while [ $# -gt 0 ]; do
+		bUf_RESTORE_FILE $1
+		if [ "$?" != 0 -a "$NOEXECUTE" == 1 ]; then
+			return 1
+		fi
+		shift
+	done
+
+	return 0
+}
+
+#
+# PRIVATE
+#
+bUf_RESTORE_FILE() {
+	typeset filename
+
+	if [ $# != 1 ]; then
+		bUf_BAIL "bUf_RESTORE_FILE <file>"
+	fi
+
+	filename=$1
+
+	if [ "`dirname $filename`" == "\." ]; then
+		bUf_BAIL "bUf_RESTORE_FILE <file>
+<file> must be an absolute pathname"
+	fi
+	
+	#
+	# Currently the best we can do is check to see if the file is backed
+	# up for a NOEXECUTE restore command.
+	#
+	if [ "$NOEXECUTE" == "1" ]; then
+		if bUf_IS_FILE_STORED $filename; then
+			return 0
+		else
+			return 1
+		fi
+	else
+		if ! bUf_IS_FILE_STORED $filename; then
+			bUf_BAIL "bUf_RESTORE_FILE: file, \"$filename\" not 
+backed up"
+		fi
+	fi
+
+	rm -f ${filename}
+
+	if [ -L ${STF_BACKUP_META}${filename} ]; then
+		if ! ln -s `bUf_GET_LINK_TARGET ${STF_BACKUP_META}${filename}` \
+		    ${filename}; then
+			bUf_BAIL "bUf_RESTORE_FILE: ln -s failed"
+		fi
+	fi
+
+	if [ -f ${STF_BACKUP_FILES}${filename} ]; then
+		if ! cat ${STF_BACKUP_FILES}${filename} > ${filename}; then
+			bUf_BAIL "bUf_RESTORE_FILE: cat failed"
+		fi
+	fi
+
+	if [ "$SAVE" != "1" ]; then
+		if ! rm -f ${STF_BACKUP_FILES}${filename} \
+		    ${STF_BACKUP_META}${filename}; then
+			bUf_BAIL "bUf_RESTORE_FILE: rm -f failed"
+		fi
+	fi
+
+	return 0
+}
+
+#
+# PRIVATE
+#
+# prints the file that the supplied symbolic link points to.
+#
+bUf_GET_LINK_TARGET() {
+	if [ ! -L "$1" ]; then
+		bUf_BAIL "bUf_GET_LINK_TARGET called on \"$1\", which is not a 
+symbolic link"
+	fi
+
+	if ! ls -l $1 | awk '{print $NF}'; then
+		bUf_BAIL "bUf_GET_LINK_TARGET: \"ls -l $1 | awk 
+'{print $NF}'\" return $?"
+	fi
+
+	return 0
+}
+
+# PRIVATE
+# bUf_IS_FILE_STORED
+# returns 0 if the file is backed up, 1 if it is not
+#
+bUf_IS_FILE_STORED() {
+	if [ $# -ne 1 ]; then
+		bUf_BAIL "bUf_IS_FILE_STORED <file>"
+	fi
+
+	file=$1
+
+	if [ -f "$STF_BACKUP_FILES$file" -o -e $STF_BACKUP_META$file ]; then
+		return 0
+	fi
+
+	return 1
+}
+

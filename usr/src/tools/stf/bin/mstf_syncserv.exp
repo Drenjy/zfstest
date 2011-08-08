@@ -1,0 +1,170 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)mstf_syncserv.exp	1.3	07/04/12 SMI"
+#
+
+source $env(STF_TOOLS)/include/stf.tcllib
+
+if {$argc != 2} {
+	puts "Usage: mstf_syncserv <listen_port> <num_parts>"
+	exit 1
+}
+
+set listen_port [lindex $argv 0]
+set num_parts [lindex $argv 1]
+
+proc handle_connect {chan client_addr client_port} {
+	global rval open_list num_parts target_label shared_vars
+	global STF_PASS STF_FAIL STF_UNRESOLVED
+
+	set line [gets $chan]
+	set command [lindex $line 0]
+
+	switch $command {
+
+		"getv" {
+			# Get variable
+			set var [lindex $line 1]
+
+			if {[info exists shared_vars($var)]} {
+				puts $chan "$shared_vars($var)"
+				close $chan
+			} else {
+				#
+				# The variable isn't set yet - wait for it.
+				#
+				if {[info exists shared_vars(${var},wait)]} {
+					lappend shared_vars(${var},wait) $chan
+				} else {
+					set shared_vars(${var},wait) $chan
+				}
+			}
+		}
+
+		"setv" {
+			# Set variable
+			set assign [lrange $line 1 end]
+			set var [lindex [split $assign =] 0]
+			set value [lindex [split $assign =] 1]
+
+			set shared_vars($var) $value
+			close $chan
+
+			if {[info exists shared_vars(${var},wait)]} {
+				foreach chan $shared_vars(${var},wait) {
+					puts $chan "$value"
+					close $chan
+				}
+				unset shared_vars(${var},wait)
+			}
+		}
+
+		"sync" {
+			set label [lrange $line 1 end]
+			if {$label == $target_label || \
+			    $target_label == ""} {
+				set target_label $label
+				lappend open_list $chan
+			} else {
+				foreach open_chan $open_list {
+					puts $open_chan "failed"
+					close $open_chan
+				}
+				puts $chan "failed"
+				close $chan
+
+				puts "Test parts out of sync!"
+				#
+				# Note that this return value is considered
+				# when the final test result is determined
+				# based on result precedence.  This is done
+				# by mstf_launch.
+				#
+				set rval $STF_UNRESOLVED
+				return
+			}
+			if {[llength $open_list] == $num_parts} {
+				foreach open_chan $open_list {
+					puts $open_chan "go"
+					close $open_chan
+				}
+				puts "Test parts in sync at $target_label"
+				set target_label ""
+				set open_list ""
+			}
+		}
+
+		"sfin" {
+			#
+			# A script has finished.
+			#
+			set num_parts [expr $num_parts - 1]
+			#
+			# This might unblock us if we were waiting to sync.
+			#
+			if {[llength $open_list] == $num_parts} {
+				foreach open_chan $open_list {
+					puts $open_chan "go"
+					close $open_chan
+				}
+				puts "Test parts in sync at $target_label"
+				set target_label ""
+				set open_list ""
+			}
+		}
+
+		"stop" {
+			if {[array names shared_vars *,wait] != "" || \
+			    $open_list != ""} {
+				puts "Test is ending prematurely"
+				puts "Expect mstf_sync errors from test parts\
+				    still running"
+				set rval $STF_UNRESOLVED
+			} else {
+				set rval $STF_PASS
+			}
+		}
+
+		default {
+			puts "mstf_syncserv: invalid command: $command"
+			foreach open_chan $open_list {
+				puts $open_chan "failed"
+				close $open_chan
+			}
+			close $chan
+			set rval $STF_UNRESOLVED
+		}
+	}
+}
+
+set target_label ""
+set open_list ""
+set rval $STF_UNRESOLVED
+socket -server handle_connect $listen_port
+puts "READY"
+vwait rval
+
+exit $rval

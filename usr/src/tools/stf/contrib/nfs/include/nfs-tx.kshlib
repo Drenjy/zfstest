@@ -1,0 +1,275 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)nfs-tx.kshlib	1.6	08/12/12 SMI"
+#
+
+# ------------------------------------------------------------------------
+# is_cipso
+# --------
+# Determine whether the connection to be NFS mounted is
+# a CIPSO connection and if it is return a value corresponding
+# to NFSv2 | NFSv3 | NFSv4.
+#
+# usage: is_cipso <mount options> <server name>
+#
+#	Example usage:
+#
+#		if [[ "X$MNTOPTS" != "X" ]]; then
+#			is_cipso $MNTOPTS $SERVER
+#			if (( $? == $CIPSO_NFSV4 )); then
+#				<setup server exported dir to include   >
+#				<non-global path in its exported dir    >
+#				<setup client mount point dir to include>
+#				<non-global path                        >
+#			fi
+#		fi
+#
+# return:	0: NOT cipso
+# 		1: IS cipso NFSv2
+# 		2: IS cipso NFSv3
+# 		3: IS cipso and NOT NFSv2 or NFSv3
+# ------------------------------------------------------------------------
+CIPSO_NOT=0
+CIPSO_NFSV2=1
+CIPSO_NFSV3=2
+CIPSO_NFSV4=3
+
+function is_cipso
+{
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:is_cipso:* ]] && set -x
+
+	if (( $# < 2 )); then
+		/bin/echo "is_cipso() wrong number of args!"
+		return $CIPSO_NOT
+	fi
+
+	M_OPTS="$1"
+	ASERVER="$2"
+
+	if [[ -x /usr/sbin/tninfo ]]; then
+		/usr/sbin/tninfo -h $ASERVER | grep cipso >/dev/null 2>&1
+		if (( $? != 0 )); then
+			return $CIPSO_NOT
+		fi
+
+		echo "$M_OPTS" | grep "vers=2" >/dev/null 2>&1
+		if (( $? == 0 )); then
+			return $CIPSO_NFSV2
+		fi
+
+		echo "$M_OPTS" | grep "vers=3" >/dev/null 2>&1
+		if (( $? == 0 )); then
+			return $CIPSO_NFSV3
+		fi
+		return $CIPSO_NFSV4
+	fi
+	return $CIPSO_NOT
+}
+
+# ------------------------------------------------------------------------
+# cipso_check_mntpaths()
+# ----------------------
+# 1.  Check that any zones exist.
+# 2.  Check that at least one non-global zone exists.
+# 3.  Check that the server's exported directory contains
+#     a path to a non-global zone's directory.
+# 4.  Check that the client's mount point dir contains a path
+#     to the same non-global zone that's in the server's
+#     exported directory path.
+#
+#	An example of valid paths are:
+#	------------------------------
+#	server's exported directory:    /zone/public/root/var/tmp/junk
+#	client's mount point directory: /zone/public/mnt
+#
+#	Then the client can mount it via:
+#	---------------------------------
+#	mount -F nfs <server>:/zone/public/root/var/tmp/junk /zone/public/mnt
+#
+# usage: cipso_check_mntpaths <server's export dir> <client's mnt pnt>
+#
+# return:	0: Everything is OK
+# 		1: No non global zones exist
+# 		2: No non global zone path in server's exported dir
+# 		3: No non global zone path in client's mount point dir
+# ------------------------------------------------------------------------
+CIPSO_NO_NG_ZONE=1
+CIPSO_NO_EXPORT_ZONEPATH=2
+CIPSO_NO_MNTPT_ZONEPATH=3
+
+function cipso_check_mntpaths
+{
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+                [[ :$_NFS_STF_DEBUG: == *:cipso_check_mntpaths:* ]] && set -x
+
+	if (( $# < 2 )); then
+		/bin/echo "cipso_check_mntpaths() wrong number of args!"
+		return $CIPSO_NO_NG_ZONE
+	fi
+
+	if [[ "${ZONE_PATH}" == "" ]]; then
+		return $CIPSO_NO_NG_ZONE
+	fi
+
+	srvdir=$1
+	clntdir=$2
+
+	zlist=`/usr/sbin/zoneadm list`
+	if [[ "$zlist" == "" ]]; then
+		return $CIPSO_NO_NG_ZONE
+	fi
+
+	if [[ "$zlist" == "global" ]]; then
+		return $CIPSO_NO_NG_ZONE
+	fi
+
+	fnd=0
+	for azone in $zlist
+	do
+		if [[ "$azone" == "global" ]]; then
+			continue
+		fi
+		X=`zoneadm -z $azone list -p | cut -d ":" -f 4`
+		if [[ "$X" = "" ]]; then
+			continue
+		fi
+		X1=`echo "$X" | sed -e 's/\// /g' | awk '{print $1}'`
+		X2=`echo "$X" | sed -e 's/\// /g' | awk '{print $2}'`
+		Y1=`echo "${ZONE_PATH}" | sed -e 's/\// /g' | awk '{print $1}'`
+		Y2=`echo "${ZONE_PATH}" | sed -e 's/\// /g' | awk '{print $2}'`
+		if [[ "$X1" == "$Y1" || "$X2" == "$Y2" ]]; then
+			fnd=1
+			break
+		fi
+	done
+
+	if [[ $fnd == 0 ]]; then
+		return $CIPSO_NO_NG_ZONE
+	fi
+
+	echo $srvdir | /bin/grep "^$ZONE_PATH" >/dev/null 2>&1
+	if (( $? != 0 )); then
+		return $CIPSO_NO_EXPORT_ZONEPATH
+	fi
+
+	echo $clntdir | /bin/grep "^$ZONE_PATH" >/dev/null 2>&1
+	if (( $? != 0 )); then
+		return $CIPSO_NO_MNTPT_ZONEPATH
+	fi
+	return 0
+}
+
+# -----------------------------------------
+# check_for_cipso()
+# -----------------
+# If this is a CIPSO connection, then check
+# for NFSv2, NFSv3 or NFSv4.  If NFSv2, then error
+# exit this script.  If NFSV3 or NFSv4, then check
+# the variables MNTPTR and NFSDIR to make
+# sure there is a non-global zone path in
+# their path legs.
+#
+# usage: cipso_check_mntpaths <server's export dir> <client's mnt pnt> <mount options>
+#
+# return:       0: Everything is OK
+#               1: The testing is not supported
+
+# -----------------------------------------
+function check_for_cipso
+{
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+                [[ :$_NFS_STF_DEBUG: == *:check_for_cipso:* ]] && set -x
+
+	TX_MNTPTR=$1
+	TX_NFSDIR=$2
+	TX_MNTOPT=$3
+
+	if [[ "$TX_MNTOPT" == "" ]]; then
+		TMPMNTOPT="vers=4"
+	else
+		TMPMNTOPT=$TX_MNTOPT
+	fi
+
+	is_cipso $TMPMNTOPT $SERVER
+	ret=$?
+	if (( $ret == $CIPSO_NOT )); then
+		return 0
+	fi
+
+	if (( $ret == $CIPSO_NFSV2 )); then
+		echo \
+		"$NAME: CIPSO NFSv2 is not supported in Trusted Extensions."
+		return 1
+	fi
+
+	if (( $ret == $CIPSO_NFSV4 )); then
+		echo "$TX_MNTOPT" | grep "proto=udp" > /dev/null 2>&1
+		if (( $? == 0 )); then
+			echo "$NAME: Invalid mount options ($TX_MNTOPT)"
+			echo "NFSv4 over UDP is not supported." 
+			return 1
+		fi
+	fi
+
+	cipso_check_mntpaths  $TX_MNTPTR $TX_NFSDIR
+	if (( $? != 0 )); then
+		echo "$NAME: CIPSO requires non-global zone mount dirs."
+		echo "The server's exported directory($TX_MNTPTR)" 
+		echo "and client's mount point ($TX_NFSDIR)"
+		echo "must contain path legs with matching"
+		echo "non-global zone paths. Please try again ..."
+		return 1
+	fi
+	
+	return 0
+}
+
+# -----------------------------------------------------
+# check_tx_zonepath
+# -----------------
+# Check whether the ZONE_PATH variable is set or not,
+# if the test system is TX enabled, it must be set,
+# otherwise, ZONE_PATH should not be set.
+# -----------------------------------------------------
+function check_tx_zonepath
+{
+    ce_is_system_labeled
+    typeset ret=$?
+    if (( $ret == 0 )); then
+	if [[ -z $ZONE_PATH ]]; then
+	    echo "ZONE_PATH is not set, exiting."
+	    echo "You are running the suite over a CIPSO connection, \c"
+	    echo "you MUST set ZONE_PATH with /zone/<zone name>"
+	    exit 1
+	fi
+    else
+	if [[ -n $ZONE_PATH ]]; then
+	    echo "ZONE_PATH is set without TX, exiting."
+	    save_results $ret
+	fi
+    fi
+}

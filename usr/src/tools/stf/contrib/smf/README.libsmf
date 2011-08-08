@@ -1,0 +1,171 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+# 
+# Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+# 
+# ident	"@(#)README.libsmf	1.3	07/04/12 SMI"
+#
+
+Since many of the existing suites in the STC 2.0 gate require a common
+way to interact with SMF, the following will be added to the contributed
+STC 2.0 utilities to facilitate determining the presence of SMF.
+
+A shell library of functions and equivalent commands for detecting the
+presence of SMF will be added to src/tools/stf/contrib/smf. The commands
+will be invocable equivalents to the functions in the library. So a test
+suite may either source the library and use the functions directly or
+rely on the invocable commands needs dictate.
+
+These files will follow existing convention concerning the location of source
+and installed files. All source files will be in src/tools/stf/contrib/smf (a
+new directory). When installed, the library may be loaded from
+${STF_TOOLS}/contrib/smf/include/libsmf.shlib, and the invocable commands will
+be in ${STF_TOOLS}/contrib/smf/bin. Since STC 2.0 adds the bin directory to
+the PATH, all of the commands may be invoked sans any path. e.g.
+
+    if smf_installed; then
+       do smf stuff...
+
+    else
+       do init.d stuff...
+
+    fi
+
+For compatibility sake, the library functions will all conform to Bourne Shell
+(sh) syntax and semantics.
+
+==============================================================================
+Commands found in usr/ontest/util/stc/bin
+
+smf_installed
+	See smf_installed_fn.
+
+smf_cmd_FMRI_wait
+	See smf_cmd_FMRI_wait_fn.
+
+============================================================================
+Library functions found in usr/ontest/util/stc/include/libsmf.sh:
+
+smf_installed_fn() { # void
+    #
+    #  		Will return 0 if smf appears to be installed and should be
+    #  		usable, otherwise it will return != 0.
+    #
+    #  		This function will check and rely on the presence or absence
+    #  		of /lib/svc/share/smf_include.sh.
+    #
+
+smf_cmd_FMRI_wait_fn() { # [-v] "quoted command" FMRI status timeout
+    #
+    #		Will invoke the quoted command, then use svcprop -w to wait
+    #		for up to timeout seconds for the restarter/state property of
+    #		the FMRI named to have the status passed. The command may be
+    #		empty, and the timeout may be 0 to indicate not to wait or -1
+    #		to indicate a wait forever.
+    #
+    #		'$FMRI' embedded within the quoted command will be replaced
+    #		with the FMRI parameter passed to this function. Note: Since
+    #		'$FMRI' references a shell variable, the '$' must be suitably
+    #		escaped or redundantly quoted to ensure that it remains intact
+    #		until substitution occurs when the quoted command is
+    #		invoked. e.g. smf_cmd_FMRI_wait "svcadm enable \$FMRI" svc:."
+    #
+    #		-v will enable progress messages.
+    #
+    #		If the quoted command returns 0, and the FMRI named reaches
+    #		the state specified within the timeout allowed, then
+    #		smf_cmd_FMRI_wait will return 0.
+    #
+    #		If the quoted command does not return 0, then
+    #		smf_cmd_FMRI_wait will return the value returned by the
+    #		command.
+    #
+    #		If the FMRI status changes, but does not match the specified
+    #		status, then smf_cmd_FMRI_wait will return 35 (ENOMSG).
+    #
+    #		If the FMRI status does not change within the timeout
+    #		specified, then smf_cmd_FMRI_wait will return 62 (ETIME).
+    #
+    #		If SMF does not appear to be installed, then smf_cmd_FMRI_wait
+    #		will return 2 (ENOENT).
+    #
+    #		If invalid or insufficient parameters are passed, then
+    #		smf_cmd_FMRI_wait will return 22 (EINVAL).
+    #
+    #		If this routine is interrupted by the user then
+    #		smf_cmd_FMRI_wait will return 4 (EINTR).
+    #
+
+smf_get_state() { # fmri
+    #		prints the current state of the instance specified by the
+    #		supplied FMRI.  Returns 22 if usage was incorrect.  Otherwise,
+    #		returns the exit status of svcprop.
+
+smf_fmri_transition_state { # "do"/"check" fmri state timeout
+    # Usage:
+    #	smf_fmri_state_transition "do" $fmri $state $timeout
+    # OR
+    #	smf_fmri_state_transition "check" $fmri $state $timeout
+    #
+    #
+    # DEVELOPER NOTES:
+    # ================
+    # Usage:
+    #
+    # This function can be used in two modes: 
+    #	(1) as a utility that waits for the specified state transition to occur
+    #	(2) as a tool that affects the desired state transition
+    #
+    # Invocation:
+    # -----------
+    # (1) "check" (waiter-only) mode
+    #		smf_fmri_transition_state "check" $fmri $state $timeout
+    # (2) "do" mode: 
+    #		smf_fmri_transition_state "do" $fmri $state $timeout
+    #
+    # In the 'check' mode, the function merely waits for the target fmri
+    # to attain the desired state in the specified timeout (seconds).  It
+    # is up to the invoking process to ensure the issuance of appropriate
+    # svcadm commands to actually affect the desired state transition.
+    # In the 'do' mode, the function itself issues an svcadm command to 
+    # cause the state transition to the desired state and then waits for
+    # the fmri to reach the desired state in the specified timeout period
+    # (seconds).  In both cases, a return status of 0 (zero) indicates 
+    # success and a non-zero return status indicates failure.
+    #
+    # Note that this is a 'state transition' function, not a substitute
+    # for svcadm commands.  Specifically, this function does not issue
+    # *all* possible svcadm commands; only those that are needed for the
+    # desired state transition to be executed as immediately as possible.  
+    # For example, the function cannot be told to issue commands such as
+    # the following:
+    #	svcadm enable -r FMRI		# recursive enable
+    # 	svcadm {en,dis}able -t FMRI	# temporary enable/disable
+    #	svcadm mark -t maintenance FMRI # temporary maintenance
+    #
+    # However, for one thing, these types of invocations are quite rare,
+    # and, for another, when developers need to issue these svcadm sub-
+    # commands, they can invoke them explicitly and simply use this 
+    # function in the "check" mode.  Alternatively, users are invited to
+    # explore the smf_cmd_wait_FMRI function described elsewhere in this file.
+    #

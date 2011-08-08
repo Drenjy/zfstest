@@ -1,0 +1,2555 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)stf_common.kshlib	1.53	08/11/21 SMI"
+#
+
+export STF_COMMON_OPTIONS_USAGE=\
+"	-h|-?      Usage help
+	-E         Process format string"
+
+set -A STF_FORMAT_STRINGS	\
+	STF_CONFIG_FORMAT	\
+	STF_JNL_NAME_FORMAT	\
+	STF_JNL_TAG_FORMAT	\
+	STF_RESULTS_FORMAT	\
+	STF_PROFILE_FORMAT
+
+export STF_DEFAULT_JNL_NAME_FORMAT=\
+'journal.$(uname -n)${STF_JNL_TAG:+.}${STF_JNL_TAG-.$STF_JNL_DATE}'\
+'.$STF_JNL_COMMAND${STF_EXECUTE_MODE+.$STF_EXECUTE_MODE}'
+export STF_DEFAULT_CONFIG_FORMAT='/var/tmp/${STF_SUITE##*/}/config'
+export STF_DEFAULT_RESULTS_FORMAT='/var/tmp/${STF_SUITE##*/}/results'
+
+export STF_CONFIG_DIRMODE=0777
+export STF_RESULTS_DIRMODE=0777
+export STF_JNL_FILEMODE=0666
+export STF_START_DIR=$(pwd -P)
+
+#
+# parse the commandline options, save all formatstrings in stf_saved_fstring
+# $1:	options specific to stf_* command
+# $2:	function name for handling stf_* specific options. The option is
+#	passed to the function and a zero return code is expected.
+# $3:	usage message
+# $4..$n: options to parse
+#
+# Return OPTIND (success) or exit with error, no way to return a failure.
+#
+function stf_parse_options
+{
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:stf_parse_options:* ]] &&
+	set -o xtrace
+
+	typeset options=$1
+	typeset parse_function=$2
+	typeset usage="$3"
+	shift 3
+
+	set -A stf_saved_fstrings
+
+	while getopts :${options#:}hE: OPT "$@"; do
+		case $OPT in
+		E)
+			# save format string for later processing
+			stf_saved_fstrings[${#stf_saved_fstrings[*]}]="$OPTARG"
+			;;
+		:)
+			_err_usage_exit 1 "$usage" "-$OPTARG: argument missing"
+			;;
+		\?|h)
+			if [[ $OPT == 'h' || $OPTARG == '?' ]] ; then
+				print "$usage"
+				exit 0
+			fi
+			_err_usage_exit 1 \
+				"$usage" "-$OPTARG: invalid option or action"
+			;;
+		*)
+			if (( ${#parse_function} > 0 )); then
+				if ! $parse_function $OPT "$OPTARG"; then
+					_err_usage_exit 1 "$usage" \
+						"-$OPT: failed to process"
+				fi
+			fi
+			;;
+		esac
+	done
+
+	return $OPTIND
+}
+
+#
+# Process formatstrings in stf_saved_fstrings, load/save default profile
+# $1:	"load" or "save"
+#
+function stf_process_formatstrings
+{
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:formatstring:* ||
+	   :${__DEBUG}: == *:stf_process_formatstrings:* ]] &&
+	set -o xtrace
+
+	typeset loadsave=$1
+	typeset -i c=0
+	typeset name
+	typeset string
+
+	# first load all profiles given by command line
+	while (( c < ${#stf_saved_fstrings[@]} )) ; do
+		name="${stf_saved_fstrings[c]}"
+		string="${name#*=}"
+		if [[ "$string" == "$name" ]] ; then
+			_err_exit 1 "Bad -E argument: \"$name\""
+		fi
+		name="${name%%=*}"
+		if [[ $name == STF_PROFILE_FORMAT ]] ; then
+			export STF_PROFILE_FORMAT=$string
+			stf_eval_formatstring STF_PROFILE_FORMAT || exit 1
+			stf_load_profile "$STF_PROFILE" \
+					"$STF_PROFILE_OPTION" || exit 1
+			unset stf_saved_fstrings[c]
+		fi
+		(( c += 1 ))
+	done
+
+	set -- "${stf_saved_fstrings[@]}"
+	while (( $# > 0 )) ; do
+		stf_set_formatstring "$1" || exit 1
+		shift
+	done
+
+	# load/save default profile
+	if [[ "$loadsave" == "save" ]]; then
+		stf_save_default_profile || exit 1
+	elif [[ "$loadsave" == "load" ]]; then
+		stf_load_default_profile || exit 1
+	fi
+
+	# set default values
+	STF_CONFIG_FORMAT=${STF_CONFIG_FORMAT:-$STF_DEFAULT_CONFIG_FORMAT}
+	export STF_CONFIG_FORMAT
+
+	STF_JNL_NAME_FORMAT=${STF_JNL_NAME_FORMAT:-$STF_DEFAULT_JNL_NAME_FORMAT}
+	export STF_JNL_NAME_FORMAT
+
+	STF_RESULTS_FORMAT=${STF_RESULTS_FORMAT:-$STF_DEFAULT_RESULTS_FORMAT}
+	export STF_RESULTS_FORMAT
+}
+
+#
+# Either return 0 or exit 1
+# Never return unsuccessful result to the caller
+#
+function stf_init
+{
+	STF_COMMAND=${prog##*/}
+
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:init:* ||
+	   :${__DEBUG}: == *:stf_init:* ]] &&
+	set -o xtrace
+
+	typeset em_STFINFO="
+Unable to determine suite directory. Please execute this command inside an STF
+suite. If you are inside an STF suite, it is missing an STF.INFO file.
+"
+
+	typeset em_BUILDMODES="
+Build modes are not defined for this suite. Please add:
+
+\tSTF_SUITE_BUILD_MODES=\"sparc sparc-f64 sparcv9 i386 i386-f64\"
+
+to the STF.INFO file. Omit any modes which do not apply.
+"
+
+	typeset em_EXECMODES="
+Execute modes are not defined for this suite. Please add:
+
+\tSTF_SUITE_EXECUTE_MODES=\"sparc sparc-f64 sparcv9 i386 i386-f64\"
+
+to the STF.INFO file. Omit any modes which do not apply.
+"
+
+	# Assign variables which could be used in STF_PROFILE_FORMAT
+	export STF_JNL_DATE=$(date +\%Y\%m\%d\%H\%M\%S)
+
+	STF_JNL_COMMAND=${prog##*/}
+	STF_JNL_COMMAND=${STF_JNL_COMMAND#stf_}
+	export STF_JNL_COMMAND
+
+	export STF_MACH=`uname -p`
+
+	# Figure out the test suite root directory
+	if [[ -z "$STF_SUITE" ]] ; then
+		d=`pwd -P`
+		while [[ ! -f ${d}/STF.INFO ]] ; do
+			d=`dirname ${d}`
+			if [[ $d == "/" ]] ; then
+				print -u2 "$em_STFINFO"
+				exit 1
+			fi
+		done
+
+		export STF_SUITE=${d}
+	fi
+
+	suite=$STF_SUITE
+	. $STF_SUITE/STF.INFO
+	STF_SUITE=$suite
+	export STF_SUITE
+
+	(. $STF_SUITE/STC.INFO && 
+		echo export STC_NAME=\'$STC_NAME\' &&
+		echo export STC_VERSION=\'$STC_VERSION\' &&
+		echo export STC_OS_VERSION=\'$STC_OS_VERSION\') | 
+		while read line; do
+			eval $line
+		done
+
+	# Warn if STF is invoked from within the src directory tree
+	[[ $STF_COMMAND != stf_build ]] && {
+	    if [[ "$STF_START_DIR" != ${STF_START_DIR%%/src/suites/*} ]] || 
+		[[ "$STF_START_DIR" != ${STF_START_DIR%%/src/tools/*} ]] ||
+		[[ "$STF_START_DIR" != ${STF_START_DIR%%/usr/closed/*} ]]; then
+			_warn "$STF_COMMAND: running from within the "\
+			"src directory tree may be unsupported"
+	    fi
+	}
+
+	# figure out where the stc tools are
+	if [[ -z "$STF_TOOLS" ]] ; then
+
+		# The $STF_TOOLS directory has not been set.
+		# That's ok, it can be derived from the location of the current
+		# STF command, which the command has kindly set for us in ${dir}
+		
+		STF_TOOLS_BIN=$(cd -P ${dir} >/dev/null; pwd)
+		export STF_TOOLS=${STF_TOOLS_BIN%/bin/*}
+	fi
+
+	export STF_TOOLS_MAKEFILES
+
+	export STF_CONFIG_INPUTS=""
+	[[ -f ${STF_SUITE}/etc/BuildConfig.override ]] &&
+    STF_CONFIG_INPUTS="$STF_CONFIG_INPUTS $STF_SUITE/etc/BuildConfig.override"
+	[[ -f ${STF_SUITE}/etc/BuildConfig.master ]] &&
+    STF_CONFIG_INPUTS="$STF_CONFIG_INPUTS $STF_SUITE/etc/BuildConfig.master"
+	[[ -f ${STF_TOOLS}/etc/BuildConfig.override ]] &&
+    STF_CONFIG_INPUTS="$STF_CONFIG_INPUTS $STF_TOOLS/etc/BuildConfig.override"
+	[[ -f ${STF_TOOLS}/etc/BuildConfig.master ]] &&
+    STF_CONFIG_INPUTS="$STF_CONFIG_INPUTS $STF_TOOLS/etc/BuildConfig.master"
+
+	# figure out the modes which are applicable to this test suite.
+	export STF_SUITE_BUILD_MODES
+
+	if [[ -z "$STF_SUITE_BUILD_MODES" ]] ; then
+
+		print -u2 "$em_BUILDMODES"
+		exit 1
+	fi
+
+	export STF_MACH_BUILD_MODES=`\
+	    ${STF_TOOLS}/build/stf_configlookupmodes BuildModes \
+		${STF_MACH} "$STF_SUITE_BUILD_MODES" ${STF_CONFIG_INPUTS}`
+
+	export STF_SUITE_EXECUTE_MODES
+
+	if [[ -z "$STF_SUITE_EXECUTE_MODES" ]] ; then
+
+		print -u2 "$em_EXECMODES"
+		exit 1
+	fi
+
+	# STF_BACKUP should really be a format string
+	export STF_BACKUP=${STF_BACKUP:-/var/tmp/${STF_SUITE##*/}/backup}
+	export STF_BASELINE=${STF_BASELINE}
+
+	PATH=$STF_SUITE/bin/$STF_MACH:$STF_SUITE/bin:$PATH
+	PATH=$STF_TOOLS/bin/$STF_MACH:$STF_TOOLS/bin:$PATH
+	export PATH
+
+	LD_LIBRARY_PATH=$STF_SUITE/lib/$STF_MACH:$STF_SUITE/lib:$LD_LIBRARY_PATH
+	LD_LIBRARY_PATH=$STF_TOOLS/lib/$STF_MACH:$STF_TOOLS/lib:$LD_LIBRARY_PATH
+	export LD_LIBRARY_PATH
+}
+
+#
+# compute STF_CONFIG
+# $1:	if set, create the configdir
+#
+function stf_set_configdir
+{
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:formatstring:* ||
+	   :${__DEBUG}: == *:stf_set_configdir:* ]] &&
+	set -o xtrace
+
+	typeset createflag=$1
+
+	STF_CONFIG_FORMAT=${STF_CONFIG_FORMAT:-$STF_DEFAULT_CONFIG_FORMAT}
+	export STF_CONFIG_FORMAT
+	stf_eval_formatstring STF_CONFIG_FORMAT || exit 1
+	if (( ${#STF_CONFIG} == 0 )) ; then
+		stf_eval_formatstring STF_DEFAULT_CONFIG_FORMAT || exit 1
+		STF_CONFIG="$STF_DEFAULT_CONFIG"
+		STF_CONFIG_OPTION="$STF_DEFAULT_CONFIG_OPTION"
+		_warn "The evaluated result of STF_CONFIG_FORMAT is null, "\
+			"using default STF_CONFIG=\"$STF_CONFIG\""
+	fi
+	STF_CONFIG=$(absolutePath "$STF_CONFIG" "$STF_START_DIR")
+
+	if (( ${#createflag} > 0 )) ; then
+		if [[ ! -d "$STF_CONFIG" ]] ; then
+			if [[ "$STF_CONFIG_OPTION" == "-" ]] ; then
+				_err_exit 1 "Config dir doesn't exist: "\
+						"\"$STF_CONFIG\""
+			fi
+			mkdir -m $STF_CONFIG_DIRMODE -p "$STF_CONFIG"
+			if (( $? != 0 )) ; then
+				_err_exit 1 "Could not create config dir: "\
+						"\"$STF_CONFIG\""
+			fi
+		fi
+	fi
+
+	typeset tmp
+
+	tmp=$(cd "$STF_CONFIG" && pwd -P)
+	if (( $? != 0 )) ; then
+		_err_exit 1 "Could not change to config dir: \"$STF_CONFIG\""
+	fi
+	STF_CONFIG="$tmp"
+	export STF_GOSU=$STF_CONFIG/stf_gosu
+}
+
+function stf_eval
+{
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:formatstring:* ||
+	   :${__DEBUG}: == *:stf_eval:* ]] &&
+	set -o xtrace
+
+	eval "$@"
+	typeset ret=$?
+	if (( ret != 0 )) ; then
+		_err "Could not eval: \"$@\""
+	fi
+	return $ret
+}
+
+#
+# Parse the formatstring
+# Store the result value and the special character in *_OPTION
+#
+# $1:	formatstring
+# $2:	name of variable to store evaluated value
+# $3:	name of variable to store the special character
+# return:
+# 0:	success
+# 1:	failure
+#
+function stf_parse_formatstring
+{
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:formatstring:* ||
+	   :${__DEBUG}: == *:stf_parse_formatstring:* ]] &&
+	set -o xtrace
+
+	typeset fstring=$1
+	typeset result_ref=$2
+	typeset option_ref=$3
+
+	stf_eval value=\"$fstring\" || return 1
+	result=${value#@(+|-|!)}
+	eval export $result_ref=\"\$result\"
+	eval export $option_ref=\"\${value%\$result}\"
+
+	return 0
+}
+
+#
+# $1:	name of formatstring
+# return:
+# 0:	success
+# 1:	evaluation fails
+#
+function stf_eval_formatstring
+{
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:formatstring:* ||
+	   :${__DEBUG}: == *:stf_eval_formatstring:* ]] &&
+	set -o xtrace
+
+	typeset name=$1
+	typeset string
+	eval string=\$$name
+	stf_parse_formatstring "$string" ${name%_FORMAT} \
+		${name%_FORMAT}_OPTION
+
+	return $?
+}
+
+#
+# $1:	profile name
+# $2:	clobber option
+# return:
+# 0:	success
+# 1:	failure
+#
+function stf_load_profile #
+{
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:formatstring:* ||
+	   :${__DEBUG}: == *:stf_load_profile:* ]] &&
+	set -o xtrace
+
+	typeset must
+	typeset err
+
+	if [[ "$2" != "!" ]] ; then
+		must=1
+	fi
+	sourcefile "$1" $must
+	err=$?
+	if (( err != 0 )) ; then
+		_err "Could not load profile: \"$1\""
+	fi
+	return $err
+}
+
+#
+# $1:	profile name
+# $2:	clobber option
+# return:
+# 0:	success
+# 1:	failure
+# 2:	profile exists and noclobber is set
+#
+function stf_save_profile
+{
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:formatstring:* ||
+	   :${__DEBUG}: == *:stf_save_profile:* ]] &&
+	set -o xtrace
+
+	typeset profile=$1
+	typeset name
+	typeset fstring
+
+	if [[ "$2" == "-" && -e "$profile" ]] ; then
+		_err "Profile exists: \"$profile\""
+		return 2
+	fi
+	if ! /bin/rm -f "$profile" ; then
+		_err "Could not remove: \"$profile\""
+		return 1
+	fi
+
+	for name in ${STF_FORMAT_STRINGS[*]} ; do
+		eval fstring=\$$name
+		if (( ${#fstring} > 0 )) ; then
+			print export $name=\${$name:-\'$fstring\'} \
+				>> "$profile"
+			if (( $? != 0 )) ; then
+				_err "Could not write profile: \"$profile\""
+				return 1
+			fi
+		fi
+	done
+
+	return 0
+}
+
+#
+# return:
+# 0	success
+# >0	failure
+#
+function stf_load_default_profile
+{
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:formatstring:* ||
+	   :${__DEBUG}: == *:stf_load_default_profile:* ]] &&
+	set -o xtrace
+
+	stf_set_configdir
+	stf_load_profile "$STF_CONFIG/stf_config.profile" '-'
+
+	return $?
+}
+
+#
+# return:
+# 0	success
+# >0	failure
+#
+function stf_save_default_profile
+{
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:formatstring:* ||
+	   :${__DEBUG}: == *:stf_save_default_profile:* ]] &&
+	set -o xtrace
+
+	stf_set_configdir create
+	stf_save_profile "$STF_CONFIG/stf_config.profile" "!"
+
+	return $?
+}
+
+#
+# Parse and assign value for format string
+# $1:	string to be parsed. "<formatstring>=<value>"
+# return:
+# 0:	success
+# 1:	failure
+#
+function stf_set_formatstring
+{
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:formatstring:* ||
+	   :${__DEBUG}: == *:stf_set_formatstring:* ]] &&
+	set -o xtrace
+
+	typeset name
+	typeset string
+
+	name="$1"
+	string="${name#*=}"
+	if [[ "$string" == "$name" ]] ; then
+		_err "Bad -E argument: \"$name\""
+		return 1
+	fi
+	name="${name%%=*}"
+
+	# varible name should be STF_*_FORMAT
+	if [[ "$name" != STF_*_FORMAT ]] ; then
+		_err "Bad format string: \"$name\""
+		return 1
+	fi
+
+	eval export $name=\"\$string\"
+
+	return 0
+}
+
+function stf_getparentdirs
+{
+	curdir=`pwd -P`
+	[[ $curdir == $STF_SUITE ]] && return 0
+
+	dirlist=""
+	cd ..
+	curdir=`pwd -P`
+
+	while [[ "$curdir" != "$STF_SUITE" ]] ; do
+		dirlist="$curdir $dirlist"
+		cd ..
+		curdir=`pwd -P`
+		[[ $curdir = "/" ]] && return 1
+	done
+	dirlist="$STF_SUITE $dirlist"
+	print $dirlist
+}
+
+function stf_needgosuindir
+{
+	if [[ -f $1/stf_description ]] ; then
+		. $1/stf_description
+
+		if [[
+		    -n "$STF_ROOT_CHECKENV" ||
+		    -n "$STF_ROOT_CONFIGURE" ||
+		    -n "$STF_ROOT_SETUP" ||
+		    -n "$STF_ROOT_CLEANUP" ||
+		    -n "$STF_ROOT_TESTCASES" ]] ; then
+			return 1
+		fi
+	fi
+	return 0
+}
+
+function stf_needgosuintree
+{
+	if [[ -f $1/stf_description ]] ; then
+		stf_needgosuindir $1
+		(( $? == 1 )) && return 1
+		for dir in $STF_EXECUTE_SUBDIRS ; do
+			stf_needgosuintree $1/$dir
+			(( $? == 1 )) && return 1
+		done
+	fi
+	return 0
+}
+
+function stf_ensuregosu
+{
+	if [[ ! -x $STF_GOSU ]] ; then
+		echo
+		echo "This Test Suite Requires Root Access."
+		stf_creategosu $STF_TOOLS/bin/$STF_MACH/stf_gosu $STF_GOSU || \
+		    return 1
+		echo
+	else
+		return 0
+	fi
+}
+
+#
+# This function tries to figure out where checkenv is and set
+# CHECKENV_DIR accordingly:
+#
+# First we check if the user has specified a valid dir
+# using the STF_CHECKENV_PATH env var
+#
+# Else, we check if SUNWstc-checkenv is installed, and if so,
+# use basedir from it's pkginfo file
+#
+# Finally we check if $STF_TOOLS is set, because we could be
+# running STF out of a workspace, in which case, checkenv
+# will be proximate to STF_TOOLS.
+#
+# If none of the above can locate checkenv AND the test does not specify
+# it's own root or user checkenv script then we print a helpful
+# error message and exit.
+#
+function set_checkenvdir
+{
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:set_checkenvdir:* ]] &&
+	set -o xtrace
+
+	pkginfo -q SUNWstc-checkenv
+	PKGINFO_RET=$?
+
+	if [[ -x $STF_CHECKENV_PATH/bin/checkenv ]]; then
+		export CHECKENV_DIR=${STF_CHECKENV_PATH}/bin
+	elif (( $PKGINFO_RET == 0 )); then
+		PKGSPOOL=/var/sadm/pkg/SUNWstc-checkenv
+		BASEDIR=`/bin/pkginfo -l SUNWstc-checkenv | \
+			awk '/BASEDIR:/ {print $2}'`
+		export CHECKENV_DIR=${BASEDIR}/bin
+	elif [[ -d $(dirname $STF_TOOLS)/checkenv/bin ]]; then
+		export CHECKENV_DIR=$(dirname $STF_TOOLS)/checkenv/bin
+	fi
+
+	[[ -n $STF_ROOT_CHECKENV || -n $STF_USER_CHECKENV ]] && {
+		[[ ! -x $CHECKENV_DIR/checkenv ]]  && {
+			print -u2 "Could not find checkenv tool - "\
+				"Please install SUNWstc-checkenv or set"\
+				"STF_CHECKENV_PATH to the location of where"\
+				"checkenv is installed"
+			exit 1
+		}
+	}
+}
+
+#
+# Return absolute path
+#
+# $1: contains path
+# $2: base directory for relative paths
+#
+function absolutePath
+{
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:absolutePath:* ]] &&
+	set -o xtrace
+
+	typeset absolutepath=$1
+	if [[ $1 != /* ]] ; then
+		absolutepath="$2/$absolutepath"
+	fi
+	if [[ "$absolutepath" != "/" ]] ; then
+		absolutepath=${absolutepath%/}
+	fi
+
+	print $absolutepath
+}
+
+#
+# Return relative path
+#
+# $1 contains path
+#
+function relativePath
+{
+	typeset relpath=${1#$STF_SUITE}
+	if [[ "$relpath" != "$1" ]] ; then #if path is within STF_SUITE
+		relpath=${relpath#/}
+	fi
+	if [[ "$relpath" != "/" ]] ; then
+		relpath=${relpath%/}
+	fi
+	echo $relpath
+}
+
+#
+# Return the location of an executable or "" if can't find it
+#
+# $1 contains executable name
+#
+function findExecDir
+{
+	typeset path=$(whence -p $1)
+	print -n "${path%/*}"
+}
+
+#
+# Insert the right executable paths into PATH
+#
+# $1 contains the base directory (proto directory). This will *always* be
+# inserted into the front of PATH.
+#
+# $2 STF_DONTBUILDMODES as a single string. This is used to determine whether or
+# not the effort should be made to lookup build mode directories.
+#
+# $3 are execute modes whose build mode directories need to be looked up and
+# inserted into the front of PATH such that build mode directories will be
+# searched before the base directory, giving precedence to build mode specific
+# code over generic code.
+#
+# STF_TOOLS and STF_CONFIG_INPUTS must be set before calling this routine.
+#
+function pathAmend # <basedir> [<modes> [...]]
+{
+	# Enable debugging....
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:pathAmend:* ]] &&
+	set -o xtrace
+
+	# Some locals...
+	typeset modes
+	typeset modelist
+	typeset basedir=$1
+	typeset dir
+
+	# Always add the basedir to the front of the PATH.
+	pathInsert_ PATH $basedir
+
+	#
+	# If there are no build modes for this directory, then we're done 
+	# already.
+	#
+	(( ${#2} > 0 )) && [[ "${2}" == "true" ]] && return 0
+
+	# Look up the directories for the rest of the build modes and add them.
+	set - $3
+	while (( ${#} > 0 )); do
+		modes=$(${STF_TOOLS}/build/stf_configlookupmodes \
+		ExecuteToBuildModes \
+		$1 \
+		'' \
+		${STF_CONFIG_INPUTS})
+		shift
+
+		# Put them in the list in reverse order.
+		wordInsert_ modelist ' ' $modes
+	done
+
+	set - $modelist
+	while (( ${#} > 0 )); do
+		dir=$(${STF_TOOLS}/build/stf_configlookupmodes \
+		BinaryLocation \
+		$1 \
+		'' \
+		${STF_CONFIG_INPUTS})
+		shift
+
+		# Insert them into the path in precedence order.
+		pathInsert_ PATH $basedir/$dir
+	done
+}
+
+#
+# check file permission
+#
+# $1 contains filename
+# $2 contains permission to check
+# $3 optional program to invoke (su)
+#
+# return 0 if permission exists; 1 otherwise
+#
+function checkpermission
+{
+	$3 /usr/bin/ksh -p -c "[[ -$2 $1 ]]"
+	return $?
+}
+
+#
+# set file permission for everyone
+#
+# $1 contains filename
+# $2 contains permission to set
+# $3 optional program to invoke (su)
+#
+# return 0 on success; 1 on failure
+#
+function setpermission
+{
+	$3 /usr/bin/chmod ugo+$2 $1
+	return $?
+}
+
+#
+# remove created files
+#
+# $1 contains config directory
+#
+function configcleanup
+{
+	/usr/bin/rm -f $1/stf_config.vars
+	/usr/bin/rm -f $1/stf_config.profile
+	/usr/bin/rm -f $1/stf_config.stf
+	/usr/bin/rm -f $1/stf_config.suite
+	/usr/bin/rm -f $1/stf_config.suite.*
+	/usr/bin/rm -f $1/stf_*testcases
+	:
+}
+
+#
+# run configuration specified by the user
+#
+# For program type are setup or cleanup, first set STF_TIMEOUT
+# if not already set to a value >= 10 minutes
+#
+# $1 contains program type (i.e: configure, setup, cleanup)
+# $2 contains optional program to invoke (when running as root)
+# $3 contains program name
+# $4 contains arguments to pass to program (optional)
+# $5-$n contain file names (optional)
+#
+# return 0 on success; 1 on failure
+#
+function runprogram
+{
+	typeset progtype="$1"
+	typeset sucmd="$2"
+	typeset program=$3
+	typeset dir=$(findExecDir $program)
+	typeset usr=""
+
+	(( ${#dir} == 0 )) && _err Could not find executable $program && \
+		return 1
+	dir=$(relativePath $dir)
+	(( ${#sucmd} == 0 )) && usr="user" || usr="root"
+	shift 3						#shift $1, $2 and $3
+
+	typeset file=$1
+	typeset files=""
+	# Loop through the files names
+	while (( ${#1} > 0 )); do
+		if [[ -f $1 ]] ; then
+			checkpermission $1 w $sucmd
+			(( $? != 0 )) && _err $1 is not writable by $usr && \
+				return 1
+		fi
+		files="$files $1"
+		shift
+	done
+
+	# run the program here
+	print -n "Running $usr $progtype: $program ${dir:+in $dir}..."
+	typeset -i ret=0
+	case $progtype in
+		@(configure|unconfigure) )
+			print ""
+			$sucmd $program $file $args
+			if (( $? != 0 )) ; then
+				print "Result: FAIL\n"
+				return 1
+			else
+				print "Result: PASS\n"
+			fi
+			;;
+		@(setup|cleanup) )
+			print -n " | "
+			$sucmd stf_timeout -n ${reldir:+$reldir/}$program \
+				$STF_TIMEOUT \
+				stf_jnl_context $program $file || ret=1
+			;;
+		"*" )
+			ret=1
+			;;
+	esac
+
+	(( ret != 0 )) && return 1
+
+	# now make sure that files have correct permissions
+	ret=0
+	for file in $files; do
+		if [[ -f $file ]] ; then
+			# all files have to be readable by user
+			checkpermission $file r || ret=1
+			(( ret != 0 )) && setpermission $file r $sucmd && ret=0
+			(( ret != 0 )) && \
+				_err Could not make $file readable && break
+			# all files have to be writable
+			if (( ${#sucmd} != 0 )); then
+				checkpermission $file w $sucmd || ret=1
+			fi
+			(( ret == 0 )) && checkpermission $file w || ret=1
+			(( ret != 0 )) && setpermission $file w $sucmd && ret=0
+			(( ret != 0 )) && \
+				_err Could not make $file writable && break
+		fi
+	done
+
+	return $ret
+}
+
+#
+# print a warning message
+#
+# $@ contains message to print
+#
+function _warn
+{
+	print -u2 "**** Warning: $@."
+}
+
+#
+# print an error message
+#
+# $@ contains message to print
+#
+function _err
+{
+	print -u2 "**** Error: $@."
+}
+
+#
+# print an error and exit
+# $1:	exit status
+# $2..:	error message
+#
+function _err_exit
+{
+	typeset -i status=$1
+	shift
+	_err "$@"
+
+	exit $status
+}
+
+#
+# print an error then the usage and exit
+# $1:	exit status
+# $2:	usage message
+# $3..:	error message
+#
+function _err_usage_exit
+{
+	typeset -i status=$1
+	typeset usage="$2"
+	shift 2
+
+	_err "$@"
+	print -u2 "$usage"
+	exit $status
+}
+
+#
+# Search PATH for a file.
+#
+function findpath
+{
+	/usr/bin/bash --norc -p -c "type -P $1"
+}
+
+#
+# source in a file
+#
+# $1 contains file name
+# $2 set if the file is expected to be found
+#
+# return 0 on success; 1 on failure
+#
+function sourcefile
+{
+	if [[ -f $1 ]] ; then
+		checkpermission $1 r
+		if (( $? == 0 )) ; then
+			. $1
+		else
+			_err $1 is not readable && return 1
+		fi
+	elif [[ -n $2 ]] ; then
+		_err $1 is not found or not a file && return 1
+	fi
+
+	return 0
+}
+
+#
+# This function is used to create the stf_config.vars file.
+# Once it is created it is sourced in.
+#
+# The following values are returned:
+#	0 - configuration file created successfully
+#	1 - no config file created because an error was encountered
+#	2 - no config file created since no variables defined
+#
+function create_vars_file
+{
+	typeset STF_VARLIST
+	typeset STF_NOTSAFELIST
+	typeset -i ret=0
+
+	rm -f $configdir/stf_config.vars
+
+	# First, get STF_CONFIGFILES
+
+	unset STF_VARIABLES
+	unset STF_NOT_SAFE
+	for file in $STF_CONFIGFILES ; do
+
+		sourcefile ${protodir}/$file 1  || return 1
+
+		[[ -z $STF_VARIABLES ]] &&
+			_err "File $file must contain a \$STF_VARIABLES \
+				definition" && return 1
+
+		STF_VARLIST="${STF_VARLIST} $STF_VARIABLES"
+		STF_NOTSAFELIST="${STF_NOTSAFELIST} $STF_NOT_SAFE"
+	done
+
+	# Second, get files passed in through the -f option
+
+	if [[ -n $STF_VARLIST ]] ; then
+
+		#
+		# Make sure that file doesn't contain definition for
+		# STF_VARIABLES or STF_NOT_SAFE
+		#
+		for file in $aconfigfile; do
+			for i in STF_VARIABLES STF_NOT_SAFE
+			do
+				grep "$i=" $file | egrep -s -v "^#" &&  {
+					_err "Variable $i may not be" \
+					   "defined in file passed in" \
+					   "through the -f option"
+					return 1
+				}
+			done
+			sourcefile $file || return 1
+		done
+
+	# Finally get -c option stuff
+
+		eval $configvar;
+		(( $? != 0 )) &&
+			_err "-c value \"$configvar\" invalid" && return 1
+
+	# Create the stf_config.vars file
+
+		echo "# This file is created by stf_configure. Do not hand" \
+			"edit - " >> $configdir/stf_config.vars
+		echo "# make changes through stf_configure." \
+			>> $configdir/stf_config.vars
+		echo >> $configdir/stf_config.vars
+
+		echo "export STF_VARIABLES=\"$STF_VARLIST\"" \
+			>> $configdir/stf_config.vars
+		echo "export STF_NOT_SAFE=\"$STF_NOTSAFELIST\"" \
+			>> $configdir/stf_config.vars
+		for var in $STF_VARLIST; do
+			eval echo "export $var=\\\"\$$var\\\"" \
+				>> $configdir/stf_config.vars
+		done
+
+		chmod a-w $configdir/stf_config.vars
+		return 0
+	else
+		return 2
+	fi
+}
+
+#
+# This function assumes that the calling routines have sourced 
+# stf/include/testgen.kshlib
+#
+function stf_configureindir
+{
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:configureindir:* ||
+	   :${__DEBUG}: == *:stf_configureindir:* ]] &&
+	set -o xtrace
+
+	failed=
+
+	options=""
+	while getopts "svekgcur" OPT ; do
+		options="$options -$OPT"
+	done
+
+	shift $(( OPTIND - 1 ))
+
+	protodir=$1
+	reldir=`relativePath $protodir`
+	configdir=$STF_CONFIG/$reldir
+	configdir=${configdir%/}
+
+	export STF_EXEC=$reldir
+
+	if [[ ! -f $protodir/stf_description ]] ; then
+		_warn "stf_description file not found"
+		return 0
+	fi
+
+	. $protodir/stf_description
+
+	set_checkenvdir
+
+	STF_EXECUTE_MODES=`$STF_TOOLS/build/stf_getmodelist \
+	    "$STF_EXECUTE_MODES" "$STF_EXECUTEONLY" "$STF_DONTEXECUTE"`
+
+	# now generate actual execute mode list
+	modelist=""
+	for mode in $STF_EXECUTE_MODES ; do
+		chk=`$STF_TOOLS/build/stf_configlookupexecmode \
+			ExecuteModes $mode CHECK $STF_CONFIG_INPUTS`
+		eval $chk
+		(( $? == 0 )) && modelist="$modelist $mode"
+	done
+
+	export STF_EXECUTE_MODES=$modelist
+
+	# now modify PATH so that it contains the right executables
+	pathAmend $protodir "$STF_DONTBUILDMODES" "$STF_EXECUTE_MODES"
+
+	if [[ ! -d $configdir ]] ; then
+		if ! mkdir -m $STF_CONFIG_DIRMODE -p "$configdir" ; then
+			_err "Could not create config dir: \"$configdir\""
+			return 1
+		fi
+	fi
+
+	cd $configdir || return 1
+
+	# Remove the FAIL file if it exists
+	rm -f $configdir/FAIL
+
+	print  "\nRUNNING $phase PHASE IN ${STF_SUITE}${reldir:+/$reldir}...\n"
+
+	for opt in $options ; do
+	case $opt in
+
+	-s )
+
+		# source all environment files that may exist
+		for file in $STF_ENVFILES ; do
+			sourcefile ${protodir}/${file} 1 || return 1
+		done
+	;;
+
+	-v )
+		#
+		# If any failures occur during a config variable setup
+		# then the stf_configure will stop (not continue running
+		# in subdirs).  This is the desired behavior - we don't
+		# want to continue if the config variables aren't setup
+		#
+		echo "Setting up config variables..."
+		#
+		# Execute in a sub-shell because this loads variables
+		# into the environment to process config variables files
+		#
+		(create_vars_file)
+		ret=$?
+		(( $ret != 2 )) && {
+			if (( $ret == 1 )) ; then
+				print "Result: FAIL\n"
+				failed=${reldir:=./} && break
+			else
+				sourcefile ${configdir}/stf_config.vars ||  {
+					print "Result: FAIL\n"
+					failed=${reldir:=./} && break
+				}
+				print "Result: PASS\n"
+			fi
+		}
+
+		#
+		# MSTF needs expect.  If EXPECT is not defined, check the
+		# default location for expect, and if it's present, define
+		# EXPECT, otherwise, issue an error.
+		#
+		if [[ ! -z "$MSTF_ROLES" ]] && [[ -z "$EXPECT" ]]; then
+			export EXPECT=/usr/bin/expect
+			[ ! -x $EXPECT ] && EXPECT=/opt/sfw/bin/expect
+		fi
+		if [[ ! -z "$MSTF_ROLES" ]] && [[ ! -x "$EXPECT" ]]; then
+			_err "Cannot execute $EXPECT"
+			_err "Please set EXPECT to the location of " \
+			    "the expect executable"
+			failed=${reldir:=./} && break
+		fi
+
+		#
+		# If MSTF is enabled, make sure a system is named for each
+		# role.  Verify that each system is reachable and save
+		# its `isainfo -k` output as <role>_ARCH.
+		#
+		for role in $MSTF_ROLES; do
+			# Make sure we only do this once ...
+			[[ ! -z "$(eval echo \$${role}_ARCH)" ]] && continue
+
+			sys_name="$(eval echo \$${role}_NAME)"
+			if [[ -z "$sys_name" ]]; then
+				_err "Variable ${role}_NAME is not set"
+				_err "MSTF is not configured correctly"
+				failed=${reldir:=./}
+				break
+			fi
+			sys_arch=`$STF_GOSU rsh $sys_name /usr/bin/isainfo -k`
+			if (( $? != 0 )); then
+				_err "cannot rsh to $sys_name"
+				_err "MSTF must be able to rsh to all systems" \
+				    "as root without a password"
+			        _err "MSTF configuration will be incomplete"
+				failed=${reldir:=./}
+				break
+			fi
+			eval ${role}_ARCH=$sys_arch
+			print "MSTF: role $role is $sys_name ($sys_arch)"
+		done
+	;;
+
+	-e )
+		sourcefile $configdir/stf_config.vars || return 1
+		sourcefile $configdir/stf_config.stf || return 1
+		sourcefile $configdir/stf_config.suite || return 1
+	;;
+
+	-k )
+		#
+		# If we are in list mode, just run checkenv scripts
+		# root checkenv scripts should be safe to run as a normal
+		# user when given the -l option
+		#
+		if (( $listmode == 1 )) ; then
+			for check in $STF_ROOT_CHECKENV ; do
+				echo "Configuration Variables Found:"
+				$CHECKENV_DIR/checkenv -w -l -t configure \
+				    -f $check -T $protodir
+			done
+			for check in $STF_USER_CHECKENV ; do
+				echo "Configuration Variables Found:"
+				$CHECKENV_DIR/checkenv -w -l -t configure \
+				    -f $check -T $protodir
+			done
+			continue
+		fi
+
+		#
+		# first run the checkenv scripts to make sure the environment
+		# is set for configuration
+		#
+		for check in $STF_ROOT_CHECKENV ; do
+			print "Running root checkenv: $check..." 
+			$STF_GOSU $CHECKENV_DIR/checkenv -w -e -v \
+			    -t configure -f $check -T $protodir
+			if (( $? != 0 )) ; then
+				print "Result: FAIL\n"
+				failed=${reldir:=./} && break 2
+			else
+				print "Result: PASS\n"
+			fi
+		done
+		for check in $STF_USER_CHECKENV ; do
+			echo "Running user checkenv: $check..." 
+			$CHECKENV_DIR/checkenv -w -e -v -t configure \
+			    -f $check -T $protodir
+			if (( $? != 0 )) ; then
+				print "Result: FAIL\n"
+				failed=${reldir:=./} && break 2
+			else
+				print "Result: PASS\n"
+			fi
+		done
+	;;
+
+	-g )
+		# Generate the list of tests to be executed
+		/usr/bin/rm -f $configdir/stf_*testcases
+
+		#
+		# If we fail configuring the test case list
+		# we want to abort and exit immediately
+		#
+
+		#
+		# Add static testcases to appropriate testcase file in
+		# the config subdirectory
+		#
+		STF_ROOT_TESTCASES=${STF_ROOT_TESTCASES} \
+		    STF_USER_TESTCASES=${STF_USER_TESTCASES} \
+		    reldir=${reldir} \
+		    stf_add_static_testcases
+
+		(( $? != 0 )) && failed=${reldir:=./} && break
+
+		#
+		# If testcase list is dynamically generated, create
+		# list here and add to the file
+		#
+
+		#
+		# Generic dynamic test cases using generation scripts provided
+		# by the test suite.
+		#
+		if [[ -n "${STF_TESTCASES_GEN}" ]] && \
+			[[ -n "${STF_EXECUTE_MODES}" ]]; then
+		    for generator in ${STF_TESTCASES_GEN}; do
+			print -u2 "Generator $generator: Creating Dynamic" \
+			    "Testcases in ${STF_SUITE}${reldir:+/$reldir}..."
+			eval $generator
+			if (( $? != 0 )) ; then
+				print "Result: FAIL\n"
+				failed=${reldir:=./}
+				break
+			else
+				print "Result: PASS\n"
+			fi
+		    done
+		fi
+
+		#
+		# Generate dynamic testcases using the framework-provided test
+		# generator in conjunction with any testsuite-provided test 
+		# case matrix files.
+		#
+		(( ${#_GEN_DEBUG_} > 0 )) && set -o xtrace
+		if [[ -n "${STF_ROOT_CASEFILES}" ]] && \
+			[[ -n "${STF_EXECUTE_MODES}" ]]; then
+		    for casefile in ${STF_ROOT_CASEFILES}; do
+			print -u2 "Creating root testcases from $casefile" \
+			    "in ${STF_SUITE}${reldir:+/$reldir}..."
+			#
+			# The end user could override STF_ROOT_CASEFILES on the
+			# fly.
+			#
+			[[ -r ${protodir}/$casefile ]] && \
+			    casefile=${protodir}/$casefile
+			gen_generator -m true -u root $casefile
+			if (( $? != 0 )) ; then
+				print "Result: FAIL\n"
+				failed=${reldir:=./}
+				break
+			else
+				print "Result: PASS\n"
+			fi
+		    done
+		fi
+		if [[ -n "${STF_USER_CASEFILES}" ]] && \
+			[[ -n "${STF_EXECUTE_MODES}" ]]; then
+		    for casefile in ${STF_USER_CASEFILES}; do
+			print -u2 "Creating user testcases from $casefile" \
+			    "in ${STF_SUITE}${reldir:+/$reldir}..."
+			#
+			# The end user could override STF_USER_CASEFILES on the
+			# fly.
+			#
+			[[ -r ${protodir}/$casefile ]] && \
+			    casefile=${protodir}/$casefile
+			gen_generator -m true $casefile
+			if (( $? != 0 )) ; then
+				print "Result: FAIL\n"
+				failed=${reldir:=./}
+				break
+			else
+				print "Result: PASS\n"
+			fi
+		    done
+		fi
+		(( ${#_GEN_DEBUG_} > 0 && ${#__DEBUG} <= 0 )) && set +o xtrace
+
+		#
+		# If we're in list mode, read the generated testcase
+		# list and print out our version of what is supposed to
+		# happen
+		#
+		(( $listmode == 1 )) && {
+			testcaseExtract -l
+			(( $? != 0 )) && failed=${reldir:=./} && break
+		}
+	;;
+
+	-c )
+		# If we're in list mode, we shouldn't run this
+		(( $listmode == 1 )) && continue
+
+		echo "export STF_EXECUTE_MODES=\"$STF_EXECUTE_MODES\"" > \
+		    $configdir/stf_config.stf
+		(( $? != 0 )) && failed=${reldir:=./} && break
+
+		typeset configfile=$configdir/stf_config.suite
+		typeset configfiles=$configfile
+		for mode in $STF_EXECUTE_MODES ; do
+			configfile=$configdir/stf_config.suite.$mode
+			[[ -f $configfile ]] && rm -f $configfile
+			configfiles="$configfiles $configfile"
+		done
+
+		# now run the configuration scripts
+		for config in $STF_ROOT_CONFIGURE ; do
+			runprogram "configure" "$STF_GOSU" $config \
+				$configfiles
+			(( $? != 0 )) && failed=${reldir:=./} && break 2
+		done
+		for config in $STF_USER_CONFIGURE ; do
+			runprogram "configure" "" $config  \
+				$configfiles
+			(( $? != 0 )) && failed=${reldir:=./} && break 2
+		done
+
+		#
+		# Since MSTF needs expect at execute time, make sure EXPECT is
+		# defined in the configuration file.
+		#
+		if [[ ! -z "$MSTF_ROLES" ]]; then
+			echo "export EXPECT=$EXPECT" >> \
+			    $configdir/stf_config.stf
+		fi
+
+		# MSTF needs to save the *_ARCH variables for future use.
+		for role in $MSTF_ROLES; do
+			system_arch="$(eval echo \$${role}_ARCH)"
+			echo "export ${role}_ARCH=$system_arch" >> \
+			    $configdir/stf_config.stf
+		done
+	;;
+
+	-r )
+		for dir in $STF_EXECUTE_SUBDIRS ; do
+			(
+			    stf_configureindir $options $protodir/$dir
+			)
+		done
+
+	;;
+
+	-u )
+		for config in $STF_ROOT_UNCONFIGURE ; do
+			runprogram "unconfigure" "$STF_GOSU" $config
+			(( $? != 0 )) && failed=$reldir && break
+		done
+		for config in $STF_USER_UNCONFIGURE ; do
+			runprogram "unconfigure" "" $config
+			(( $? != 0 )) && failed=$reldir && break
+		done
+
+		configcleanup $configdir
+
+	;;
+
+	esac
+	done
+
+	[[ -n $failed ]] && {
+		echo $failed >> $STF_CONFIG/fail_list
+		touch $configdir/FAIL
+		return 1
+	}
+	return 0
+}
+
+#
+# Scan in directories and save the specified test cases relative paths in
+# variable $stf_match_paths. And save the cases name in variable
+# $stf_exist_cases.
+#
+# $1 contains the current proto directory path
+#
+# Return value:
+# 0 -> success
+# 1 -> failure
+#
+function stf_scanindir
+{
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:stf_scanindir:* ]] &&
+	set -o xtrace
+
+	typeset protodir=$1
+	typeset reldir=${protodir#$STF_SUITE}
+	reldir=${reldir%/}
+	reldir=${reldir#/}
+	typeset configdir=$STF_CONFIG/$reldir
+	typeset filelist="stf_root_testcases stf_user_testcases"
+
+	sourcefile $protodir/stf_description 1 || return 1
+
+	#
+	# Recursively filter current directory and its sub-directories,
+	# if the specified cases were found, then save the relative paths
+	#
+	typeset -i found=0
+	typeset file=""
+	for file in $filelist; do
+		if [[ ! -f $configdir/$file ]]; then
+			continue
+		fi
+		while read test_case test_cmd; do
+			typeset match_list=""
+			match_list=$(patternFilter "$test_case" "$test_list")
+			if (( !${#match_list} )); then
+				continue
+			fi
+
+			#
+			# In current directory, at least one test case matched
+			# with $test_list, so record it.
+			#
+			found=1
+
+			#
+			# If all of the specified test cases were found, just
+			# break. Otherwise, still need find it in the current
+			# directory.
+			#
+			if (( ${#stf_exist_cases} == ${#test_list} )); then
+				break
+			fi
+
+			#
+			# Save matching patterns name. For negated pattern, it
+			# just do copy work if no duplicate
+			#
+			wordAdd_ "stf_exist_cases" " " $match_list
+
+		done < $configdir/$file
+	done
+
+	#
+	# If there are specified test cases existing in current directory, save
+	# the relative path.
+	#
+	if (( found )); then
+		typeset -i i=0
+		while (( i < ${#stf_match_paths[@]} )); do
+			#
+			# Check if the current directory includes one of matched
+			# paths which have been saved in $stf_match_paths.
+			# If it is true, replace it.
+			#
+			# stf_match_paths[@] were assigned in stf_scanindir
+			#
+			if [[ ${reldir}/ == ${stf_match_paths[i]}/* ]]; then
+				break
+			fi
+			(( i += 1 ))
+		done
+		stf_match_paths[i]=$reldir
+	fi
+
+	if (( $force_recurse == 1 )); then
+		for subdir in $STF_EXECUTE_SUBDIRS ; do
+			stf_scanindir $protodir/$subdir || return 1
+		done
+	fi
+
+	return 0
+}
+
+function stf_executeindir
+{
+	(( ${#__DEBUG} > 0 )) &&
+	[[ :${__DEBUG}: == *:stf_execute:* ||
+	   :${__DEBUG}: == *:stf_executeindir:* ]] &&
+	set -o xtrace
+
+	failed=0
+
+	options=""
+	while getopts "vksiecr" OPT ; do
+		options="$options -$OPT"
+	done
+
+	typeset -i numargs=$#
+	shift $((numargs - 2))
+
+	mode=$2
+	protodir=$1
+
+	reldir=${protodir#$STF_SUITE}
+	reldir=${reldir%/}
+	reldir=${reldir#/}
+	builddir=$protodir/$STF_BUILD_MODE
+	configdir=$STF_CONFIG/$reldir
+	resultsdir=$STF_RESULTS/$reldir
+	configdir=${configdir%/}
+	resultsdir=${resultsdir%/}
+	mstf_envbase=/tmp/mstf_envfile
+
+	export STF_EXEC=$reldir
+
+	if [[ ! -f $protodir/stf_description ]] ; then
+		_warn "stf_description file not found"
+		return 0
+	fi
+
+	if [[ -f $configdir/FAIL ]] ; then
+		echo "\nSkipping $reldir - prior config failure detected\n" \
+			&& return 1
+	fi
+
+	. $protodir/stf_description
+
+	sourcefile $configdir/stf_config.stf 1 || return 1
+	if [[ $STF_EXECUTE_MODES == "" || \
+		" $STF_EXECUTE_MODES " != *" $STF_EXECUTE_MODE "* ]]
+	then
+		return 0
+	fi
+
+	set_checkenvdir
+
+	[[ $STF_DONTBUILDMODES = "true" ]] && bindir=$protodir \
+					|| bindir=$builddir
+
+	# modify PATH so that it contains the right executable
+	pathAmend $protodir "$STF_DONTBUILDMODES" "$STF_EXECUTE_MODE"
+
+	if [[ ! -d $resultsdir ]] ; then
+		if ! mkdir -m $STF_RESULTS_DIRMODE -p $resultsdir ; then
+			_err "Could not create results dir: \"$resultsdir\""
+			return 1
+		fi
+	fi
+	cd $resultsdir
+
+	echo "\nExecuting in directory ${STF_SUITE}${reldir:+/$reldir}..."
+
+	noexec=0
+	norecurse=0
+	for opt in $options ; do
+	case $opt in
+	-v )
+		cnt=0
+		cd $resultsdir
+
+		# source all environment files that may exist
+		for file in $STF_ENVFILES ; do
+			sourcefile ${protodir}/${file} 1
+			(( $? != 0 )) && failed=1 && break 2
+		done
+
+		sourcefile $configdir/stf_config.vars || return 1
+
+		# Process config variables passed through the -c option
+		STF_NOTSAFELIST="$STF_NOT_SAFE $STF_NOTSAFELIST"
+		for vars in ${varnames[*]}
+		do
+			STF_NOTSAFELIST=$(echo $STF_NOTSAFELIST | tr " " "\n" |
+				sort -u | tr "\n" " ")
+
+			for notsafe in $STF_NOTSAFELIST
+			do
+				[[ ${vars%%=*} = $notsafe ]] && {
+					_warn "Variable $notsafe can \
+only be reset in the config phase \n \
+(stf_configure) - the value $vars=${varvalues[$cnt]} \
+will be ignored"
+					continue 2
+				}
+			done
+			eval $vars=\"${varvalues[$cnt]}\"
+			(( cnt += 1 ))
+		done
+
+		# source any config files
+		sourcefile $configdir/stf_config.suite
+		(( $? != 0 )) && failed=1 && break
+		sourcefile $configdir/stf_config.suite.$STF_EXECUTE_MODE
+		(( $? != 0 )) && failed=1 && break
+
+	;;
+
+	-k )
+		#
+		# first run the checkenv scripts to make sure the environment
+		# is set for configuration
+		#
+		for check in $STF_ROOT_CHECKENV ; do
+			echo "Running root checkenv: $check"
+			$STF_GOSU $CHECKENV_DIR/checkenv -w -e -v \
+			    -t execute -f $check -T $protodir
+			(( $? != 0 )) && failed=1 && break 2
+		done
+		for check in $STF_USER_CHECKENV ; do
+			echo "Running user checkenv: $check"
+			$CHECKENV_DIR/checkenv -w -e -v -t execute \
+			    -f $check -T $protodir
+			(( $? != 0 )) && failed=1 && break 2
+		done
+	;;
+
+	# run setups
+	-s )
+		STF_TIMEOUT=${STF_TIMEOUT:=600}
+
+		for setup in $STF_ROOT_SETUP ; do
+			runprogram "setup" "$STF_GOSU" $setup \
+			    $resultsdir/stf_setup.$STF_EXECUTE_MODE
+			(($? != 0)) && failed=1 && noexec=1 && \
+			    norecurse=1 && break
+		done
+
+		# Don't bother with user setups if a root setup failed
+		if [[ $failed == 0 ]]; then
+			for setup in $STF_USER_SETUP ; do
+				runprogram "setup" "" $setup \
+					$resultsdir/stf_setup.$STF_EXECUTE_MODE
+				(($? != 0)) && failed=1 && noexec=1 && \
+					norecurse=1 && break
+			done
+		fi
+
+		sourcefile $resultsdir/stf_setup.$STF_EXECUTE_MODE
+
+		# MSTF only: create an environment file on each remote system.
+		for role in $MSTF_ROLES; do
+			sys_name=$(eval echo \$${role}_NAME)
+			mstf_envfile=${mstf_envbase}.$role
+			( for var in $STF_VARIABLES; do
+				echo "export $var=$(eval echo \$$var)"
+			  done
+			  echo "export MSTF_ROLES=$MSTF_ROLES"
+			  echo "export STF_SUITE=$STF_SUITE"
+                	  echo "export STF_TOOLS=$STF_TOOLS") |\
+			    ( $STF_GOSU rsh $sys_name cat \> $mstf_envfile )
+			(($? != 0)) && failed=1 && noexec=1 && \
+			    norecurse=1 && break || /bin/true
+		done
+
+		(( $? != 0 )) &&  failed=1 && noexec=1 && norecurse=1 && break
+	;;
+	# run test cases
+	-e )
+		[[ $noexec == 1 ]] && continue
+		STF_TIMEOUT=${STF_TIMEOUT:=600}
+
+		# Run the statically and dynamically defined test cases
+		testcaseExtract -e
+		(( $? == 1 )) && failed=1
+
+	;;
+	-i )	(
+			unset STF_JOURNAL
+			export PATH=$bindir:$PATH
+			export PS1='<stf>':$PS1
+			export STF_TESTCASE_DIR=$protodir
+			export STF_TESTCASE_BIN=$bindir
+			echo
+			echo "Entering stf interactive test shell."
+			echo "Execution Mode: $STF_EXECUTE_MODE"
+			echo "Build Mode    : $STF_BUILD_MODE"
+			echo
+			echo "Use \"\$STF_GOSU command\" to execute as root."
+			echo
+			echo "Current directory is in the results tree."
+			echo "Test case directory is  : \$STF_TESTCASE_DIR"
+			echo "Test case binary dir is : \$STF_TESTCASE_BIN"
+			echo
+			ksh -p
+			echo "Exiting stf interactive test shell."
+		)
+	;;
+	# recurse subdirs
+	-r )
+		[[ $norecurse == 1 ]] && continue
+		for dir in $STF_EXECUTE_SUBDIRS ; do
+			#
+			# If only invoke specified test cases, judge if the
+			# sub-directory path was child set of one of test case
+			# path. If not, it indicate that this directory and its
+			# sub-directories don't contain any specified test
+			# cases.
+			#
+			if (( ${#test_list} > 0 )); then
+				typeset -i i=0
+				while (( i < ${#stf_match_paths[@]} )); do
+					if [[ -n $(listFilter \
+					"${stf_match_paths[i]#$reldir/}/" \
+					"$dir/*") ]]; then
+						break
+					fi
+					(( i += 1 ))
+				done
+				if (( i >= ${#stf_match_paths[@]} )); then
+					continue
+				fi
+			fi
+
+			(stf_executeindir \
+			    $options $protodir/$dir $STF_EXECUTE_MODE)
+			(( $? == 1 )) && failed=1
+		done
+
+	;;
+	# run cleanups
+	-c )
+		# now run the cleanup scripts
+		for cleanup in $STF_USER_CLEANUP ; do
+			runprogram "cleanup" "" $cleanup
+			(( $? != 0 )) && failed=1
+		done
+		for cleanup in $STF_ROOT_CLEANUP ; do
+			runprogram "cleanup" "$STF_GOSU" $cleanup
+			(( $? != 0 )) && failed=1
+		done
+
+		# MSTF only: cleanup temporary envfiles.
+		for role in $MSTF_ROLES; do
+			mstf_envfile=${mstf_envbase}.$role
+			sys_name=$(eval echo \$${role}_NAME)
+			$STF_GOSU rsh $sys_name rm $mstf_envfile
+		done
+
+		/usr/bin/rm -f $resultsdir/stf_setup.$STF_EXECUTE_MODE
+	;;
+
+	esac
+	done
+
+	if [[ $resultsdir != $STF_RESULTS ]]; then
+		cd ..
+		/usr/bin/rmdir $resultsdir
+	fi
+
+	return $failed
+}
+
+#
+# Insert a path name at the beginning of a PATH style variable.
+#
+#	${1}	contains the variable name to which the rest of the paramaters
+#		should be added.
+#
+#	${2-n}	contain paths to insert into the list.
+#
+pathInsert_ () {
+	# Debugging stuff...
+	if [[ ${__DEBUG} = *:pathInsert_:* ]]; then
+		set -o xtrace
+	fi
+
+	# Define my locals...
+	typeset listname="${1}"	# List to which things should be added.
+
+	#
+	# Shift off the parameters already used, and call forceWordInsert_ with
+	# a colon (:) as the separator.
+	#
+	while shift; (( ${#1} > 0 )); do
+		[[ -d ${1} ]] && forceWordInsert_ "${listname}" ":" "${1}"
+    	done
+
+	# Final debugging stuff...
+	if [[ ${__DEBUG} = *:pathInsert_:* ]]; then
+		set +o xtrace
+	fi
+}
+
+#
+# Add a word to a list variable. The list is left unchanged if the word already
+# exists within it.
+#
+#	${1}	contains the variable name to which the rest of the parameters
+#		should be added.
+#
+#	${2}	contains the character that separates the items in the list.
+#
+#	${3-n}	contain words to add to the list.
+#
+wordAdd_ () {
+	# Debugging stuff...
+	if [[ :${__DEBUG}: = *:wordAdd_:* ]]; then
+		set -o xtrace
+	fi
+
+	#
+	# Invoke the internal function which does the actual manipulation. Note
+	# that the first argument is NULL indicating that if the pattern
+	# already exists then the list should not be altered (for comparison
+	# see forceWordAdd_())
+	#
+	wordAdd__ "" "$@"
+
+	# Final debugging stuff...
+	if [[ :${__DEBUG}: = *:wordAdd_:* ]]; then
+		set +o xtrace
+	fi
+}
+
+#
+# Add a word to a list variable. If the word already exists in the list it
+# is moved to the end of the list.
+#
+#	${1}	contains the variable name to which the rest of the parameters
+#		should be added.
+#
+#	${2}	contains the character that separates the items in the list.
+#
+#	${3-n}	contain words to add to the list.
+#
+forceWordAdd_ () {
+	# Debugging stuff...
+	if [[ :${__DEBUG}: = *:forceWordAdd_:* ]]; then
+		set -o xtrace
+	fi
+
+	#
+	# Invoke the internal function which does the actual manipulation. Note
+	# that the first argument is "force" indicating that if the pattern is
+	# already in the list then it should be moved to the tail of the list.
+	#
+	wordAdd__ "force" "$@"
+
+	# Final debugging stuff...
+	if [[ :${__DEBUG}: = *:forceWordAdd_:* ]]; then
+		set +o xtrace
+	fi
+}
+
+#
+# Internal function for appending a pattern to the end of a list. Should not
+# be invoked directly but rather through its wrapper functions wordAdd_() and
+# forceWordAdd_()
+#
+wordAdd__ () {
+	# Debugging stuff...
+	if [[ :${__DEBUG}: = *:wordAdd__:* ]]; then
+		set -o xtrace
+	fi
+
+	# Define my locals...
+	typeset forceit=False
+
+	if [[ $1 == "force" ]]; then
+		forceit=True
+	fi
+
+	#
+	# Remove first parameter (even if NULL) to allow for
+	# correct processing of args below.
+	#
+	shift 1
+
+	typeset left			# Left side of the string.
+	typeset right			# Right side of the string.
+	typeset listname="${1}"	# List to which things should be added.
+	typeset list			# The acutal list to manipulate.
+	typeset separator="${2}"	# Separator character.
+
+	# Fetch the list.
+	eval list=\"\${${listname}:+${separator}}\${${listname}}\${${listname}:+${separator}}\"
+
+	#
+	# Get ready for the loop by shifting all but of the parameters already
+	# used off the list.
+	#
+	shift 1	# count of (listname, separator) - 1
+
+	# Loop through the remaining parameters.
+	while shift; (( ${#1} > 0 )); do
+
+	# Fetch the left side of the path.
+	left="${list%%${separator}"${1}"${separator}*}"
+
+	# Fetch the right side of the path.
+	right="${list##*${separator}"${1}"${separator}}"
+
+	# If the list was empty to begin with, then just put in the word.
+	if (( ! ${#list} )); then
+		list="${separator}${1}${separator}"
+
+	# If either side is not empty, then there wuz wurds in the list.
+	elif (( ${#left} || ${#right} )); then
+
+		#
+		# If the left and right sides are identical, then pattern was
+		# not in list so add it now.
+		#
+		if [[ "${left}" = "${right}" ]]; then
+			list="${left}${1}${separator}"
+
+		#
+		# else, left and right are not equal so pattern already
+		# exists in path. If "forceit" is set then move the existing
+		# pattern to the end of the list, otherwise do nothing.
+		#
+		elif [[ "$forceit" == True ]]; then
+			list=${left}${separator}${right}${1}
+
+		fi
+	fi
+	done
+
+	# Okay, so put the list back where it belongs.
+	list="${list%${separator}}"
+	list="${list#${separator}}"
+	eval ${listname}=\"${list}\"
+
+	# Final debugging stuff...
+	if [[ :${__DEBUG}: = *:wordAdd__:* ]]; then
+		set +o xtrace
+	fi
+}
+
+#
+# Insert a word at the beginning of a list variable. If word already exists
+# in list then list is left unmodified.
+#
+#	${1}	contains the variable name to which the rest of the parameters
+#		should be inserted.
+#
+#	${2}	contains the character that separates the items in the list.
+#
+#	${3-n}	contain words to insert into the beginning of the list.
+#
+wordInsert_ () {
+	# Debugging stuff...
+	if [[ ${__DEBUG} = *:wordInsert_:* ]]; then
+		set -o xtrace
+	fi
+
+	#
+	# Pass along the arguments unchanged to the internal function
+	# Note that the first argument is blank indicating that we
+	# do not wish to re-order the list (see comment in forceWordInsert_)
+	#
+	wordInsert__ "" "$@"
+
+	# Final debugging stuff...
+	if [[ ${__DEBUG} = *:wordInsert_:* ]]; then
+		set +o xtrace
+	fi
+}
+
+#
+# Insert a word at the beginning of a list variable. If word already exists
+# in list then it is moved to the start of the list.
+#
+#	${1}	contains the variable name to which the rest of the parameters
+#		should be inserted.
+#
+#	${2}	contains the character that separates the items in the list.
+#
+#	${3-n}	contain words to insert into the beginning of the list.
+#
+forceWordInsert_ () {
+	# Debugging stuff...
+	if [[ ${__DEBUG} = *:forceWordInsert_:* ]]; then
+		set -o xtrace
+	fi
+
+	#
+	# Pass along the arguments unchanged to the internal function
+	# along with the "force" keyword to indicate that if the words
+	# already exist in the list they should be moved to the head of
+	# the list.
+	#
+	wordInsert__ "force" "$@"
+
+	# Final debugging stuff...
+	if [[ ${__DEBUG} = *:forceWordInsert_:* ]]; then
+		set +o xtrace
+	fi
+}
+
+#
+# Internal function for inserting items into a list. Should never be invoked
+# directly, but rather through wordInsert_() or forceWordInsert_() wrapper
+# functions.
+#
+wordInsert__ () {
+	# Debugging stuff...
+	if [[ ${__DEBUG} = *:wordInsert__:* ]]; then
+		set -o xtrace
+	fi
+
+	# Define my locals...
+	typeset forceit=False
+
+	if [[ $1 == "force" ]]; then
+		forceit=True
+	fi
+
+	#
+	# Remove first parameter (even if NULL) to allow for
+	# correct processing of args below.
+	#
+	shift 1
+	typeset left			# Left side of the string.
+	typeset right			# Right side of the string.
+	typeset listname="${1}"		# List to which things should be added.
+	typeset list			# The acutal list to manipulate.
+	typeset separator="${2}"	# Separator character.
+
+	# Fetch the list.
+	eval list=\"\${${listname}:+${separator}}\${${listname}}\${${listname}:+${separator}}\"
+
+	#
+	# Get ready for the loop by shifting all but of the parameters already
+	# used off the list.
+	#
+	shift 1	# count of (listname, separator) - 1
+
+	# Loop through the remaining parameters.
+	while shift; (( ${#1} > 0 )); do
+
+	# Fetch the left side of the path.
+	left="${list%%${separator}"${1}"${separator}*}"
+
+	# Fetch the right side of the path.
+	right="${list##*${separator}"${1}"${separator}}"
+
+	# If the list was empty to begin with, then just put in the word.
+	if (( ! ${#list} )); then
+		list="${separator}${1}${separator}"
+
+	# If either side is not empty, then there wuz wurds in the list.
+	elif (( ${#left} || ${#right} )); then
+
+		#
+		# If left and right sides are equal then pattern was not
+		# present, so add it to list now.
+		#
+		if [[ "${left}" = "${right}" ]]; then
+		list="${separator}${1}${left}"
+
+		#
+		# else, left and right are not equal so pattern already
+		# exists in path. If "forceit" is set then move the existing
+		# pattern to the start of the list, otherwise do nothing.
+		#
+		elif [[ "$forceit" == True ]]; then
+			list=${1}${left}${separator}${right}
+		fi
+	fi
+	done
+
+	# Okay, so put the list back where it belongs.
+	list="${list%${separator}}"
+	list="${list#${separator}}"
+	eval ${listname}=\"${list}\"
+
+	# Final debugging stuff...
+	if [[ ${__DEBUG} = *:wordInsert__:* ]]; then
+		set +o xtrace
+	fi
+}
+
+#
+# Delete a word from a list variable.
+#
+#	${1}	contains the variable name to which the rest of the paramaters
+#		should be deleteed.
+#
+#	${2}	contains the character that separates the items in the list.
+#
+#	${3}	contain either RL or LR to indicate right-2-left
+#		precedence for the replacement or left-2-right.
+#
+#	${4-n}	contain words to delete from the list.
+#
+wordDelete__ () {
+	# Debugging stuff...
+	if [[ :${__DEBUG}: = *:wordDelete_:* ]]; then
+		typeset ox=0
+		[[ -o xtrace  ]] && ox=1
+		set -o xtrace
+	fi
+
+	# Define my locals...
+	typeset left			# Left side of the string.
+	typeset right			# Right side of the string.
+	typeset listname="${1}"		# List to which things should be added.
+	typeset list			# The acutal list to manipulate.
+	typeset separator="${2}"	# Separator character.
+	typeset RLLR="${3}"		# Right-2-left or left-2-right?
+
+	# Fetch the list.
+	eval list=\"\${${listname}:+${separator}}\${${listname}}\${${listname}:+${separator}}\"
+
+	# Get ready for the loop by shifting all but of the parameters already
+	# used off the list.
+	shift 2	# count of (listname, separator, RLLR) - 1
+
+	# Loop through the remaining parameters.
+	while shift && (( ${#1} > 0 )) && (( ${#list} > 0 )); do
+
+	# Fetch the two sides of the list, sans the word.
+	case ${RLLR} in
+		LR)
+		left="${list%%${separator}"${1}"${separator}*}"
+		right="${list#*${separator}"${1}"${separator}}"
+		;;
+
+		RL)
+		left="${list%${separator}"${1}"${separator}*}"
+		right="${list##*${separator}"${1}"${separator}}"
+		;;
+
+		*)
+		return 1
+	esac
+
+	#
+	# If the two sides are identical, then the word worn't in the list in
+	# the first place. If they differ, then they no longer include the
+	# word. So put the two pieces together as the new, smaller, list.
+	#
+	if [[ "${left}" != "${right}" ]]	||
+	    (( ${#left}  == 0 ))		||
+	    (( ${#right} == 0 )); then
+		list="${left}${separator}${right}"
+	fi
+	done
+
+	# Okay, so put the list back where it belongs.
+	list="${list%${separator}}"
+	list="${list#${separator}}"
+	eval ${listname}=\"${list}\"
+
+	# Final debugging stuff...
+	if [[ :${__DEBUG}: = *:wordDelete_:* ]]; then
+		(( ox == 1 )) && set +o xtrace
+	fi
+}
+
+wordDeleteRL_ () {
+	typeset listname="${1}"	# List to which things should be added.
+	typeset separator="${2}"	# Separator character.
+	shift 2
+	wordDelete__ ${listname} "${separator}" RL "${@}"
+}
+
+wordDeleteLR_ () {
+	typeset listname="${1}"	# List to which things should be added.
+	typeset separator="${2}"	# Separator character.
+	shift 2
+	wordDelete__ ${listname} "${separator}" LR "${@}"
+}
+
+wordDelete_ () {
+	wordDeleteLR_ "${@}"
+}
+
+#
+# Replace a word in a list variable.
+#
+#	${1}	contains the variable name to which the rest of the paramaters
+#		should be replaced.
+#
+#	${2}	contains the character that separates the items in the
+#	        list.
+#
+#	${3}	contain either RL or LR to indicate right-2-left
+#		precedence for the replacement or left-2-right.
+#
+#	${4,5}-${n-1,n} contains the list of word pairs to substitute.
+#	                The first word of a pair will be replaced by
+#	                the second word. Words not in the list and an
+#	                odd last word will be ignored.
+#
+wordReplace__ () {
+	# Debugging stuff...
+	if [[ :${__DEBUG}: = *:wordReplace_:* ]]; then
+		typeset ov=0
+		typeset ox=0
+		[[ -o xtrace  ]] && ox=1
+		set -o xtrace
+	fi
+
+	# Define my locals...
+	typeset left		# Left side of the string.
+	typeset right		# Right side of the string.
+	typeset listname="${1}"	# List to which things should be added.
+	typeset list		# The acutal list to manipulate.
+	typeset separator="${2}"	# Separator character.
+	typeset RLLR="${3}"		# Right-2-left or left-2-right?
+
+	# Fetch the list.
+	eval list=\"\${${listname}:+${separator}}\${${listname}}\${${listname}:+${separator}}\"
+
+	#
+	# Shift once to account for using the name from the parameter list
+	# already.
+	#
+	shift
+
+	#
+	# Loop through the remaining parameters. Note that the first time
+	# shifts the separator and the RLLR off the line. All subsequent
+	# shifts remove word pairs.
+	#
+	while shift 2 && (( ${#} > 1 )) && (( ${#1} > 0 )); do
+
+	# Fetch the two sides of the list, sans the word.
+	case ${RLLR} in
+		LR)
+		left="${list%%${separator}"${1}"${separator}*}"
+		right="${list#*${separator}"${1}"${separator}}"
+		;;
+
+		RL)
+		left="${list%${separator}"${1}"${separator}*}"
+		right="${list##*${separator}"${1}"${separator}}"
+		;;
+
+		*)
+		return 1
+	esac
+
+	#
+	# If the two sides are identical, then the word worn't in the
+	# list in the first place. If they differ, then they no longer
+	# include the word. So put the two pieces together with the
+	# substitute word in place.
+	#
+	if [[ "${left}" != "${right}" ]]	||
+	    (( ${#left}  == 0 ))		||
+	    (( ${#right} == 0 )); then
+		list="${left}${separator}${2}${separator}${right}"
+	fi
+	done
+
+	# Okay, so put the list back where it belongs.
+	list="${list%${separator}}"
+	list="${list#${separator}}"
+	eval ${listname}=\"${list}\"
+
+	# Final debugging stuff...
+	if [[ :${__DEBUG}: = *:wordReplace_:* ]]; then
+		(( ox == 1 )) && set +o xtrace
+	fi
+}
+
+wordReplaceRL_ () {
+	typeset listname="${1}"	# List to which things should be added.
+	typeset separator="${2}"	# Separator character.
+	shift 2
+	wordReplace__ ${listname} "${separator}" RL "${@}"
+}
+
+wordReplaceLR_ () {
+	typeset listname="${1}"	# List to which things should be added.
+	typeset separator="${2}"	# Separator character.
+	shift 2
+	wordReplace__ ${listname} "${separator}" LR "${@}"
+}
+
+wordReplace_ () {
+	wordReplaceLR_ "${@}"
+}
+
+#
+# Reduce a whitespace separated list to only those items matching a set of
+# filters. The modified list is printed.
+#
+# Syntax: listFilter <list> <filter list>
+#
+listFilter () {
+	typeset olist=""
+	typeset match=0
+	typeset add_match=1
+	typeset pattern_list="$2"
+
+	if [[ $pattern_list = \~* ]]; then
+		# Reverse the sense of matching and remove the ~.
+		add_match=0
+		pattern_list="${pattern_list#\~}"
+	fi
+
+	for item in $1; do
+		match=0
+		set -f
+		for pattern in $pattern_list; do
+			if [[ $item = $pattern ]]; then
+				match=1
+				break
+			fi
+		done
+		if [[ $match -eq $add_match ]]; then
+			olist="$olist $item"
+		fi
+	done
+	echo ${olist#\ }
+}
+
+#
+# Reduce the filter list to those items are matched by item
+#
+# $1 contains the item will match with the filter list
+# $2 contains the filter list
+#
+# Return value:
+#	a list of matching filters is returned
+#
+# Syntax: patternFilter <item> <filter list>
+#
+patternFilter(){
+	typeset item="$1"
+	typeset pattern_list="$2"
+	typeset -i negated_pattern=0
+	typeset -i match=0
+	typeset match_list=""
+
+	if [[ $pattern_list = \~* ]]; then
+		negated_pattern=1
+		pattern_list="${pattern_list#\~}"
+	fi
+
+	set -f
+	for pattern in $pattern_list; do
+		if [[ $item == $pattern ]]; then
+			match=1
+			if (( !negated_pattern )); then
+				wordAdd_ "match_list" " " "$pattern"
+			fi
+		fi
+	done
+	if (( negated_pattern && !match )); then
+		#
+		# Now, if pattern_list is negated filter and nothing matched,
+		# then the original filter list is the right one.
+		#
+		match_list="$2"
+	fi
+
+	echo $match_list
+}
+
+#
+# Read testcase name and command from file
+# Syntax: testcaseExtract <-e|-l>
+#
+# -e executes the testcases from our current directory
+# -l lists the test case names and commands, optionally outputting to a file
+#
+function testcaseExtract
+{
+	testlistmode=0
+	testexecmode=0
+	root_testcase_file="$configdir/stf_root_testcases"
+	user_testcase_file="$configdir/stf_user_testcases"
+
+	while getopts ':el' OPT ; do
+		case $OPT in
+			l)	testlistmode=1
+				;;
+			e)	testexecmode=1
+				;;
+		esac
+	done
+
+	# sanity check arguments
+	(( $testlistmode ^ $testexecmode )) || {
+		print -u2 "testcaseExtract() -l and -e are mutually exclusive."
+		return 1
+	}
+
+	#
+	# Check the best that we can that the configuration was
+	# executed properly.  Guard against variables set but
+	# only defined as whitespace
+	#
+	STF_ROOT_TESTCASES=$(nominalizespaces $STF_ROOT_TESTCASES)
+	STF_USER_TESTCASES=$(nominalizespaces $STF_USER_TESTCASES)
+
+	[[ -n ${STF_ROOT_TESTCASES} && ! -s $root_testcase_file ]] || \
+	    [[ -n ${STF_USER_TESTCASES} && ! -s $user_testcase_file ]] && {
+		print -u2 "${reldir}: Static test cases defined," \
+		    "but not configured."
+		return 1
+	}
+
+	# If there are no test cases to be run here, just exit
+	[[ ! -f $root_testcase_file ]] && [[ ! -f $user_testcase_file ]] && \
+		return 0
+
+	#
+	# Run through tests, extracting and running or printing as appropriate
+	# For executing we add bindir to the PATH, but don't require
+	# that the test case is run from that directory.
+	# A fully qualified PATH is also acceptable
+	#
+	if [[ -f $root_testcase_file ]]; then
+		while read test_case test_cmd; do
+			[[ -n "$test_list" ]] && \
+			    [[ -z $(listFilter "$test_case" \
+			    "$test_list") ]] && continue
+			if [[ $testexecmode = 1 ]]; then
+				echo "Running root test case: " \
+				    "$test_case | \c"
+				export STF_CASENAME=$test_case
+				eval PATH=$PATH:$bindir $STF_GOSU \
+				    stf_timeout -n $reldir/$test_case \
+				    $STF_TIMEOUT stf_jnl_context $test_cmd \
+					< /dev/null
+			elif [[ $testlistmode = 1 ]]; then
+				echo "Root test case name: " \
+				    "$STF_SUITE/${reldir:+$reldir/}$test_case"
+				echo "Root test case cmd: " \
+				    "$test_cmd"
+			fi
+		done < $root_testcase_file
+	fi
+	if [[ -f $user_testcase_file ]]; then
+		while read test_case test_cmd; do
+			[[ -n "$test_list" ]] && \
+			    [[ -z $(listFilter "$test_case" \
+			    "$test_list") ]] && continue
+			if [[ $testexecmode = 1 ]]; then
+				echo "Running user test case: " \
+				    "$test_case | \c"
+				export STF_CASENAME=$test_case
+				eval PATH=$PATH:$bindir stf_timeout -n \
+				    $reldir/$test_case \
+				    $STF_TIMEOUT stf_jnl_context $test_cmd \
+					< /dev/null
+			elif [[ $testlistmode = 1 ]]; then
+				echo "User test case name: " \
+				    "$STF_SUITE/${reldir:+$reldir/}$test_case"
+				echo "User test case cmd: " \
+				    "$test_cmd"
+			fi
+		done < $user_testcase_file
+	fi
+	return 0
+}
+
+#
+# Strip gratuitous whitespace from a string
+# Syntax: nominalizespaces <string>
+#
+nominalizespaces() {
+	print $*
+}

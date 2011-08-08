@@ -1,0 +1,92 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)README	1.2	08/11/21 SMI"
+#
+
+===============================================================================
+
+Overview
+
+checkenv is a harness-independent tool which provides a framework for a test
+suite to define and verify its test requirements.  All test suites have
+requirements that must be met before they can be built, configured or executed.
+For some test suites, the requirements can be simple, such as the installation
+of core Solaris components with a common build environment. However, for many
+test suites, the requirements can be complex. For example, tests suites may
+depend upon the availability of one or more of the following:
+
+	* a minimum number of CPUs on the system
+	* extra network interfaces
+	* a minimum number of spare disk partitions
+	* packages not in core Solaris
+	* non-standard application software 
+	* non-basic Solaris configurations (ie. non-global zones)
+
+checkenv provides a standard way to check for such dependencies.
+
+===============================================================================
+
+Installing the Package
+
+To install the checkenv package, use the following command as super user:
+
+	% pkgadd -d <package location>  SUNWstc-checkenv
+
+Where <package location> refers to the path containing the SUNWstc-checkenv 
+package directory. This will install checkenv into the /opt/SUNWstc-checkenv
+directory.
+
+===============================================================================
+
+Removing the Package
+
+It is recommended that you install the package from scratch, rather than on
+top of an existing installation.  Thus, if an old version of the package is
+present use the following command as super user to remove the package:
+
+        % pkgrm SUNWstc-checkenv
+
+===============================================================================
+
+Building the Package (Optional)
+
+If you need to create the checkenv package from the source code use the 
+following steps:
+
+	# set path to STF bin directory
+	% PATH=<path-to-STF>/bin/`uname -p`:$PATH
+	% export PATH
+
+	# build checkenv proto area and package 
+	% cd <workspace_path>/usr/src/tools/checkenv
+	% make package
+
+The binaries will be located in the proto area at:
+<workspace_path>/proto/tools/checkenv
+
+The SUNWstc-checkenv package will be located at:
+<workspace_path>/packages/`uname -p`
+

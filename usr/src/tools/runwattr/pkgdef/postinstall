@@ -1,0 +1,61 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)postinstall	1.2	07/01/30 SMI"
+#
+
+cd /usr/bin
+
+find . -type f -name ppriv | \
+while read f ; do
+	f=`echo $f | sed -e 's/^.\///'`
+	d=`echo $f | sed -e 's/ppriv$//' -e 's/\/$//'`
+	if [ "$d" ]; then
+		echo "$d"
+	fi
+	echo "$f"
+done | \
+while read p ; do
+	if [ -f "$p" ]; then
+		d=`echo $p | sed -e 's/ppriv$//' -e 's/\/$//'`
+		if [ ! -f $BASEDIR/lib${d:+/$d}/forcepriv ]; then
+			cp /usr/bin${d:+/$d}/ppriv \
+			    $BASEDIR/lib${d:+/$d}/forcepriv || exit 2
+		fi
+		if [ -z "$d" ]; then
+			echo $BASEDIR/lib${d:+/$d}/forcepriv f 06555 root root
+		else
+			echo $BASEDIR/lib${d:+/$d}/forcepriv f 00555 root root
+		fi
+	elif [ -d "$p" ]; then
+		if [ ! -d $BASEDIR/lib/$p ]; then
+			mkdir $BASEDIR/lib/$p || exit 2
+		fi
+		echo $BASEDIR/lib/$p d 0755 root root
+	fi
+done | installf $PKGINST - || exit 2
+
+installf -f $PKGINST || exit 2
+

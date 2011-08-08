@@ -1,0 +1,425 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)nfs-smf.kshlib	1.14	09/07/01 SMI"
+#
+
+nfs_server="svc:/network/nfs/server:default"
+PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin
+
+#
+#				NOTES
+# Debug
+# _NFS_STF_DEBUG is a DEBUG switch for debugging the functions 
+# in NFS-SMF contrib script(s), the value of the variable determines
+# which function(s) will have verbose output (set -x) turned on. 
+# For example,
+# _NFS_STF_DEBUG=all, print verbose messages of all functionss
+# _NFS_STF_DEBUG=nfs_smf_setup, print verbose messages of nfs_smf_setup()
+# _NFS_STF_DEBUG=nfs_smf_setup:RSH, debugging nfs_smf_setup() and RSH()
+#
+# Syntax
+# This library uses Korn shell (ksh) syntax only, and must be invoked in ksh
+# scripts only.
+#
+
+#
+# Usage: nfs_smf_setup <SHROPT> <SPATH> <TIMEOUT> [RET]
+#	SHROPT :  share option
+#	SPATH  :  path to be shared or the file contains share path
+#	          and opt
+#	TIMEOUT:  time for services to change its status
+#	RET    :  return value for failure, it is  optional
+# This function shares the $SPATH directory.  This directory
+# must exist before this function is invoked, otherwise an
+# error may be returned.  It is assumed that the 'share'
+# command enables all necessary NFS services.  This function
+# only monitors the status of the NFS services to ensure they
+# are 'online'.
+# To make the filesystems can be shared after rebooting system,
+# if sharemgr exists, we use "sharemgr add-share" to share directory,
+# otherwise, we write the shared entry into the file "/etc/dfs/dftab"
+# and restart the nfs/server service.
+#
+function nfs_smf_setup {
+	typeset FNAME=nfs_smf_setup
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	# If the caller does not specify a return value,
+	# the function returns 6 on failure.
+	typeset -i RET=6
+	if [[ $# != @(3|4) ]];then
+		echo "Usage: $FNAME <SHROPT> <SPATH> <TIMEOUT> [RET]"
+		return $RET
+	fi
+	typeset SHROPT=$1
+	typeset SPATH=$2
+	typeset -i TIMEOUT=$3
+	[[ -n $4 ]] && RET=$4
+	typeset output=$STF_TMPDIR/$FNAME.out.$$
+
+	# check existence of the directory
+	if [[ ! -e $SPATH ]]; then
+		echo "ERROR: the directory/file $SPATH does not exist"
+		return $RET
+	fi
+
+	# set auto_enable property to "true", so share command can 
+	# bring nfs/server online automatically.
+	svccfg -s network/nfs/server setprop application/auto_enable=true \
+		>> $output 2>&1
+	res=$?
+	if (( res != 0 )); then
+		echo "ERROR: failed to set auto_enable property, returned $res"
+		cat $output
+		rm -f $output
+		return $RET
+	fi
+ 
+	if [[ -x /usr/sbin/sharemgr ]]; then
+	    if [[ -f $SPATH ]]; then
+		typeset shroptions=""
+		while read shrpath line; do
+			if [[ ! -d $shrpath ]]; then
+				echo "ERROR: the directory $shrpath \c"
+				echo "does not exist"
+				return $RET
+			fi
+
+			shroptions=$(get_shareoptions $line)
+			sharemgr_share default $shrpath $shroptions \
+				>> $output 2>&1
+			res=$?
+			if (( res != 0 )); then
+				echo "ERROR: failed to sharemgr_share \c"
+				echo "(default, $shrpath, $shroptions), \c"
+				echo "returned $res"
+				cat $output
+				rm -f $output
+				return $res
+			fi			
+		done < $SPATH
+	    else
+		sharemgr_share default $SPATH $SHROPT >> $output 2>&1
+		res=$?
+		if (( res != 0 )); then
+			echo "ERROR: failed to sharemgr_share \c"
+			echo "(default, $SPATH, $SHROPT), returned $res"
+			cat $output
+			rm -f $output
+			return $res
+		fi
+	    fi
+	else
+	    # backup the file /etc/dfs/dfstab
+	    if [[ ! -f /etc/dfs/$FNAME.dfstab ]]; then
+		cp -p /etc/dfs/dfstab /etc/dfs/$FNAME.dfstab >> \
+			$output 2>&1
+		res=$?
+		if (( res != 0 )); then
+			echo "ERROR: backup /etc/dfs/dfstab failed, return $res"
+			cat $output
+			rm -f $output
+			return $RET
+		fi
+	    fi
+
+	    # write the shared entry to /etc/dfs/dfstab
+	    if [[ -f $SPATH ]]; then
+		# NOTE: For the extendibility and easy to verify the
+		#       path is shared, each line of this file consists
+		#       of two parts, the first one is the first column,
+		#       which is the path to share, which is used to
+		#       verify whether the share is successful. The
+		#       second one is the remainning, which is just
+		#       appended to /etc/dfs/dfstab, it is the caller's
+		#       responsibility to guarantee the validity of
+		#       second part. Please refer to dfstab(4)
+		while read shrpath line; do
+			if [[ ! -d $shrpath ]]; then
+				echo "ERROR: the directory $shrpath \c"
+				echo "does not exist"
+				return $RET
+			fi
+			echo $line >> /etc/dfs/dfstab
+		done < $SPATH
+	    else
+		echo "share -o $SHROPT $SPATH" >> /etc/dfs/dfstab
+	    fi
+	fi
+	
+	if [[ $(smf_get_state $nfs_server) == online ]]; then
+		svcadm restart $nfs_server
+		sleep 5
+	else
+		smf_fmri_transition_state do $nfs_server online $TIMEOUT \
+			>> $output 2>&1
+		res=$?
+		if (( res != 0 )); then
+			echo "ERROR: the NFS services can not start," \
+				"returned $res"
+			cat $output
+			rm -f $output
+			return $RET
+		fi
+	fi
+
+	# Make sure the service is online	
+	smf_fmri_transition_state check $nfs_server online $TIMEOUT \
+		>> $output 2>&1
+	if (( $? != 0 )); then
+		echo "ERROR: the NFS services is not online"
+		cat $output
+		svcs -xv $nfs_server
+		rm -f $output
+		return $RET
+	fi
+
+	# Verify if these entries are shared.
+	if [[ -f $SPATH ]]; then
+		while read shrpath line; do
+			share | grep $shrpath > /dev/null
+			if (( $? != 0 )); then
+				echo "ERROR: the directory $shrpath \c"
+				echo "was not exported"
+				share
+				return $RET
+			fi
+		done < $SPATH
+	else
+		share | grep $SPATH > /dev/null
+		if (( $? != 0 )); then
+			echo "ERROR: the directory $SPATH \c"
+			echo "was not exported"
+			share
+			return $RET
+		fi
+	fi
+
+	# Delay some time before shared entries will be mounted.
+	sleep 10
+
+	rm -f $output
+	[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set +x
+	return 0
+}
+
+
+#
+# Usage: nfs_smf_clean <SPATH> <TIMEOUT> [RET]
+#	SPATH  :  path to be unshare or the file contains
+#	          unshare path
+#	TIMEOUT:  time for  services to change its status
+#	RET    :  return value for failure, it is optional
+# The function unshares the path, check the status and
+# disable the services if there's no more NFS shares.
+# if the directory to be unshared does not exist, this
+# function may return an error.
+#
+function nfs_smf_clean {
+	typeset FNAME=nfs_smf_clean
+	typeset -i RET=8
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	if [[ $# != @(2|3) ]];then
+		echo "WARNING: $FNAME <SPATH> <TIMEOUT> [RET]"
+		return $RET
+	fi
+
+	typeset SPATH=$1
+	typeset -i TIMEOUT=$2
+	[[ -n $3 ]] && RET=$3
+	typeset output=$STF_TMPDIR/$FNAME.$$
+	typeset ctn=$STF_TMPDIR/ctn.out.$$
+
+	if [[ ! -e $SPATH ]]; then
+		echo "WARNING: $SPATH to be unshared does not exist"
+		return $RET
+	fi
+
+	if [[ -d $SPATH ]]; then
+		echo $SPATH > $ctn
+	else
+		cp $SPATH $ctn
+	fi
+
+	if [[ ! -s $ctn ]]; then
+		echo "ERROR: failed to create valid share content"
+		rm -f $ctn
+		return $RET
+	fi
+
+	if [[ -x /usr/sbin/sharemgr ]]; then
+	    while read shrpath; do
+		share | awk '{print $2}' | grep -w $shrpath > /dev/null 2>&1
+		if (( $? == 0 )); then
+			auto_unshare $shrpath > $output 2>&1
+			res=$?
+			if (( res != 0 )); then
+				echo "WARNING: unshare the path $shrpath " \
+					"failed, returned $res"
+				cat $output
+				rm -f $output $ctn
+				return $RET
+			fi
+		fi
+	    done < $ctn
+	else
+	    # restore the file /etc/dfs/dftab
+	    if [[ -f /etc/dfs/nfs_smf_setup.dfstab ]]; then
+		mv /etc/dfs/nfs_smf_setup.dfstab /etc/dfs/dfstab >> $output 2>&1
+		res=$?
+		if (( res != 0 )); then
+			echo "WARNING: failed to restore /etc/dfs/dfstab," \
+				"returned $res"
+			cat $output
+			rm -f $output $ctn
+			return $RET
+		fi
+		svcadm restart $nfs_server
+		sleep 2
+	    fi
+
+	    while read shrpath; do
+		share | awk '{print $2}' | grep -w $shrpath >> $output 2>&1
+		res=$?
+		if (( res == 0 )); then
+			echo "WARNING: unshare the path $shrpath failed, " \
+				"the $shrpath is still shared"
+			cat $output
+			rm -f $output $ctn
+			return $RET
+		fi
+	    done < $ctn
+	fi
+
+	typeset still_share=$(share | wc -l | awk '{print $1}')
+	if (( still_share == 0 )); then
+		smf_fmri_transition_state do $nfs_server disabled $TIMEOUT \
+			>> $output 2>&1
+		res=$?
+		if (( res != 0 )); then
+			echo "WARNING: failed to disable the NFS services," \
+				"returned $res"
+			cat $output
+			rm -f $output $ctn
+			return $RET
+		fi
+	fi
+
+	rm -f $output $ctn
+	[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set +x
+	return 0
+}
+
+#
+# Function: set_fmri_svcprop
+# Usage: set_fmri_svcprop <file to save svcprop> \
+#                   <FMRI 1> [FMRI 2] ... [FMRI n]
+#
+# This function is to save the original status of auto_enable property of
+# specfic service(s) and set it to false to ensure that they are not silenty
+# re-enabled after we have disabled them.
+#
+# Note: svc:/network/nfs/client does not have an auto_enable property.
+#
+function set_fmri_svcprop {
+	typeset FNAME=set_fmri_svcprop
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	typeset f_prop=$1
+	shift
+	typeset fmris=$@
+	typeset -i ret=0
+	typeset orig_prop=""
+
+	if [[ ! -f $f_prop ]]; then
+		for s in $fmris; do
+			orig_prop=$(svcprop -p application/auto_enable $s)
+			(( $? != 0 )) && continue
+			echo "$s $orig_prop" >> $f_prop
+		done
+	fi
+
+	for s in $fmris; do
+		orig_prop=$(svcprop -p application/auto_enable $s)
+		(( $? != 0 )) && continue
+		if [[ $orig_prop != false ]]; then
+			svccfg -s $s setprop application/auto_enable=false \
+				> $STF_TMPDIR/smf-prop.out.$$ 2>&1
+			if (( $? != 0 )); then
+				echo "$FNAME: setting $s auto_enable property failed:"
+				cat $STF_TMPDIR/smf-prop.out.$$
+				(( ret += 1 ))
+			fi
+		fi
+	done
+
+	return $ret
+}
+
+#
+# Function: restore_fmri_svcprop
+# Usage: restore_fmri_svcprop <file to save svcprop> \
+#                       <FMRI 1> [FMRI 2] ... [FMRI n]
+#
+# This function is to restore auto_enable property for specfic service(s)
+# from file, if file dees not exist, return 0 directly.
+#
+function restore_fmri_svcprop {
+	typeset FNAME=restore_fmri_svcprop
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	typeset f_prop=$1
+	shift
+	typeset fmris=$@
+	typeset -i ret=0
+
+	[[ ! -f $f_prop ]] && return 0
+
+	for s in $fmris; do
+		orig_prop=$(grep $s $f_prop | awk '{print $2}')
+		[[ -z $orig_prop ]] && continue
+
+		cur_prop=$(svcprop -p application/auto_enable $s)
+		(( $? != 0 )) && continue
+		if [[ $cur_prop != $orig_prop ]]; then
+			svccfg -s $s setprop application/auto_enable=$orig_prop \
+				> $STF_TMPDIR/smf-prop.out.$$ 2>&1
+			if (( $? != 0 )); then
+				echo "$FNAME: setting $s auto_enable property failed:"
+				cat $STF_TMPDIR/smf-prop.out.$$
+				(( ret += 1 ))
+			fi
+		fi
+	done
+
+	(( ret == 0 )) && rm -f $f_prop
+	return $ret
+}

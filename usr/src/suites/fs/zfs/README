@@ -1,0 +1,339 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+# 
+# ident	"@(#)README	1.8	09/05/19 SMI"
+#
+
+The ZFS Test Suite Gate README - Apr 2nd, 2007
+
+Table of Contents
+
+1. Introduction
+
+2. Building & Installation
+   2.1 Installing from Packages
+   2.2 Uninstalling the Test Suite Package
+   2.3 Building the Test Suite (optional)
+
+3. Running the tests
+   3.1 Setting environment
+   3.2 Configuring and running in global zone
+   3.3 Configuring and running in local zone
+   3.4 Unconfigure
+
+================================================================================
+
+1. Introduction
+
+  o This message contains the basics you need to know for the ZFS test suite
+
+================================================================================
+
+2. Building & Installation
+
+2.1 Installing from Packages
+
+   o In the majority of cases, the test suite can be installed from
+     packages.  The package is called SUNWstc-fs-zfs and installs into
+     "/opt" by default.  Installation is via the standard Solaris
+     package installation tool pkgadd(1M).  To install SUNWstc-fs-zfs,
+     simply enter the following command:
+
+	% sudo pkgadd -d <package location>  SUNWstc-fs-zfs
+
+     where <package location> refers to the path containing the
+     SUNWstc-fs-zfs package directory.
+
+  o It is recommended that you install the packages from scratch, rather
+    than on top of an existing installation.  Thus, if an old version of
+    the tests is installed, remove it before installing a new one:
+
+        % sudo pkgrm SUNWstc-fs-zfs
+
+2.2 Uninstalling the Test Suite Package
+
+  o Prior to uninstalling the SUNWstc-fs-zfs package, you may want to
+    run stf_unconfigure from the top level directory.  Typically this
+    will be "/opt/SUNWstc-fs-zfs".  Unconfiguring the suite is
+    recommended if you have previous run the suite in local zone mode.
+    For more detail on how to unconfigure the suite see section 3.4.
+
+  o To uninstall the package, use the standard Solaris package
+    installation tool pkgrm(1M) as follows:
+
+        % sudo pkgrm SUNWstc-fs-zfs
+
+2.3 Building the Test Suite (optional)
+
+  o This method uses the standard STF techniques to create a Solaris
+    package, which will be installed under the base directory
+    "/opt/SUNWstc-fs-zfs".
+ 
+    Briefly, this build and installation is performed as follows:
+
+	# set path to STF bin directory
+	% PATH=<path-to-STF>/bin/`uname -p`:$PATH
+	% export PATH
+
+	# <WS_ROOT> refers to the root of the STC workspace which
+	# contains the source of the ZFS test suite
+	% cd <WS_ROOT>/usr/src/suites/fs/zfs
+	% stf_build package
+	% cd <WS_ROOT>/packages/`uname -p`
+	% sudo pkgadd -d `pwd` SUNWstc-fs-zfs
+
+  o It is recommended that you install the packages from scratch, rather
+    than on top of an existing installation.  Thus, if an old version of
+    the tests is installed, remove it prior to installing a new one:
+
+	% sudo pkgrm SUNWstc-fs-zfs
+
+================================================================================
+
+3. Running the tests
+
+3.1 Setting environment
+
+  o Add <STF Tools> to your PATH.  For example,
+
+    (a) If SUNWstc-stf was installed, then
+
+    	csh% set path = ( /opt/SUNWstc-stf/bin/`uname -p` $path)
+
+	sh$ PATH=/opt/SUNWstc-stf/bin/`uname -p` export PATH
+
+    (b) If STF is being accessed over the network from an NFS mounted
+        proto directory, say '/ws/stcnv-gate', then
+
+	csh% set path = ( /ws/stcnv-gate/proto/tools/stf/bin/`uname -p` $path )
+
+	sh$ PATH=/ws/stcnv-gate/proto/tools/stf/bin/`uname -p`:$PATH export PATH
+
+  o If no legal IP address was assigned to local zone, you MUST pkgadd
+    SUNWstc-stf in the global zone
+
+	% sudo pkgadd -d /ws/onnv-stc2/packages/`uname -p` SUNWstc-stf
+  
+  o When testing with NFS, you should set the remote access permission
+    for rsh/rcp on the remote server machine. You can add the permission
+    to ~root/.rhosts file in the server, for example:
+
+        server% echo "foo root" >~root/.rhosts
+
+    Here, the 'foo' is the local host name.  Also make sure that the
+    'network/shell:default' (rsh) service is enabled and online.
+
+--------------------------------------------------------------------------------
+
+3.2 Configuring and running in global zone
+
+3.2.1 Configure the tests
+
+  o You could configure the test on physical disks, that means you'll need 
+    at least one scratch disks. (Above two is recommended) Configure the two 
+    scratch disks, c0t13d0 and c0t14d0 for example:
+ 
+	% cd /opt/SUNWstc-fs-zfs; stf_configure -c DISKS="c0t13d0 c0t14d0"
+
+  o The test suites could also be configured on rawfiles, each of them should
+    be created by mkfile before configure, and the size not less than 3G.
+
+	% mkfile 3g /var/tmp/file1 /var/tmp/file2
+	% cd /opt/SUNWstc-zfs
+	% stf_configure -c DISKS="/var/tmp/file1 /var/tmp/file2" 
+
+  o By default the test suite runs all test assertions. However, the
+    test suite can be configured for test runs of varying length by
+    using the RUNTIME parameter. Valid runtime lengths are: short,
+    medium and long (the default). For example, the following command
+    will configure the test suite for the shortest possible runtime:
+
+	% cd /opt/SUNWstc-fs-zfs; stf_configure -c DISKS="c0t13d0 c0t14d0" \
+	    -c "RUNTIME=short" 
+
+    Note that hardware speed is also a significnat contributor to the
+    runtime length of the test suite.
+
+  o Configuring this test suite will destroy all existing pools.  If you
+    want to preserve existing pools you should use the KEEP
+    parameter. For example:
+
+	% cd /opt/SUNWstc-fs-zfs; stf_configure -c DISKS="c0t13d0 c0t14d0" \
+	    -c "KEEP=poolA poolB"
+    
+  o If you want to run the test suite with remote support, you should
+    assign one or more machines as remote testing hosts. Meanwhile, you
+    also need to specify disks for each remote host. Optionally, you can
+    specify test scripts location directory on the remote host. The
+    descriptions of variables are as follows:
+
+    RHOSTS -- The remote hosts list.
+
+    RDISKS -- The corresponding scratch disks list for each host in
+	      RHOSTS list.  You need to quote the disks of each host,
+	      for example:
+
+		 RDISKS="'c0t0d0 c0t1d0' 'c0t2d0'"
+
+	      which specifies scratch disks for two remote hosts.  You
+	      can assign 'detect' for a remote host, which means let the
+	      program to detect any available disks for testing in a
+	      remote host.
+    RTEST_ROOT -- The temporary directory to store test scripts and
+    	      files on the remote host. By default it's set to
+    	      /var/tmp/SUNWstc-fs-zfs/tmp.
+
+    Here is an example about how to customize the testing:
+        % cd /opt/SUNWstc-fs-zfs
+        % stf_configure -c DISKS="c0t13d0 c0t14d0" -c RHOSTS="foo1 foo2" \
+                        -c RDISKS="'c0t1d0 c0t2d0' 'detect'"
+    In this example, there are two remote hosts -- "foo1" and "foo2":
+    "foo1" is assigned two disks -- c0t1d0 and c0t2d0 for testing;
+    "foo2" is assigned 'detect', which will detect any available scratch
+    disks in "foo2" for remote support testing.
+
+  o If you want to run the test suite on iSCSI targets, you need to
+    specify iscsi variable to do the configuration, in addition to
+    specify RHOSTS and RDISKS.  Currently, only one value "remote" is
+    supported for iscsi variable.
+
+    Here is an example 
+	% cd /opt/SUNWstc-fs-zfs
+	% stf_configure -c DISKS="c0t13d0 c0t14d0" -c RHOSTS="host1" \
+			-c RDISKS="'detect'" -c iscsi="remote"
+    In this example, all available scratch disks detected on host1 will
+    be configured as iSCSI targets on zfs, the local host will serve as
+    iSCSI initiator, the test suite will run on the iSCSI targets at
+    local host.
+
+  o In addition, all variables to stf_configure can be set through
+    setting environment variables or defining in a file. For example:
+        In Korn Shell, you can export all variables as environment variables:
+
+        % export DISKS="c0t13d0 c0t14d0"
+        % export KEEP="poolA poolB"
+        % export RUNTIME="long"
+        % export RHOSTS="foo1 foo2" 
+	% export RDISKS="'c0t1d0 c0t2d0' 'detect'"
+	% export RTEST_ROOT="/export/tmp"
+        % stf_configure
+        ...
+        or, you can define all variables in a file and then via "-f" option of
+        stf_configure to export the vairables:
+        % echo "export DISKS=\"c0t13d0 c0t14d0\"" >/tmp/vars.cfg
+        % echo "export KEEP=\"poolA poolB\"" >>/tmp/vars.cfg
+        % echo "export RUNTIME=\"LONG\"" >>/tmp/vars.cfg
+        % echo "export RHOSTS=\"foo1 foo2\"" >>/tmp/vars.cfg
+	% echo "export RDISKS=\"'c0t1d0 c0t2d0' 'detect'\"" >>/tmp/vars.cfg
+	% echo "export RTEST_ROOT=\"/export/tmp\"" >>/tmp/vars.cfg
+        % stf_configure -f /tmp/vars.cfg
+
+  o For stf_configure options refer to the STF User's Guide.
+
+3.2.2 Run the tests
+
+  o To execute all of the modes on current system platform:
+
+	% cd /opt/SUNWstc-fs-zfs; stf_execute
+
+  o To execute in a specific mode:
+
+	% stf_execute -m <mode>
+
+  o To execute only test cases in a specific directory:
+
+	% cd /opt/SUNWstc-fs-zfs/<test directory>; stf_execute
+
+  o For other stf_execute options, refer to the STF User's Guide.
+
+  o Note: NIS client service will be disabled during tests/func/acl
+    subsets execution temporarily, and its state will be restored after
+    that.
+
+--------------------------------------------------------------------------------
+
+3.3 Configuring and running in local zone
+
+3.3.1 Configure the tests
+
+  o First, configure in the global zone to create a local zone and
+    export the pool to the local zone.  You'll need at least one scratch
+    disks. (Two above is recommended) You can assign a zone name, zone root 
+    and IP address for the local zone.  All parameters are optional. Syntax as,
+
+    % stf_configure -c DISKS="<DISKS>" -c zone=new [-c zone_name=<zone_name>] [-c zone_root=<zone_root>] [-c zone_ip=<zone_ip>]
+
+    For example,
+
+	% cd /opt/SUNWstc-fs-zfs
+	% stf_configure -c DISKS="c0t13d0 c0t14d0" -c zone=new
+
+  o Note: '-c zone=new' forces the creation a fresh zone. While
+    'zone=existing' will try to use an existing zone if possible or
+    create a new one if no existing zone is found.
+
+  o Note:
+	If zone_name is NOT given, the default name of zone is `hostname`001
+	If zone_root is NOT given, the default residence of zone is /export/home
+
+  o Then, login to local zone.
+
+	% sudo zlogin zone001
+
+  o In local zone su to non-root user 'zone' which has be created
+    automatically during the stf_configure process which was executed
+    from the global zone.
+
+	# su - zone
+
+  o Configure in local zone
+
+	% cd /opt/SUNWstc-fs-zfs; /opt/SUNWstc-stf/bin/`uname -p`/stf_configure
+
+3.3.2 Running the tests
+
+  o To execute all of the modes on current system platform
+
+	% cd /opt/SUNWstc-fs-zfs; 
+	% /opt/SUNWstc-stf/bin/`uname -p`/stf_execute
+
+  o To execute in a specific mode:
+
+	% /opt/SUNWstc-stf/bin/`uname -p`/stf_execute -m <mode>
+
+  o To execute only test cases in a specific directory:
+
+	% cd /opt/SUNWstc-fs-zfs/<test directory>
+	% /opt/SUNWstc-stf/bin/`uname -p`/stf_execute
+
+--------------------------------------------------------------------------------
+
+3.4 Unconfigure the suite.
+
+  o Use the STF unconfigure tool.        
+
+        % cd /opt/SUNWstc-fs-zfs; stf_unconfigure  
+
+================================================================================

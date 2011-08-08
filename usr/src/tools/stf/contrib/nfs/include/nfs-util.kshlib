@@ -1,0 +1,2388 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)nfs-util.kshlib	1.31	09/08/02 SMI"
+#
+
+#
+# Function to remotely execute one or more commands, using korn shell.
+#	Usage: RSH user machine  command_string (rest of line)
+#	user		target user on remote system
+#	machine		remote machine to execute command
+#	command_string	any desired command(s) (korn shell)
+#	_NFS_STF_DEBUG	global to enable debugging mode
+#	UNIX_RES	global to detect failures, if unix standard is followed
+#			for return codes (0=OK, !0=failure).
+#	This function in addition to execute remote command, adds code for
+#	getting the return code from last operation, and to trace the remote
+#	execution as enabled by set -x (depending on $_NFS_STF_DEBUG).
+#
+#                             NOTES
+#       Take care to no redirect stderr to stdout as that will cause
+#       a very messy output in debug mode, and possible test failures.
+#
+#       This library uses Korn shell (ksh) syntax only, and must be invoked in
+#       ksh scripts only.
+function RSH
+{
+	typeset FNAME=RSH
+	typeset SETD=""
+
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+	    [[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && \
+		set -x && \
+		typeset SETD="export _NFS_STF_DEBUG=$_NFS_STF_DEBUG; set -x; "
+
+	(( $# < 3 )) && \
+		echo "Usage: $FNAME ruser remotehost \"rcmd args\"" && \
+		return 1
+	
+	typeset ruser=$1
+	typeset rmach=$2
+	shift; shift
+	typeset rcmd="${SETD}$@"
+	typeset -i ret=0
+
+	# by default, expect UNIX standard result codes
+	typeset UNIX_RES=${UNIX_RES:="1"}
+
+	typeset file=$STF_TMPDIR/$rmach.$$.out
+	typeset file2=$STF_TMPDIR/exec.$$.result
+
+	rsh -n -l $ruser $rmach /usr/bin/ksh -c "'$rcmd; \
+		print -u 2 \"returned=(\$?)\"'" \
+		> $file 2>$file2
+	ret=$?
+	if (( $ret != 0 )); then
+		echo "ERROR: the rsh command failed, returned=$ret"
+		cat $file2
+		rm -f $file $file2
+		return $ret
+	fi
+	
+	cat $file
+	ret=$(grep -v 'print -u 2' $file2 | grep 'returned=(' | \
+		sed 's/^.*returned=(//' | sed 's/).*$//')
+	if [[ $UNIX_RES != 1 ]]; then
+		if (( $ret == 0 )); then
+			ret=1
+			cat $file2 >&2
+		else
+			ret=0
+		fi
+	else
+		(( $ret != 0 )) || \
+		    [[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		    [[ :$_NFS_STF_DEBUG: == *:RSH:* ]] \
+			&& cat $file2 >&2
+	fi
+	rm -f $file $file2 > /dev/null 2>&1
+        [[ :$_NFS_STF_DEBUG: == :RSH: ]] && set +x
+
+	return $ret
+}
+
+#
+# Usage: set_nfs_param <parameter> <value> <file>
+#	parameter    :  parameter which value will be changed
+#	value        :  the value will be set
+#	file         :  which file will be changed
+# This function is used to set/change the value of a parameter.
+# The format must be like this, paramter=value, in this file.
+# If value="-",  parameter  will be commented out from the file.
+#
+function set_nfs_param
+{
+
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:set_nfs_param:* ]] &&
+        set -o verbose &&
+        set -o xtrace
+		
+
+	if (( $# != 3 )) ; then
+        	print -u 2 "usage: set_nfs_param <parameter> <value> <file>"
+		return $STF_OTHER
+	fi
+	parameter=$1
+	value=$2
+	file=$3
+	if [[ ! -w $file  ]] ; then
+        	print -u 2 "The file <$file> doesn't exist or isn't writable"
+		return $STF_OTHER
+	fi
+	if [[ $value == "-" ]] ; then
+		perl -i -p -e "s/^$parameter/#$parameter/g" $file
+        else
+		perl -i -p -e "s/^#?$parameter=.*/$parameter=$value/g" $file
+	fi	
+	if (( $? != 0 )) ; then
+		print -u 2 "change the nfs config file <$file> failed"
+		return $STF_OTHER
+	fi
+}
+
+#
+# Function to check and exit if the current zone is a non-global zone.
+# Usage: ck_zone [err_msg]
+#       err_msg (optional); if provided, it will be added to the output
+#
+# This function is to verify if the current zone is a non-global zone
+#       Yes, it just returns 0 without any messages printed;
+#       No, it prints an error message and exit STF_UNSUPPORTED
+#
+function ck_zone
+{
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:ck_zone:* ]] &&
+	set -o verbose &&
+	set -o xtrace
+
+        ErrMsg=$1
+        [[ "$ErrMsg" = "" ]] && \
+            ErrMsg="This test is not supported in non-global zone."
+
+        zn=`/usr/bin/zonename`
+        if [[ "$zn" != "global" ]]; then
+                echo "ck_zone: current zonename is <$zn>"
+                echo "  $ErrMsg"
+                exit $STF_UNSUPPORTED
+        fi
+        return 0
+}
+
+#
+# Function to print test system information.
+# If $1 is provided, the function will print the info of remote host ($1).
+# Make sure the remote host can be accessed with root before invocation.
+# If there's no parameter, the function will print local host information.
+#
+# Usage: print_system_info  [hostname]
+#	hostname(optional):	the name of remote system
+#
+function print_system_info
+{
+	host=$1
+
+	if [[ $host == "" ]]; then
+		echo "`hostname` info:"
+		echo "\tuname:\t\t`uname -a` \n\tisainfo:\t`isainfo` \
+			\n\tzonename:\t`zonename`"
+	else
+		echo "$host info:"
+		RSH root $host \
+		"echo \"\tuname:\t\t\`uname -a\` \n\tisainfo:\t\`isainfo\` \
+			\n\tzonename:\t\`zonename\`\" "
+	fi
+}
+
+#
+# Function to create ZFS filesystem in provided zfs pool.
+# Usage: create_zfs_fs ZPOOL mountpoint [FSsize] [FSmopt]
+#
+#	ZPOOL: zfs pool where ZFS filesystem is created
+# 	mountpoint: the mount point new filesystem is mounted on
+#	FSsize:	size is in the form of 5m/2g
+#	FSmopt: remount option
+#
+function create_zfs_fs {
+	typeset FNAME=create_zfs_fs
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+                [[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && \
+		set -x
+
+        typeset ZPOOL=$1
+        typeset FSname=$2
+        (( $# >= 3 )) && typeset FSsize=$3
+        (( $# == 4 )) && typeset FSmopt=$4
+
+        typeset -u ZName=`basename $FSname`
+        zfs create $ZPOOL/$ZName > $STF_TMPDIR/$FNAME.czfs.$$ 2>&1
+        if [ $? -ne 0 ]; then
+                echo "$FNAME: failed to <zfs create $ZPOOL/$ZName>"
+                cat $STF_TMPDIR/$FNAME.czfs.$$
+		rm -f $STF_TMPDIR/$FNAME.*.$$
+                return 2
+        fi
+        zfs set mountpoint=$FSname $ZPOOL/$ZName \
+		> $STF_TMPDIR/$FNAME.szfs.$$ 2>&1
+        if [ $? -ne 0 ]; then
+                echo "$FNAME: failed to \c"
+		echo "<zfs set mountpoint=$FSname $ZFSPOOL/$Zname>"
+                cat $STF_TMPDIR/$FNAME.szfs.$$
+		rm -f $STF_TMPDIR/$FNAME.*.$$
+                return 2
+        fi
+        chmod 777 $FSname
+        ACLs=write_xattr/write_attributes/write_acl/add_file:allow
+        chmod A+everyone@:${ACLs} $FSname
+
+        if [ -n "$FSsize" ]; then
+                zfs set quota=$FSsize $ZPOOL/$ZName \
+			> $STF_TMPDIR/$FNAME.qzfs.$$ 2>&1
+                if [ $? -ne 0 ]; then
+                        echo "$FNAME: failed to \c"
+			echo "<zfs set quota=$FSsize $ZPOOL/$ZName>"
+                        cat $STF_TMPDIR/$FNAME.qzfs.$$
+			rm -f $STF_TMPDIR/$FNAME.*.$$
+                        return 2
+                fi
+                unset FSsize
+        fi
+        if [ -n "$FSmopt" ]; then
+                zfs umount $ZPOOL/$ZName > $STF_TMPDIR/$FNAME.mzfs.$$ 2>&1
+                zfs mount -o $FSmopt $ZPOOL/$ZName \
+			>> $STF_TMPDIR/$FNAME.mzfs.$$ 2>&1
+                if [ $? -ne 0 ]; then
+                        echo "$FNAME: failed to \c"
+			echo "<zfs mount -o $FSmopt $ZPOOL/$ZName>"
+                        cat $STF_TMPDIR/$FNAME.mzfs.$$
+			rm -f $STF_TMPDIR/$FNAME.*.$$
+                        return 2
+                fi
+                unset FSmopt
+        fi
+
+	rm -f $STF_TMPDIR/$FNAME.*.$$
+	return 0
+}
+
+#
+# Function to create LOFI filesystem with provided options.
+# Usage: create_lofi_fs lofile mountpoint [FSsize] [FSmopt]
+#
+#	lofile: lofi file where LOFI filesystem is created
+# 	mountpoint: the mount point new filesystem is mounted on
+#	FSsize:	size is in the form of 5m/2g
+#	FSmopt: remount option
+#
+function create_lofi_fs {
+	typeset FNAME=create_lofi_fs
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && \
+		set -x
+
+	typeset Fname=$1
+	typeset FSname=$2
+	typeset FSsize=2m
+	typeset FSmopt="rw"
+	(( $# >= 3 )) && FSsize=$3
+	(( $# == 4 )) && FSmopt=$4
+
+	[[ -f $Fname ]] && rm -f $Fname
+	mkfile $FSsize $Fname > $STF_TMPDIR/$FNAME.mkfile.$$ 2>&1
+	if (( $? != 0 )); then
+		echo "$FNAME: failed to <mkfile $FSsize $Fname>"
+		cat $STF_TMPDIR/$FNAME.mkfile.$$
+		rm -f $STF_TMPDIR/$FNAME.*.$$
+		return 2
+	fi
+	lofiadm -a $Fname > $STF_TMPDIR/$FNAME.lofi.$$ 2>&1
+	if (( $? != 0 )); then
+		echo "$FNAME: failed to <lofiadm -a $Fname>"
+		cat $STF_TMPDIR/$FNAME.lofi.$$
+		rm -f $STF_TMPDIR/$FNAME.*.$$
+		return 2
+	fi
+	typeset LDEV=$(head -1 $STF_TMPDIR/$FNAME.lofi.$$ | awk '{print $1}')
+	echo "y" | newfs -i 10240 $LDEV > $STF_TMPDIR/$FNAME.newfs.$$ 2>&1
+	if (( $? != 0 )); then
+		echo "$FNAME: failed to <newfs -i 10240 $LDEV>"
+		cat $STF_TMPDIR/$FNAME.newfs.$$
+		rm -f $STF_TMPDIR/$FNAME.*.$$
+		return 2
+	fi
+	[[ ! -d $FSname ]] && mkdir -p $FSname
+	mount -F ufs -o $FSmopt $LDEV $FSname > $STF_TMPDIR/$FNAME.mnt.$$ 2>&1
+	if (( $? != 0 )); then
+		echo "$FNAME: failed to <mount -F ufs -o $FSmopt $LDEV $FSname>"
+		cat $STF_TMPDIR/$FNAME.mnt.$$
+		rm -f $STF_TMPDIR/$FNAME.*.$$
+		return 2
+	fi
+	chmod 0777 $FSname
+
+	rm -f $STF_TMPDIR/$FNAME.*.$$
+	return 0
+}
+
+#
+# Function to destroy LOFI filesystem.
+# Usage: destroy_lofi_fs mountpoint
+#
+# 	mountpoint: mount point the filesystem is mounted on
+#
+function destroy_lofi_fs {
+	typeset FNAME=destroy_lofi_fs
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && \
+		set -x
+
+	typeset FSname=$1
+	typeset LDEV=$(df -k $FSname | awk '{print $1}' | \
+			grep -v "^Filesystem$")
+
+	umount -f $FSname > $STF_TMPDIR/$FNAME.umnt.$$ 2>&1
+	if (( $? != 0 )); then
+		echo "$FNAME: WARNING, umount $FSname failed."
+		cat $STF_TMPDIR/$FNAME.umnt.$$
+		rm -f $STF_TMPDIR/$FNAME.*.$$
+		return 2
+	fi
+	typeset Fname=$(lofiadm $LDEV 2>$STF_TMPDIR/$FNAME.file.$$)
+	if (( $? != 0 )); then
+		echo "$FNAME: WARNING, lofiadm $LDEV failed."
+		cat $STF_TMPDIR/$FNAME.file.$$
+		rm -f $STF_TMPDIR/$FNAME.*.$$
+		return 2
+	fi
+	lofiadm -d $LDEV > $STF_TMPDIR/$FNAME.lofi.$$ 2>&1
+	if (( $? != 0 )); then
+		echo "$FNAME: WARNING, lofiadm -d $LDEV failed."
+		cat $STF_TMPDIR/$FNAME.lofi.$$
+		rm -f $STF_TMPDIR/$FNAME.*.$$
+		return 2
+	fi
+
+	rm -f $STF_TMPDIR/$FNAME.*.$$ $Fname
+	return 0
+}
+
+#
+# Function to verify a specified condition
+# Usage: wait_now max_TIMER the_condition [interval]
+#
+# max_TIMER: the maximum timer to wait
+# condition: the condition to break the wait:
+#	"true"  wait_now{} returns 0
+#	"false" wait_now{} continues until the TIMER
+# interval: the interval between check condition
+#
+function wait_now {
+	typeset FNAME=wait_now
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && \
+		set -x
+
+	(( $# < 2 || $# > 3 )) && \
+		echo "Usage: $FNAME max_TIMER condition interval" && \
+		return -1
+
+	typeset -i Timer=$1 interval
+	Wcond="$2"
+	[[ -n $3 ]] && interval=$3 || interval=1
+
+	typeset -i i=0
+	while (( i < Timer ))
+	do
+		eval ${Wcond}
+		[[ $? -eq 0 ]] && return 0
+		sleep $interval
+		let i+=interval
+	done
+	return $i
+}
+
+#
+# Funtion to check return code of the last command.
+# If the return code is equal to zero, it does nothing; if not,
+# it prints an error message and an optional logfile on stderr,
+# and return that error code.
+#
+# If a logfile is passed, it is removed automatically when the
+# function exits. User can use -n option to ask not to remove
+# that file.
+# Usage:  ckresult <-n> <retcode> <errmsg> <logfile>
+# 	-n      - don't remove logfile if the check passed
+#	retcode - the return code to be checked
+#	errmsg  - error message if $retcode is non-zero
+#	logfile - logfile of the command of interest. This
+#                         argument is optional.
+# Return: the same as $retcode, the return code to be checked
+#
+function ckresult {
+        not_remove=0
+        if [[ $1 == "-n" ]]; then
+                not_remove=1
+                shift 1
+        fi
+
+        retcode=$1
+        errmsg="$2"
+        logfile=$3
+
+        # print $errmsg on stderr if $retcode is non-zero
+        if (( retcode != 0 )); then
+                if (( $# >= 3 )) && [[ -f $logfile ]]; then
+                        cat $logfile
+                        rm -f $logfile
+                fi
+                print -u2 "$errmsg"
+        fi
+
+        # remove the logfile
+        [[ -f "$logfile" ]] && ((not_remove == 0)) && rm -f $logfile
+
+        return $retcode
+}
+
+#
+# get_hostname_remote - get the host name on a remote machine
+# 	Based on the name service configruation in
+# 	/etc/nsswitch.conf, different name maybe occur for
+#	the same host on different host. i.e. nodename vs FQDN
+# Usage:  get_hostname_remote <hostname> <remotehost>
+#	hostname - the host to be resolved on the remote host
+#	remotehost - the host which resolves hostname
+#
+function get_hostname_remote {
+	typeset FNAME=get_hostname_remote
+	typeset ip name
+
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && \
+		set -x
+
+	if (( $# < 2 )) ; then
+		echo "usage: $FNAME <hostname> <remotehost>"
+		return $STF_OTHER
+	fi
+
+	ip=$(getent ipnodes $1 | head -1 | awk '{print $1}')
+	(( $? != 0 )) && return 1
+	name=$(RSH root $2 "getent ipnodes $ip" \
+		2>$STF_TMPDIR/rsh.out.$$)
+	if (( $? != 0 )); then
+		echo "$FNAME: run getent ipnodes on $2 failed:"
+		cat $STF_TMPDIR/rsh.out.$$
+		rm $STF_TMPDIR/rsh.out.$$
+		return 1
+	fi
+	typeset retval=$(echo "$name" | head -1 | awk '{print $NF}')
+
+	# check the return value
+	if [[ -z $retval ]]; then
+		echo "$FNAME: did not get host name of $1 on $2:"
+		cat $STF_TMPDIR/rsh.out.$$
+		rm $STF_TMPDIR/rsh.out.$$
+		return 1
+	fi
+	ping $retval > $STF_TMPDIR/ping.out.$$ 2>&1
+	if (( $? != 0 )); then
+		echo "$FNAME: $retval not responding to pings:"
+		cat $STF_TMPDIR/ping.out.$$
+		rm $STF_TMPDIR/rsh.out.$$ $STF_TMPDIR/ping.out.$$
+		return 1
+	fi
+
+	echo $retval
+	rm $STF_TMPDIR/rsh.out.$$ $STF_TMPDIR/ping.out.$$
+	return 0
+}
+
+#
+# set_nfs_property - set property via "sharectl set" command
+# if sharectl is available
+# Usage: set_nfs_property <property> <value> [file]
+#	property - property name
+#	value    - property value
+# 	file     - the file to save old value. It is optional.
+#
+function set_nfs_property {
+        typeset FNAME=set_nfs_property
+        typeset logfile=$STF_TMPDIR/$FNAME.$$
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+        if (( $# < 2 )); then
+                echo "Usage: $FNAME <property> <value> [file]"
+                return 1
+        fi
+
+	typeset property=$1
+	typeset value=$2
+	typeset file=$3
+	typeset cur_value
+	typeset envvar
+
+	typeset -l l_property
+	typeset -u u_property
+	typeset errmsg="$property: this property is unsupported by $FNAME now,"
+	errmsg="$errmsg please add more codes to it for your requirement."
+
+	case $property in
+        nfsmapid_domain | NFSMAPID_DOMAIN)
+		l_property=nfsmapid_domain
+		u_property=NFSMAPID_DOMAIN
+		;;
+	server_versmax | NFS_SERVER_VERSMAX)
+		l_property=server_versmax
+		u_property=NFS_SERVER_VERSMAX
+		;;
+	server_versmin | NFS_SERVER_VERSMIN)
+		l_property=server_versmin
+		u_property=NFS_SERVER_VERSMIN
+		;;
+	server_delegation | NFS_SERVER_DELEGATION)
+		l_property=server_delegation 
+		u_property=NFS_SERVER_DELEGATION
+		;;
+	*)
+		print -u2 "$errmsg"
+		return 1
+	esac
+
+	if [[ -n $file ]]; then
+	    # get current value
+	    typeset -i ret=0
+	    if [[ -x /usr/sbin/sharectl ]]; then
+		cur_value=$(sharectl get -p $l_property nfs 2>$logfile)
+		ret=$?
+	    else
+		cur_value=$(grep -i "^[ |	]*${u_property}=" \
+			/etc/default/nfs 2>$logfile)
+	    fi
+	    ckresult $ret "failed to get $property" $logfile || return 1
+	    cur_value=${cur_value##*=}
+
+	    # generate a env variable name for it
+	    envvar="ORIG_$l_property"
+
+	    # save the value into file
+	    echo "$envvar=$cur_value" >> $file
+	fi
+
+	# set new value
+	if [[ -x /usr/sbin/sharectl ]]; then
+	    sharectl set -p $l_property=$value nfs > $logfile
+	else
+	    grep -vi "^[ |	]*${u_property}=" /etc/default/nfs \
+		> $STF_TMPDIR/$FNAME.nfs.$$
+	    echo "$u_property=$value" >> $STF_TMPDIR/$FNAME.nfs.$$
+	    mv $STF_TMPDIR/$FNAME.nfs.$$ /etc/default/nfs
+	    chown root:sys /etc/default/nfs
+	    if [[ $u_property == NFSMAPID_DOMAIN ]]; then
+		svcadm restart mapid > $logfile
+		[[ -z $value ]] || wait_now 10 \
+			"[[ \$(cat /var/run/nfs4_domain) == $value ]]"
+	    fi
+	fi
+	ckresult $? "failed to set $property to $value" $logfile || return 1
+}
+
+#
+# restore_nfs_property - restore property via "sharectl set" command
+# if sharectl is available
+# Usage: restore_nfs_property <property> <file>
+#	property - property name
+# 	file     - the file contains the old value
+#
+function restore_nfs_property {
+        typeset FNAME=restore_nfs_property
+        typeset logfile=$STF_TMPDIR/$FNAME.$$
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+        if (( $# < 2 )); then
+                echo "Usage: $FNAME <property> <file>"
+                return 1
+        fi
+
+	typeset -l property
+	typeset file=$2
+	typeset envvar
+	typeset value
+
+	case $1 in
+        nfsmapid_domain | NFSMAPID_DOMAIN)
+        	property=nfsmapid_domain
+		def_value=domain
+                ;;
+	server_versmax | NFS_SERVER_VERSMAX)
+        	property=server_versmax
+		def_value=4
+                ;;
+	server_versmin | NFS_SERVER_VERSMIN)
+        	property=server_versmin
+		def_value=2
+                ;;
+	server_delegation | NFS_SERVER_DELEGATION)
+        	property=server_delegation
+		def_value=on
+		;;
+	esac
+	
+	# generate env variable name we need
+	envvar="ORIG_$property"
+
+	# get its value from file
+	value=$(grep $envvar $file 2>$logfile)
+	ckresult $? "failed to get $envvar from $file" $logfile || return 1
+	value=${value##$envvar=}	
+	[[ $value == "" ]] && value=$def_value
+
+	set_nfs_property $property "$value"
+}
+
+#
+# sharemgr_share - share one dir using sharemgr if it is available
+# Usage: sharemgr_share <group> <directory> [share_options]
+#
+function sharemgr_share {
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:sharemgr_share:* ]] && \
+		set -x
+
+	typeset tgrp=$1
+	typeset dir=$2
+	typeset opts=${3:-"rw"}
+
+	typeset -i ret=0
+	typeset i=0
+	typeset j=0
+
+	# if there is no sharemgr, use share instead
+	if [[ ! -x /usr/sbin/sharemgr ]]; then
+		share -F nfs -o $opts $dir
+		return $?
+	fi
+
+	#
+	# divide options into groups, using "sec" as keywords
+	# Example:
+	#   input:  "anon=0,ro,sec=krb5,rw,sec=krb5:krb5p,ro=snake"
+	#   output: "sec=sys,anon=0,ro" "sec=krb5,rw" "sec=krb5:krb5p,ro=snake"
+	#
+	while [[ -n $opts ]]; do
+		opt_group[$i]=${opts%%,sec=*}
+		[[ ${opt_group[$i]} == $opts ]] && break
+		opts=${opts#${opt_group[$i]},}
+		(( i += 1 ))
+	done
+	if [[ $opt_group[0] != "sec="* ]]; then
+		opt_group[0]="sec=sys,${opt_group[0]}"
+	fi
+
+	#
+	# extract options that are not sec flavour specific,
+	# Example:
+	#   input:  "sec=sys,anon=0,ro" "sec=krb5,rw" "sec=krb5:krb5p,ro=snake"
+	#   output: "sec=sys ro" "sec=krb5 rw" "sec=krb5:krb5p ro=snake"
+	#           and "anon=0"
+	#
+	i=0
+	while (( i < ${#opt_group[*]} )); do
+		opts=$(echo ${opt_group[$i]} | tr , ' ')
+		opt_group[$i]=""
+		for o in $opts; do
+			if echo $o | egrep "sec=|rw|ro|root=|window=" \
+				>/dev/null; then
+				# sec flavour specific options
+				opt_group[$i]="${opt_group[$i]} $o"
+			else
+				# global options, like anon, etc.
+				if ! echo $opt_global | grep $o >/dev/null; then
+					opt_global="$opt_global $o"
+				fi
+			fi
+		done
+		(( i += 1 ))
+	done
+
+	#
+	# divide a single definition for multiple sec flavours into
+	# multiple ones
+	# Example:
+	# 	input:  "sec=sys ro" "sec=krb5 rw" "sec=krb5:krb5p ro=snake"
+	#	output: "sec=sys ro" "sec=krb5 rw" "sec=krb5 ro=snake"
+	#		"sec=krb5p ro=snake"
+	#
+	i=0
+	j=0
+	while (( i < ${#opt_group[*]} )); do
+		if ! echo ${opt_group[$i]} |awk '{print $1}' |grep ":" \
+			>/dev/null; then
+			opt_group2[$j]=${opt_group[$i]}
+			(( j += 1 ))
+		else
+			# contains multiple sec flavours
+			flavours=$(echo ${opt_group[$i]} | awk '{print $1}')
+			tmp=${opt_group[$i]}
+			tmp=${tmp# *}
+			rest=${tmp#$flavours}
+			flavours=${flavours##*=}
+			flavours=$(echo $flavours | tr : ' ')
+			for f in $flavours; do
+				opt_group2[$j]="sec=$f $rest"
+				(( j += 1 ))
+			done
+		fi
+		(( i += 1 ))
+	done
+
+	#
+	# use sharemgr to share the directory
+	# Example:
+	#   input: share anon=0,ro,sec=krb5,rw,ro=snake,sec=krb5p,ro=snake /tmp
+	#   output:
+	#	sharemgr add-share -s /tmp $tgrp
+	# 	sharemgr set -P nfs -p anon=0 -s /tmp $tgrp
+	#	sharemgr set -P nfs -S sys  -p ro=* -s /tmp $tgrp
+	#	sharemgr set -P nfs -S krb5  -p rw=* -p ro=snake -s /tmp $tgrp
+	#	sharemgr set -P nfs -S krb5p  -p ro=snake -s /tmp $tgrp
+	#
+	if sharemgr list | grep $tgrp >/dev/null 2>&1; then
+		sharemgr remove-share -f -s $dir $tgrp > /dev/null 2>&1
+	else
+		sharemgr create -P nfs $tgrp
+	fi
+	sharemgr add-share -s $dir $tgrp 
+	((ret |= $?))
+
+	typeset property=""
+	for o in $opt_global; do
+		if [[ $o == nosuid ]]; then
+			o="nosuid=true"
+		elif [[ $o == nosub ]]; then
+			o="nosub=true"
+		elif [[ $o == public ]]; then
+			o="public=true"
+		elif [[ $o == aclok ]]; then
+			o="aclok=true"
+		elif [[ $o == log ]]; then
+			o="log=global"
+		fi
+		property="$property -p $o"
+	done
+	if [[ -n $property ]]; then
+		sharemgr set -P nfs $property -s $dir $tgrp
+		((ret |= $?))
+	fi
+
+	typeset flavour=""
+	i=0
+	while (( i < ${#opt_group2[*]} )); do
+		flavour=""
+		property=""
+		flavour=$(echo ${opt_group2[$i]} | awk '{print $1}')
+		tmp=${opt_group2[$i]}
+		tmp=$(echo $tmp | sed "s/^ *//")
+		optlist=${tmp##$flavour}
+		
+		[[ -z $optlist ]] && optlist="rw"
+		for o in $optlist; do
+			if [[ $o == "rw" ]]; then
+				o="rw=*"
+			elif [[ $o == "ro" ]]; then
+				o="ro=*"
+			fi
+			property="$property -p $o"
+		done
+
+		flavour=${flavour##sec=}
+		sharemgr set -P nfs -S $flavour $property -s $dir $tgrp
+		((ret |= $?))
+
+		(( i += 1 ))
+	done
+
+	return $ret
+}
+
+#
+# sharemgr_unshare - unshare the passed directory. If sharemgr is available,
+#	the passed share group is deleted too.
+# Usage: sharemgr_unshare <group> <directory>
+#
+function sharemgr_unshare {
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:sharemgr_unshare:* ]] && \
+		set -x
+
+	typeset tgrp=$1
+	typeset dir=$2
+
+	if [[ ! -x /usr/sbin/sharemgr ]]; then
+		unshare $dir
+	else 
+		sharemgr delete -f $tgrp
+	fi
+}
+
+#
+# zfs_share - share one dir using zfs share
+# Usage: zfs_share <directory> [share_options]
+#
+function zfs_share {
+	typeset FNAME=zfs_share
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+                [[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	typeset dir=$1
+	typeset opts=${2:-"rw"}
+
+	if [[ -z $dir ]]; then
+		echo "$FNAME Error: exported diretory name not found"
+		return 1
+	fi
+
+	typeset -i ret=0
+	typeset zfs_mntpnt_flag=1
+
+	typeset mntpnt=$(zfs list -H -o mountpoint)
+	mntpnt=$(echo $mntpnt | tr -s "\n" " ")
+	if [[ " $mntpnt " == *" $dir "* ]]; then
+		zfs_mntpnt_flag=0
+	fi
+
+	if (( zfs_mntpnt_flag == 0 )); then
+		typeset fs=$(zfs list -H -o name,mountpoint | \
+			grep "${dir}$" | awk '{print $1}')
+
+		zfs set sharenfs="$opts" $fs
+		ret=$?
+
+		typeset sharedir=$(share | awk '{print $2}' | grep -w "$dir")
+		sharedir=$(echo $sharedir | tr -s "\n" " ")
+		if [[ " $sharedir " != *" $dir "* ]]; then
+			zfs share $fs
+			((ret |= $?))
+		fi
+	else
+	    	share -F nfs -o $opts $dir
+		ret=$?
+	fi
+
+	return $ret
+}
+
+#
+# zfs_unshare - unshare one dir using zfs set sharenfs=off
+# Usage: zfs_unshare <directory>
+#
+function zfs_unshare {
+	typeset FNAME=zfs_unshare
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+                [[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	typeset dir=$1
+	[[ -z $dir ]] && return 1
+
+	typeset -i ret=0
+	typeset	-i zfs_mntpnt_flag=1
+
+	typeset fs=$(zfs list -H -o name,mountpoint | \
+			grep "${dir}$" | awk '{print $1}')
+	typeset share_status=$(zfs get -H -o value sharenfs $fs)
+
+	typeset mntpnt=$(zfs list -H -o mountpoint)
+	mntpnt=$(echo $mntpnt | tr -s "\n" " ")
+	if [[ " $mntpnt " == *" $dir "* ]]; then
+		zfs_mntpnt_flag=0
+	fi
+
+	if [[ $share_status != "off" ]] && (( zfs_mntpnt_flag == 0 )); then
+		zfs set sharenfs=off $fs
+		ret=$?
+	else
+		unshare $dir
+		ret=$?
+	fi
+
+	return $ret
+}
+
+
+#
+# auto_unshare - unshare one dir automatically by looking up its group
+# If its group is zfs, use zfs_unshare();
+# else if sharemgr is available and its group is default or other one,
+# use sharemgr remove-share;
+# else use unshare.
+#
+# If misc share is done, unshare should be done according to the table shows:
+# +--------------------+----------------------+---------------------+-------+
+# |                    |sharemgr::remove-share|zfs::set sharenfs=off|unshare|
+# +--------------------+----------------------+---------------------+-------+
+# |sharemgr::add-share |            Y         |          Y          |    N  |
+# |zfs::set sharenfs=on|            N         |          Y          |    N  |
+# |share               |            Y         |          Y          |    Y  |
+# +--------------------+----------------------+---------------------+-------+
+#
+# Usage: auto_unshare <directory>
+#
+function auto_unshare {
+	typeset FNAME=auto_unshare
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+                [[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	typeset -i ret=0
+	typeset dir=$1
+
+	# strip last '/' of dir, e.g dir=/var/tmp/
+	# after strip, dir=/var/tmp
+	[[ $dir == */ ]] && dir=$(dirname ${dir}/FAKEFILE.$$)
+
+	# if dir is not shared, return 0 directly	
+	typeset shstr=$(share | awk '{print $2}' | tr '\n' ' ')
+	[[ " $shstr " != *" $dir "* ]] && return 0
+
+	# if sharemgr is not existed, use zfs_unshare
+	# zfs_unshare will check dir is zfs or not
+	if [[ ! -x /usr/sbin/sharemgr ]]; then
+		zfs_unshare $dir
+		return $?
+	fi
+
+	STF_TMPDIR=${STF_TMPDIR:-"/var/tmp"}
+	typeset sharedfile=$STF_TMPDIR/sharedfile.out.$$
+	typeset tmpfile=$STF_TMPDIR/tmpfile.out.$$
+
+	# format all shared entries and save them to file
+	typeset igroup=""
+	for igroup in $(sharemgr list | tr -s '\n' ' '); do
+		sharemgr show $igroup | sed '1d' | tr -d '\t' > $tmpfile
+		while read line; do
+			echo ${line}@${igroup} >> $sharedfile
+		done < $tmpfile
+	done
+	rm -f $tmpfile
+
+	# lookup dir resides in which group
+	typeset shdir=""
+	igroup=""
+	while read line; do
+		shdir=$(echo $line | awk -F@ '{print $1}')
+		if [[ @$shdir@ == *@$dir@* ]]; then
+			igroup=$(echo $line | awk -F"@" '{print $2}')
+			break
+		fi
+	done < $sharedfile
+	rm -f $sharedfile
+	
+	# unshare dir according to its group	
+	if [[ $igroup == "zfs" ]]; then
+		zfs_unshare $dir
+	elif [[ -n $igroup ]]; then
+		sharemgr remove-share -f -s $dir $igroup
+	else
+		unshare $dir
+	fi
+	ret=$?
+	if (( ret != 0 )); then
+		echo "ERROR: unshare $dir failed, returned $ret"
+	fi
+
+	return $ret
+}
+
+#
+# Function to get share options from a standard entry
+# saved in /etc/dfs/dfstab
+# Usage: get_shareoptions <share entry>
+#
+# e.g.
+# get_shareoptions share -F nfs -o rw /tmp  # rw
+# get_shareoptions share -o ro=client1 /tmp # ro=client1
+# get_shareoptions share /tmp               # rw
+#
+function get_shareoptions {
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:get_shareoptions:* ]] && \
+		set -x
+
+	set -A a_opt $@
+	typeset a_opt_len=${#a_opt[*]}
+	typeset -i i=0
+	typeset options=""
+	while (( i < a_opt_len )); do
+		if [[ ${a_opt[$i]} == "-o" ]]; then
+			(( i+= 1 ))
+			options=${a_opt[$i]}
+			break
+		fi
+		(( i+= 1 ))
+	done
+	[[ -z $options ]] && options="rw"
+	echo "$options"
+}
+
+#
+# Function to check if running as root.
+# Usage: is_root [testname] [tmessage]
+#
+#	testname  optional; if provided, add to the output
+#	tmessage  optional; if provided, must follow testname
+#
+# The main purpose of testname and message is to provide a line that emulates
+# an assertion, so that the failure is captured in the summary and reported.
+# On success, it just returns 0, on failure, a message is printed, and
+# exit UNINITIATED is issued.
+#
+function is_root {
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:is_root:* ]] && \
+		set -x
+
+	TName=$1
+	[[ -n $TName ]] && TName="$TName: "
+	Msg=$2
+	Stat=""
+	[[ -n $Msg ]] && Stat="\tTest UNINITIATED: " || Msg="\c"
+	id | grep "0(root)" > /dev/null 2>&1
+	if (( $? != 0 )); then
+		echo "$TName$Msg"
+		echo "${Stat}Must run the tests as root."
+		exit $STF_UNINITIATED
+	fi
+	return 0
+}
+
+# RUN_CHECK - run a command and check its return code. It prints out 
+#	error information if the return code is not equal to the expected
+#	one. 
+#
+#	The expected return code is 0 by default. If user specifies "-n"
+#	option(for negative checking purpose), however, the expected return
+#	code is a non-zero value.
+#
+#	If the check fails, the function prints out the failed command,
+#	its stdout otupt, and its stderr ouput.
+#
+#	The function uses its internal log files and removes them by default.
+#	User can pass stdout log file and stderr log file via -o and -e
+#	options. In that cases, these files won't be deleted automatically.
+#
+# Usage: RUN_CHECK [-n] [-o outlog] [-e errlog] <command> [args ...]
+#	-n 	        negatvie checking
+#	-o outlog       user specified outlog
+#	-e errlog       user specified errlog
+#	command         command to be executed
+#	args	        args passed to the command
+#
+# WARNING:
+#	Quote characters in args are silently discarded by shell when 
+#	command and args are passed to RUN_CHECK(). If these quotes matters,
+#	you can't use RUN_CHECK().
+#
+#	For example, you can't use RUN_CHECK() to run the following command:
+#
+#	   runat /tmp/testfile "echo hello > attr"
+#
+#	Because if quote characters are removed, the command becomes a quite
+#	different one:
+#
+#	   runat /tmp/testfile echo hello > attr
+#
+function RUN_CHECK {
+	FNAME=RUN_CHECK
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+                [[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+        typeset outlog
+        typeset errlog
+        typeset keep_outlog=0
+        typeset keep_errlog=0
+	typeset neg_check=0
+        typeset debug=0
+
+        if [[ -n $_NFS_STF_DEBUG ]]; then
+        	case $_NFS_STF_DEBUG in
+                	*RUN_CHECK_ALL*) debug=2
+                	;;
+                	*RUN_CHECK_CMD*) debug=1
+                	;;
+                	?)
+                   	;;
+        	esac
+        fi
+
+        while getopts o:e:d:n flag; do
+                case $flag in
+                        o) outlog=$OPTARG
+                           keep_outlog=1
+			;;
+                        e) errlog=$OPTARG
+                           keep_errlog=1
+			;;
+			n) neg_check=1
+			;;
+			?) echo "$FNAME: invalid option" >&2
+			   return 1
+			;;
+                esac
+        done
+        shift $((OPTIND - 1))
+        typeset cmd="$@"
+	if [[ -z $cmd ]]; then
+		echo "$FNAME: should specify command name" >&2
+		return 1
+	fi
+
+        if ((keep_outlog == 0)); then
+                outlog=$(mktemp -p /var/tmp $$.log.XXXXXX) 
+        fi
+	if ((keep_errlog == 0)); then
+        	errlog=$(mktemp -p /var/tmp $$.log.XXXXXX) 
+	fi
+
+        if [[ -z $outlog || -z $errlog ]]; then
+            	echo "$FNAME: invalid logfile name" >&2
+		echo "$FNAME: \toutlog=<$outlog>,errlog=<$errlog>" >&2
+                return 1
+        fi
+
+        eval $cmd 1>$outlog 2>$errlog
+        typeset ret=$?
+	typeset check_result="FAIL"
+	if (( neg_check == 0 )); then
+		# positive checking
+		(( ret == 0 )) && check_result="PASS"
+	else
+		# negative checking
+		(( ret != 0 )) && check_result="PASS"
+	fi
+	
+	cat $outlog
+
+	if [[ $check_result == "FAIL" ]]; then
+		echo "command | [FAIL] $cmd" >&2
+		sed "s/^/stdout  | /" $outlog >&2
+		sed "s/^/stderr  | /" $errlog >&2
+	elif (( debug == 1 )); then
+		echo "command | [OK] $cmd" >&2
+	elif (( debug == 2 )); then
+		echo "command | [OK] $cmd" >&2
+		sed "s/^/stdout  | /" $outlog >&2
+		sed "s/^/stderr  | /" $errlog >&2
+	fi
+
+        # remove logfiles
+	(( keep_outlog == 0 )) && rm -f $outlog
+	(( keep_errlog == 0 )) && rm -f $errlog
+
+	[[ $check_result == "PASS" ]] && return 0
+	[[ $check_result == "FAIL" ]] && return 1
+}
+
+# RUN_CHECKNEG - Run a command and check its return code to verify
+#	it fails as expected. This a warpper around RUN_CHECK.
+#
+# Usage: RUN_CHECKNEG [-o outlog] [-e errlog] <command> [args ...]
+#	-o outlog    user specified outlog
+#	-e errlog    user specified errlog
+#	command args the command to be executed, and its args
+#
+function RUN_CHECKNEG {
+	RUN_CHECK -n $@
+}
+
+#
+# Get free userid or groupid on client and servers
+# Usage:
+#       get_free_id <database> [server 1] ... [server n]
+#       database: passwd or group
+# If successful, print id and return 0
+# else return 1
+#
+function get_free_id {
+	typeset FNAME=get_free_id
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+	
+	typeset database=$1
+	# check databse: passwd or group
+	if [[ $database != "passwd" && $database != "group" ]]; then
+		echo "ERROR: invalid database."
+		return 1
+	fi
+	shift
+
+	typeset -i id=$((RANDOM + 50000))
+	[[ $database == "group" ]] && id=$((RANDOM/10 + 1000))
+
+	typeset getentcmd="/usr/bin/getent $database"
+
+	typeset servers=$@ # server1 server2 ... serverN
+	typeset nserver=$#
+
+	typeset -i ret=1
+	typeset -i i=0
+	typeset -i counter=0
+	while (( i < 1000 )); do # try 1000 times
+		# check id on client
+		$getentcmd $id > /dev/null 2>&1
+		if (( $? == 0 )); then
+			(( id += 1 ))
+			((  i += 1 ))
+			continue
+		fi
+
+		# check id on servers one bye one
+		counter=$nserver
+		for srv in $servers; do
+			[[ -z $srv ]] && break
+
+			RSH root $srv "$getentcmd $id | grep $id" \
+				> $STF_TMPDIR/rsh.out.$$ \
+				2> $STF_TMPDIR/rsh.err.$$
+			(( $? == 0 )) && break
+			#
+			# $? == 0, id exists on srv
+			# $? != 0, maybe due to
+			# - RSH itself failed
+			# - id does not exist on srv
+			# Only id does not exist on srv, counter -= 1
+			#
+			grep "rsh command failed" \
+				$STF_TMPDIR/rsh.out.$$ \
+				$STF_TMPDIR/rsh.err.$$ > /dev/null 2>&1
+			if (( $? == 0 )); then
+				echo "ERROR: run <RSH root $srv $getentcmd $id> failed"
+				cat $STF_TMPDIR/rsh.out.$$
+				cat $STF_TMPDIR/rsh.err.$$
+				break
+			fi
+
+			# confirm id on srv is not equale to current id
+			srvid=$(cat $STF_TMPDIR/rsh.out.$$ | awk -F: '{print $3}')
+			[[ $srvid == $id ]] && break
+
+			(( counter -= 1 ))
+		done
+
+		if (( counter == 0 )); then
+			ret=0
+			break
+		fi
+
+		(( id += 1 ))
+		((  i += 1 ))
+	done
+
+	rm -f $STF_TMPDIR/rsh.out.$$ $STF_TMPDIR/rsh.err.$$
+	echo $id
+	return $ret
+}
+
+#
+# Get free uid on client and servers
+# Usage:
+# 	get_free_uid <server 1> [server 2] ... [server n]
+# If sucessful, print free uid and return 0
+# else return 1
+#
+function get_free_uid {
+	typeset FNAME=get_free_uid
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && \
+		_NFS_STF_DEBUG=$_NFS_STF_DEBUG:get_free_id && set -x
+
+	get_free_id passwd $@
+	return $?
+}
+
+#
+# Get free gid on client and servers
+# Usage:
+# 	get_free_gid <server 1> [server 2] ... [server n]
+# If sucessful, print free uid and return 0
+# else return 1
+#
+function get_free_gid {
+	typeset FNAME=get_free_gid
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && \
+		_NFS_STF_DEBUG=$_NFS_STF_DEBUG:get_free_id && set -x
+
+	get_free_id group $@
+	return $?
+}
+
+#
+# Check user or group exists on client and remote servers.
+# If it does exist with the same id(uid or gid) on all hosts, return 0,
+# else return non-zero.
+# 1 - invalid database
+#   - argument <name> is null
+#   - run RSH failed
+# 2 - user or group does not exsit on client
+#   - uid or gid is unmatched between client and one server
+#
+# Usage: check_user_group <database> <name> [server 1] [server 2] ... [server n]
+#
+function check_user_group {
+	typeset FNAME=check_user_group
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	typeset database=$1
+	# check databse: passwd or group
+	if [[ $database != "passwd" && $database != "group" ]]; then
+		echo "ERROR: invalid database."
+		return 1
+	fi
+	shift
+
+	typeset key="user"
+	[[ $database == "group" ]] && key="group"
+
+	typeset name=$1
+	if [[ -z $name ]]; then
+		echo "ERROR: $key name<$name> is necessary."
+		return 1
+	fi
+	shift
+
+	typeset counter=$#
+	typeset servers=$@
+	
+	typeset getentcmd="/usr/bin/getent $database $name"
+	typeset -i ret=0
+
+	# check user/group on client
+	typeset clntid=$($getentcmd | awk -F: '{print $3}')
+	[[ -z $clntid ]] && return 2
+
+	# check user/group with clntid on servers
+	typeset srvid=0
+	for srv in $servers; do
+		RSH root $srv "$getentcmd" \
+			> $STF_TMPDIR/rsh.out.$$
+			2> $STF_TMPDIR/rsh.err.$$
+		if (( $? != 0 )); then
+			ret=1
+			echo "ERROR: run <RSH root $srv getentcmd> failed"
+			cat $STF_TMPDIR/rsh.out.$$
+			cat $STF_TMPDIR/rsh.err.$$
+			break
+		fi
+
+		srvid=$(cat $STF_TMPDIR/rsh.out.$$ | awk -F: '{print $3}')
+		if [[ $srvid != $clntid ]]; then
+			ret=2
+			echo "INFO: $key id is unmatched,"
+			echo "      $key id on server<$srv>: $srvid"
+			echo "      $key id on client<$(hostname)>: $clntid"
+			break
+		fi
+	done
+
+	rm -f $STF_TMPDIR/rsh.out.$$ $STF_TMPDIR/rsh.err.$$
+	return $ret
+}
+
+function chk_user {
+	typeset FNAME=chk_user
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && \
+		_NFS_STF_DEBUG=$_NFS_STF_DEBUG:check_user_group && set -x
+
+	check_user_group passwd $@
+	return $?
+}
+
+function chk_group {
+	typeset FNAME=chk_group
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && \
+		_NFS_STF_DEBUG=$_NFS_STF_DEBUG:check_user_group && set -x
+
+	check_user_group group $@
+	return $?
+}
+
+#
+# Select valid uid and create specified user in specified group
+# on local host and remote servers.
+#
+# Usage: add_user [-g group] <user name> [server 1] [server 2] ... [server n]
+# e.g.
+#        add_user usr1 srv1 srv2   # add to localhost, srv1, srv2
+#        add_user -g goo usr2 srv1 # add to localhost, srv1 with group "goo"
+#        add_user usr3             # only add to localhost
+#
+function add_user {
+	typeset FNAME=add_user
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	typeset grp=""
+	if [[ $1 == "-g" ]]; then
+		shift
+		grp=$1
+		shift
+	fi
+
+	typeset user=$1
+	if [[ -z $user ]]; then
+		echo "ERROR: user name<$user> is necessary."
+		return 1
+	fi
+	shift
+
+	typeset counter=$#
+	typeset servers=$@
+
+	typeset grpopt=""
+	if [[ -n $grp ]]; then
+		getent group $grp > /dev/null 2>&1
+		if (( $? == 0 )); then
+			grpopt="-g $grp"
+		else
+			echo "ERROR: group name<$grp> doesn't exist."
+			return 1
+		fi
+	fi
+
+	typeset myuid=$(get_free_uid $servers)
+	if (( $? != 0 )); then
+		echo "ERROR: get free uid failed."
+		return 1
+	fi
+
+	# add to server
+	typeset -i ret=0
+	for srv in $servers; do
+		RSH root $srv \
+			"/usr/sbin/userdel $user;" \
+			"/usr/sbin/useradd -u $myuid $grpopt -d /tmp -m $user" \
+			> /dev/null 2>&1
+		if (( $? == 0 )); then
+			(( counter -= 1 ))
+		else
+			ret=1
+			break
+		fi
+	done
+
+	# add to client
+	if (( counter == 0 )); then
+		/usr/sbin/userdel $user >/dev/null 2>&1
+		/usr/sbin/useradd -u $myuid $grpopt -d /tmp -m $user
+		ret=$?
+	fi
+
+	# print uid for possible use outside
+	(( ret == 0 )) && echo $myuid
+
+	return $ret
+}
+
+
+#
+# Select valid gid and create specified group with gid
+# on local host and remote servers.
+#
+# Usage: add_group <group name> [server 1] [server 2] ... [server n]
+# e.g.
+#        add_group Tgrp01 srv1 srv2 # add to localhost, srv1, srv2
+#        add_group Tgrp01           # only add to localhost
+#
+function add_group {
+	typeset FNAME=add_group
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+	
+	typeset grp=$1
+	if [[ -z $grp ]]; then
+		echo "ERROR: group name<$grp> is necessary."
+		return 1
+	fi
+	shift
+
+	typeset counter=$#
+	typeset servers=$@
+
+	typeset mygid=$(get_free_gid $servers)
+	if (( $? != 0 )); then
+		echo "ERROR: get free gid failed."
+		return 1
+	fi
+
+	# add to servers
+	typeset -i ret=0
+	for srv in $servers; do
+		RSH root $srv \
+			"/usr/sbin/groupdel $grp; " \
+			"/usr/sbin/groupadd -g $mygid $grp" \
+			> /dev/null 2>&1
+		if (( $? == 0 )); then
+			(( counter -= 1 ))
+		else
+			ret=1
+			break
+		fi
+	done
+
+	# add to client
+	if (( counter == 0 )); then
+		/usr/sbin/groupdel $grp > /dev/null 2>&1
+		/usr/sbin/groupadd -g $mygid $grp
+		ret=$?
+	fi
+
+	# print gid for possible use outside
+	(( ret == 0 )) && echo $mygid
+
+	return $ret
+}
+
+#
+# Delete specified user or group on local host and remote servers.
+#
+# Usage: delete_user_group <database > <name> [server 1] [server 2] ... [server n]
+#
+function delete_user_group {
+	typeset FNAME=delete_user_group
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	typeset database=$1
+	# check databse: passwd or group
+	if [[ $database != "passwd" && $database != "group" ]]; then
+		echo "ERROR: invalid database."
+		return 1
+	fi
+	shift
+
+	typeset name=$1
+	if [[ -z $name ]]; then
+		typeset key="user"
+		[[ $database == "group" ]] && key="group"
+		echo "ERROR: $key name<$name> is necessary."
+		return 1
+	fi
+	shift
+
+	typeset getentcmd="/usr/bin/getent $database $name"
+	if [[ $database == "passwd" ]]; then
+		typeset delcmd="/usr/sbin/userdel $name"
+	else
+		typeset delcmd="/usr/sbin/groupdel $name"
+	fi
+
+	typeset counter=$#
+	typeset servers=$@
+
+	for srv in $servers; do
+		# check user or group does exsit on srv
+		RSH root $srv "$getentcmd | grep $name" \
+			> /dev/null 2>&1
+		if (( $? != 0 )); then
+			(( counter -= 1 ))
+			continue
+		fi
+
+		# delete user or group on srv once user exsits
+		RSH root $srv "$delcmd > /dev/null" \
+			> /dev/null 2>&1
+		if (( $? == 0 )); then
+			(( counter -= 1 ))
+		else
+			break
+		fi
+	done
+
+	# If user or group are deleted on all remote servers,
+	# then we delete it on client
+	if (( counter == 0 )); then
+		# check user or group does exist on client, if not, return 0
+		$getentcmd | grep $name > /dev/null 2>&1
+		(( $? != 0 )) && return 0
+
+		$delcmd > /dev/null 2>&1
+		return $?
+	fi
+
+	return 1
+
+}
+
+#
+# Delete specified user on local host and remote servers.
+#
+# Usage: del_user <user name> [server 1] [server 2] ... [server n]
+#
+function del_user {
+	typeset FNAME=del_user
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && \
+		_NFS_STF_DEBUG=$_NFS_STF_DEBUG:delete_user_group && set -x
+
+	delete_user_group passwd $@
+	return $?
+}
+
+#
+# Delete specified group on local host and remote servers.
+#
+# Usage: del_group <group name> [server 1] [server 2] ... [server n]
+#
+function del_group {
+	typeset FNAME=del_group
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && \
+		_NFS_STF_DEBUG=$_NFS_STF_DEBUG:delete_user_group && set -x
+
+	delete_user_group group $@
+	return $?
+}
+
+#
+# Function to check if the specific system variable is set and it is
+# accessible for nfs test suite.
+#
+function check_system {
+	typeset VAR=$1
+	eval system=\${$VAR}
+
+	if [[ -z $system ]]; then
+		echo "$VAR is not set, exiting."
+		exit 1
+	fi
+
+	/usr/sbin/ping $system > /dev/null 2>&1
+	if (( $? != 0 )); then
+		echo "$system not responding to pings, exiting"
+		exit 1
+	fi
+
+	RSH root $system /bin/true > /tmp/ckrsh.$$ 2>&1
+	if (( $? != 0 )); then
+		echo "Failed to <rsh> to $system, exiting."
+		cat /tmp/ckrsh.$$
+		rm -f /tmp/ckrsh.$$
+		exit 1
+	fi
+	rm -f /tmp/ckrsh.$$
+}
+
+#
+# Function to get zone id 
+#   Usage: get_zone_id <host>
+#
+function get_zone_id {
+	typeset FNAME=get_zone_id
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	typeset host=$1
+
+	# Check host is localhost or not
+	typeset ip1=$(getent ipnodes $host | head -1 | awk '{print $1}')
+	typeset ip2=$(getent ipnodes $(hostname) | head -1 | awk '{print $1}')
+	if [[ $ip1 == $ip2 ]]; then
+		typeset zone_id=$(zoneadm -z $(zonename) list -p | awk -F: '{print $1}')
+		echo $zone_id
+		return 0
+	fi
+
+	RSH root $host \
+		"/usr/sbin/zoneadm -z \$(/usr/bin/zonename) list -p" \
+		> $STF_TMPDIR/$FNAME.rsh.$$ 2>&1
+	if (( $? != 0 )); then
+		echo "$FNAME: rsh to host<$host> failed"
+		cat $STF_TMPDIR/$FNAME.rsh.$$
+		rm -f $STF_TMPDIR/$FNAME.*.$$
+		return 2
+	fi
+	typeset zone_id=$(cat $STF_TMPDIR/$FNAME.rsh.$$ | awk -F: '{print $1}')
+
+	rm -f $STF_TMPDIR/$FNAME.*.$$
+	echo $zone_id
+	return 0
+}
+
+#
+# Function to reboot rhost and make sure rsh is available again
+#
+# A standard model to reboot a remote host for us is:
+# 1) before reboot rhost:
+#    1.1 ping rhost [OK] # this step needn't checking as we will do 1.2
+#    1.2 rsh to create script for rebooting [OK]
+# 2) rhost is rebooting:
+#    2.1 ping rhost [FAIL] # rhost is down
+# 3) after rhost rebooted:
+#    3.1 ping rhost [OK]   # rhost is up again
+#    3.2 rsh rhost to test something [OK]
+#
+# Usage: reboot_rhost <timer> <rhost> [ boot_arguments ]
+# Return: if reboot successfully, return 0;
+#         if create reboot script on rhost failed, return 1;
+#         if rhost is not down in 90s after reboot, return 2;
+#         if rhost is not up again in $timer seconds, return 3;
+#         if rsh is not available again, return 4. 
+#
+function reboot_rhost {
+	typeset FNAME=reboot_rhost
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	typeset timer=$1
+	typeset rhost=$2
+	shift 2
+	typeset boot_args=$@
+
+	#
+	# Check rhost is non-global zone or not
+	#
+	RSH root $rhost "/usr/bin/zonename" > $STF_TMPDIR/$FNAME.rsh.$$ 2>&1
+	if (( $? != 0 )); then
+		echo "$FNAME: rsh to rhost<$rhost> failed"
+		cat $STF_TMPDIR/$FNAME.rsh.$$
+		rm -f $STF_TMPDIR/$FNAME.*.$$
+		return 5
+	fi
+	typeset zone_name=$(cat $STF_TMPDIR/$FNAME.rsh.$$)
+	typeset -i iszone=1
+	[[ $zone_name != global ]] && iszone=0
+
+	#
+	# Get current zone id if rhost is non-global zone
+	#
+	if (( iszone == 0 )); then
+		typeset zone_id=$(get_zone_id $rhost)
+		if (( $? != 0 )); then
+			echo "$FNAME: get zone id for rhost<$rhost> failed"
+			echo $zone_id
+			rm -f $STF_TMPDIR/$FNAME.*.$$
+			return 6
+		fi
+	fi
+
+	#
+	# Create rebooting script on rhost and let it run by 'at'
+	# Notice: To let rhost sleep 10 before reboot is to avoid rsh timeout
+	#
+	typeset f2reboot=/tmp/reboot_by_$(hostname)
+	RSH root $rhost \
+		"echo \"#! /usr/bin/ksh -p\" > $f2reboot; \
+		 echo \"/usr/bin/sleep 10\" >> $f2reboot; \
+		 echo \"/usr/sbin/reboot $boot_args\"  >> $f2reboot; \
+		 chmod 0755 $f2reboot; \
+		 at -k -f $f2reboot now" \
+		> $STF_TMPDIR/$FNAME.rsh.$$ 2>&1
+	if (( $? != 0 )); then
+		echo "$FNAME: setup job for rebooting on rhost<$rhost> failed"
+		cat  $STF_TMPDIR/$FNAME.rsh.$$
+		rm -f $STF_TMPDIR/$FNAME.*.$$
+		return 1
+	fi
+
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && \
+		echo "[$(date +'%Y-%m-%d %H:%M:%S')] \c" && \
+		echo "rhost<$rhost> will reboot in 10s..."
+
+	#
+	# Check rhost is back if rhost is non-global zone
+	# as reboot a non-global zone is very fast actually
+	#
+	# Notice: 
+	# Function get_zone_id() will use RSH, so we don't have to check rsh
+	# on rhost is available again after reboot.
+	#
+	if (( iszone == 0 )); then
+		sleep 10
+		typeset zone_id2=0
+		typeset -i i=0
+		typeset -i flag=1
+		while (( i < $timer )); do
+			zone_id2=$(get_zone_id $rhost)
+			if [[ $? == 0 && $zone_id != $zone_id2 ]]; then
+				flag=0
+				break
+			fi
+
+			sleep 10
+			(( i += 10 ))
+		done
+
+		if (( flag != 0 )); then
+			echo "$FNAME: reboot rhost<$rhost> failed in ${timer}s," 
+			echo "\t rhost is a non-global zone,"
+			echo "\t and seems never come back, please check it manually"
+			rm -f $STF_TMPDIR/$FNAME.*.$$
+			return 3
+		fi
+
+		[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+			[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && \
+			echo "[$(date +'%Y-%m-%d %H:%M:%S')] \c" && \
+			echo "rhost<$rhost> is up again..."
+
+		rm -f $STF_TMPDIR/$FNAME.*.$$
+		return 0
+	fi
+
+	#
+	# Wait for rhost is down
+	# for ping, the default value of timeout is 20 seconds,
+	# we set it to be 5 seconds to save time.
+	#
+	wait_now 90 "! ping $rhost 5 > /dev/null 2>&1" 5
+	if (( $? != 0 )); then
+		echo "$FNAME: reboot rhost<$rhost> failed, it seems not down in 90s."
+		rm -f $STF_TMPDIR/$FNAME.*.$$
+		return 2
+	fi
+
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && \
+		echo "[$(date +'%Y-%m-%d %H:%M:%S')] \c" && \
+		echo "rhost<$rhost> is down..."
+
+	#
+	# Wait for rhost is up 
+	# If timer = 600, the max timeout is:
+	# 5 * (600 / 10) + 600 = 900 seconds
+	#
+	wait_now $timer "ping $rhost 5 > /dev/null 2>&1" 10
+	if (( $? != 0 )); then
+		echo "$FNAME: reboot rhost<$rhost> failed," 
+		echo "\t it is not responding to pings in ${timer}s,"
+		echo "\t and seems never come back, please check it manually"
+		rm -f $STF_TMPDIR/$FNAME.*.$$
+		return 3
+	fi
+
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && \
+		echo "[$(date +'%Y-%m-%d %H:%M:%S')] \c" && \
+		echo "rhost<$rhost> is up again..."
+
+	sleep 30 # wait for services on rhost start
+
+	#
+	# Check rsh on rhost is available again 
+	# If rsh is not availbale, rsh will timeout in N (about 200) seconds, then
+	# if we call "wait_now $timer 'RSH ...' $interval" will have to wait for
+	# N * (( $timer / $interval )) + $timer seconds.
+	# 
+	wait_now 90 \
+		"RSH root $rhost true > $STF_TMPDIR/$FNAME.rsh.$$ 2>&1" 30
+	if (( $? != 0 )); then
+		echo "$FNAME: reboot rhost<$rhost> failed,"
+		echo "\t rsh is not available after reboot in 90s,"
+		echo "\t please check it manually"
+		cat $STF_TMPDIR/$FNAME.rsh.$$
+		rm -f $STF_TMPDIR/$FNAME.*.$$
+		return 4
+	fi
+
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && \
+		echo "[$(date +'%Y-%m-%d %H:%M:%S')] \c" && \
+		echo "rsh on rhost<$rhost> is available again!"
+
+	rm -f $STF_TMPDIR/$FNAME.*.$$
+	return 0
+}
+
+#
+# Function to chech if the passed argument is a device name or not.
+#   Usage: is_device_name <name>
+#
+function is_device_name {
+        typeset Fname=is_device_name
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+                [[ :$_NFS_STF_DEBUG: == *:$Fname:* ]] && set -x
+
+        typeset name=$1
+        name=/dev/dsk/$name
+
+        ls ${name}* >/dev/null 2>&1
+        return $?
+}
+
+# Description
+#	A function to get the name of the test case which is generated
+#	dynamically. 
+# Usage:
+#	get_casename prefix index
+# Return:
+#	The function returns the name of the case.
+#
+function get_casename {
+	FNAME=get_casename
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+                [[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	typeset prefix=$1
+	typeset ind=$2
+	if (( $ind < 10 )); then
+		tname=${prefix}00${ind}
+	elif (( $ind < 100 )); then
+		tname=${prefix}0${ind}
+	else
+		tname=${prefix}${ind}
+	fi
+	echo $tname
+}
+
+# Description:
+#	A function to extract the assertion information from the test source file.
+# Usage:
+#	extract_assertion_info test_src_filename
+# Return:
+#	The function only prints the info, nothing is returned.
+#
+function extract_assertion_info {
+	typeset FNAME=extract_assertion_info
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+                [[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	typeset FILE=$1
+	echo "==================================================================="
+	nawk \
+	    '$2 ~ /__stc_assertion_start/,/__stc_assertion_end/ { print $0}' \
+	    $FILE | sed -e 's/^#//' -e '/__stc_assertion_/d'
+	echo "==================================================================="
+}
+
+#
+# Description
+#	A function used to block the network communication between two machines
+# Usage:
+#	ipf_network
+#		-t timeout         // timeout before restore ipfilter setting
+#		-f blockflagfile   // restore ipfilter setting once the flagfile
+#				      removed 
+#		-k feedbackfile    // remove the feedbackfile once ipfilter was
+#				      applied, used to tell user the network already
+#				      blocked	
+#		-v ip_version      // ipv4 or ipv6.
+#		-r rules	   // ipfilter rules where hostname rather than ip is used.
+#	example: ipf_network -s flowerbud -t 100 -f /tmp/blockflagfile 
+#		-r "block in from flowerpot"
+#		-r "pass in from flowerpot to port != 513
+# Return:
+#	0: success
+#	other: failure
+# Notes: 
+#	The function calls smf_fmri_transition_state() which locates in
+#	usr/src/tools/stf/contrib/smf/include/libsmf.shlib, So the caller
+#	should source the file before using the function.
+#
+function ipf_network
+{
+        FNAME=ipf_network
+        [[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+                [[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	typeset IPF_TIMEOUT=90
+	typeset blockflagfile=""
+	typeset feedbackfile=""
+	typeset enabled=0
+	typeset rulesfile="$STF_TMPDIR/ipf_cmd_file"
+	typeset IPF_FMRI=svc:/network/ipfilter:default
+	
+	rm -f $rulesfile
+	while getopts "t:f:k:v:r:" opt; do
+		case $opt in
+			t) timeout=$OPTARG;;
+			f) blockflagfile=$OPTARG;;
+			k) feedbackfile=$OPTARG;;
+			v) ip_version=$OPTARG;;
+			r) echo $OPTARG >> $rulesfile;;
+			?) echo "undefined argument"; return 1;;
+		esac
+	done
+
+	echo "Start to ipf_network... "
+	typeset -i ret_v4 ret_v6=0
+	[[ `smf_get_state $IPF_FMRI` == online ]] && enabled=1
+	if (( $enabled != 1 )); then
+		echo "ipfilter service is not online"
+		RUN_CHECK smf_fmri_transition_state do \
+			$IPF_FMRI online $IPF_TIMEOUT || return 1
+		sleep 5
+	else
+		# backup original rules
+		ipfstat -i > $STF_TMPDIR/ipfilter_in
+		grep "empty list for ipfilter" $STF_TMPDIR/ipfilter_in \
+			|| mv $STF_TMPDIR/ipfilter_in $STF_TMPDIR/ipfilter_ori
+		ipfstat -o > $STF_TMPDIR/ipfilter_out; ret_v4=$?
+		grep "empty list for ipfilter" $STF_TMPDIR/ipfilter_out \
+			|| cat $STF_TMPDIR/ipfilter_out >> $STF_TMPDIR/ipfilter_ori
+		rm -f $STF_TMPDIR/ipfilter_in $STF_TMPDIR/ipfilter_out
+		if [[ $ip_version == ipv6 ]]; then 
+			ipfstat -6 -i > $STF_TMPDIR/ipfilter_in_v6
+			grep "empty list for ipfilter" $STF_TMPDIR/ipfilter_in_v6 \
+				|| mv $STF_TMPDIR/ipfilter_in_v6 $STF_TMPDIR/ipfilter_ori_v6
+			ipfstat -6 -o > $STF_TMPDIR/ipfilter_out_v6; ret_v6=$?
+			grep "empty list for ipfilter" $STF_TMPDIR/ipfilter_out_v6 \
+				|| cat $STF_TMPDIR/ipfilter_out_v6 >> $STF_TMPDIR/ipfilter_ori_v6
+			rm -f $STF_TMPDIR/ipfilter_in_v6 $STF_TMPDIR/ipfilter_out_v6
+		fi
+		if (( $ret_v4 != 0 )) || (( $ret_v6 != 0 )); then
+			echo "failed to backup original ipfilter rules"
+			cat $STF_TMPDIR/ipfilter_ori $STF_TMPDIR/ipfilter_ori_v6
+			rm -f $STF_TMPDIR/ipfilter_in \
+				$STF_TMPDIR/ipfilter_ori_v6
+				$rulesfile 
+			return 1
+		fi
+	fi
+
+	echo "apply new rules"
+	ipf -Fa -f $rulesfile > $STF_TMPDIR/ipf.out.$$ 2>&1
+	ret_v4=$?
+	if [[ $ip_version == ipv6 ]]; then 
+		ipf -6 -Fa -f $rulesfile >> $STF_TMPDIR/ipf.out.$$ 2>&1
+		ret_v6=$?
+	fi
+	if (( $ret_v4 != 0 )) || (( $ret_v6 != 0 )); then
+		echo "failed to apply new rules"
+		cat $STF_TMPDIR/ipf.out.$$
+		rm -f $STF_TMPDIR/ipf.out.$$ \
+			$STF_TMPDIR/ipfilter_ori \
+			$STF_TMPDIR/ipfilter_ori_v6
+		return 1
+	fi
+
+	RUN_CHECK smf_fmri_transition_state check \
+		$IPF_FMRI online $IPF_TIMEOUT || return 1
+	sleep 5
+
+	# remove the feedbackfile to tell user network already blocked
+	[[ -n $feedbackfile ]] && rm $feedbackfile
+	
+	# wait blockflagfile removed or timeout
+	if [[ -n $blockflagfile ]]; then
+		wait_now $timeout "[[ ! -f $blockflagfile ]]" > /dev/null 2>&1
+	else
+		sleep $timeout
+		rm -f $blockflagfile
+	fi
+
+	# restore ipfilter settings
+	echo "restore ipfilter settings"
+	if (( $enabled != 1 )); then
+		echo "disable ipfilter service on $host"
+		RUN_CHECK smf_fmri_transition_state do \
+			$IPF_FMRI disabled $IPF_TIMEOUT || return 1
+	else
+		echo "apply original rules on $host"
+		RUN_CHECK ipf -Fa -f $STF_TMPDIR/ipfilter_ori || return 1
+		if [[ $ip_version == ipv6 ]]; then 
+			ipf -6 -Fa -f $STF_TMPDIR/ipfilter_ori_v6 || return 1
+		fi
+		RUN_CHECK smf_fmri_transition_state check \
+			$IPF_FMRI online $IPF_TIMEOUT || return 1
+	fi
+	sleep 5
+
+	echo "ipf_network finished"
+	rm -f $STF_TMPDIR/ipf.out.$$ $rulesfile
+	return 0
+}
+
+# 
+# Function: get_zpool_name
+#   get the zpool name of a zfs filesystem and print out
+# Usage:
+#   get_zpool_name <fs name>
+# Return:
+#   always return 0 unless fs name is null string
+# 
+function get_zpool_name {
+	FNAME=get_zpool_name
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+                [[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	typeset fs_name=$1
+	[[ -z $fs_name ]] && return 1
+	typeset zpool_name=$(echo $fs_name | awk -F\/ '{print $1}')
+
+	echo $zpool_name
+	return 0
+}
+
+# 
+# Function: get_zpool_stat
+#   get the status of a zpool and print out
+# Usage:
+#   get_zpool_stat <zpool name>
+# Return:
+#   return 0 if successful
+# 
+function get_zpool_stat {
+	FNAME=get_zpool_stat
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+                [[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	typeset zpool_name=$1
+	[[ -z $zpool_name ]] && return 1
+
+	typeset zpool_stat=""
+	typeset f1=$STF_TMPDIR/get_zpool_stat.out.$$
+	typeset f2=$STF_TMPDIR/get_zpool_stat.err.$$
+
+	/usr/sbin/zpool list -H -o health $zpool_name > $f1 2>$f2
+	typeset -i rc=$?
+	(( rc == 0 )) && zpool_stat=$(cat $f1) || zpool_stat=$(cat $f2)
+	echo $zpool_stat
+	rm -f $f1 $f2
+	return $rc
+}
+
+#
+# ------------------
+# Function: get_fstype
+# ------------------
+# This function is to check what type of filesystem of a directory,
+# then print related information out as such format,"
+# <FAIL|OKAY> <fs type> <fs name | <zpool name> [zpool stat]>"
+# and exit 0 if OKAY or exit 1 if FAIL."
+#
+# Usage: get_fstype <directory name>"
+# e.g.	get_fstype /export/foo   # print OKAY zfs rpool ONLINE"
+# e.g.	get_fstype /ufsdisk/d1   # print OKAY ufs /dev/dsk/c0t1d0s3"
+# e.g.	get_fstype /tmp/dirxxx   # print OKAY tmpfs swap"
+# e.g.	get_fstype /proc/12345   # print OKAY proc proc"
+# e.g.	get_fstype /home         # print OKAY autofs auto.home"
+# e.g.	get_fstype /ws/onnv-gate # print OKAY nfs onnv.sfbay:/export/onnv-gate
+#
+# Return 0 and print related information if successful, otherwise return 1
+#
+function get_fstype {
+	FNAME=get_fstype
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+                [[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	[[ $# != 1 ]] && echo "ERROR: No directory privided" && return 1
+
+	typeset dir=$1
+	[[ -z $dir ]] && return 1
+	typeset basepath=$dir
+	typeset strout=""
+
+	#
+	# get base path of dir which does not exist
+	#
+	if [[ ! -d $dir ]]; then
+		typeset pdir=""              # dir begins with  a relative path
+		[[ $dir == /* ]] && pdir="/" # dir begins with an absolute path
+		typeset d=""
+		for d in $(echo $dir | sed 's%/% %g'); do
+			if [[ -z $pdir ]]; then
+				pdir=$d
+			else
+				[[ $pdir == "/" ]] && pdir=/$d || pdir=$pdir/$d
+			fi
+
+			if [[ ! -d $pdir ]]; then
+				basepath=$(dirname $pdir)
+				break
+			fi
+		done
+	fi
+
+	#
+	# get filesystem type: ufs, zfs, tmpfs, ...
+	#
+	typeset fs_type=$(/usr/bin/stat -f -c "%T" $basepath)
+
+	#
+	# get filesystem name
+	# e.g.
+	# +---------+---------+-------------------+
+	# | dir     | fs_type | fs_name           |
+	# +---------+---------+-------------------+
+	# | /root   | ufs     | /dev/dsk/c0t4d0s0 |
+	# | /tmp    | tmpfs   | swap              |
+	# | /export | zfs     | rpool/export      |
+	# | /proc   | proc    | proc              |
+	# +---------+---------+-------------------+
+	#
+	typeset fs_name=$(/usr/sbin/df $basepath | awk -F\( '{print $2}' \
+				| awk -F\) '{print $1}')
+
+	strout=""
+	if [[ $fs_type == "ufs" ]]; then
+		strout="$fs_type $fs_name"
+	elif [[ $fs_type == "zfs" ]]; then
+		strout=$fs_type
+
+		zpool_name=$(get_zpool_name $fs_name)
+		if (( $? != 0 )); then
+			echo "FAIL $strout \n$zpool_name"
+			return 1 
+		fi
+		strout="$strout $zpool_name"
+
+		zpool_stat=$(get_zpool_stat $zpool_name)
+		if (( $? != 0 )); then
+			echo "FAIL $strout \n$zpool_stat"
+			return 1 
+		fi
+		strout="$strout $zpool_stat"
+	else
+		strout="$fs_type $fs_name"
+	fi
+
+	echo OKAY $strout
+	return 0
+}
+
+# check_knfs - function to check if the client can use kerberos to
+#         access nfs server successfully. If <client> is set to
+#	  "localhost", then we don't need to call rsh for the check.
+#	  <client> can be set to multiple machines 
+# Usage:  check_knfs <server> <client>
+# Return: 0 on success, 1 on error, 2 if not supported
+function check_knfs {
+	FNAME=check_knfs
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+                [[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+        typeset server=$1
+	typeset clients=$2
+	typeset KRB5_SHRDIR=$ZONE_PATH/krb5_shr
+	typeset KRB5_MNTDIR=$ZONE_PATH/krb5_mnt
+        typeset logfile=$STF_TMPDIR/$FNAME.$$
+
+	# the server is always a remote machine
+	SRV_CMD="RSH root $server"
+        # share with krb5 authentication
+        $SRV_CMD "mkdir -p $KRB5_SHRDIR && \
+            share -o sec=krb5 $KRB5_SHRDIR && sleep 2" \
+            > $logfile 2>&1
+        ckresult $? "$FNAME: failed to share $KRB5_SHRDIR on $server" $logfile \
+	    || return 1
+
+	for clt in $clients; do
+		[[ $clt == localhost ]] && \
+			CLT_CMD=RUN_CHECK || CLT_CMD="RSH root $clt"
+
+		# mount it and check mount options
+		$CLT_CMD "mkdir -p $KRB5_MNTDIR" || return 1
+		$CLT_CMD "mount -o sec=krb5 $server:$KRB5_SHRDIR $KRB5_MNTDIR" \
+			> $logfile 2>&1
+		# verify if mount succeeded
+		$CLT_CMD "mount -p | grep $server:$KRB5_SHRDIR | grep sec=krb5" \
+		    >> $logfile 2>&1 
+		ckresult $? "$FNAME: failed to mount $server:$KRB5_SHRDIR on $clt" \
+			$logfile || return 1
+
+		# clean up
+		$CLT_CMD "umount -f $KRB5_MNTDIR && rm -rf $KRB5_MNTDIR" 
+	done
+
+        $SRV_CMD "unshare $KRB5_SHRDIR && rm -rf $KRB5_SHRDIR" \
+            2>$logfile
+        ckresult $? "$FNAME: failed to unshare $server:$KRB5_SHRDIR" $logfile
+
+        return 0
+}
+
+#
+# Function get_DNS_INFO
+#
+#   get dns domain or nameserver from /etc/resolv.conf,
+#   if fails, then set it to default value which is specified
+#   as the third parameter.
+# Usage:
+#   get_DNS_INFO <key> <host> <default>
+#   key  - key should be "domain" or "nameserver", 
+#          if key is "domain", we get dns domain;
+#          if key is "nameserver", we get dns nameserver.
+#   host - hostname, if it's local host, just set to "localhost".
+#   default - default value for domain or nameserver.
+# Return:
+#   if key is valid, return 0 and print domain or nameserver.
+# 
+function get_DNS_INFO {
+	FNAME=get_DNS_INFO
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	typeset -l key=$1
+	typeset -l host=$2
+	typeset default=$3
+	typeset CMD=""
+	[[ $host != localhost ]] && CMD="RSH root $host "
+
+	case $key in
+	domain)
+		typeset domain=$(${CMD}egrep "^$key" /etc/resolv.conf 2>/dev/null \
+			| awk '{print $2}')
+		[[ -z $domain ]] && domain=$default
+		typeset -l str=$domain
+	;;
+
+	nameserver)
+		typeset nameserver=$(${CMD}nslookup www.sun.com 2>/dev/null \
+			| egrep "^Server:" | awk '{print $2}')
+		[[ -z $nameserver ]] && nameserver=$default
+		typeset -l str=$nameserver
+	;;
+
+	*)
+		print -u2 "$FNAME: invalid key, must be domain or nameserver"
+		return 1
+	;;
+	esac
+
+	echo $str
+	return 0
+}
+
+#
+# Function: is_IPv6
+#   Check if current system communicate with remote system via IPv6
+# Usage:
+#   is_IPv6 <remote_host>
+# Return:
+#   0 and print IPv4 address
+#   1 and print IPv6 address
+#   2 and print error message
+#
+function is_IPv6 {
+	FNAME=is_IPv6
+	[[ :$_NFS_STF_DEBUG: == *:all:* ]] || \
+		[[ :$_NFS_STF_DEBUG: == *:$FNAME:* ]] && set -x
+
+	typeset rhost=$1
+	typeset rhost_ip=""
+	typeset -i ret=0
+
+	getent ipnodes $rhost | grep -i $rhost > $STF_TMPDIR/getent.$$ 2>&1
+	if (( $? != 0 )); then
+		echo "failed to get <$rshost>'s IP:"
+		cat $STF_TMPDIR/getent.$$
+		rm -f $STF_TMPDIR/getent.$$
+		return 2
+	fi
+
+	rhost_ip=$(head -1 $STF_TMPDIR/getent.$$ | awk '{print $1}')
+	[[ $rhost_ip == *":"* ]] && ret=1
+	echo "$rhost_ip"
+	rm -f $STF_TMPDIR/getent.$$
+	return $ret
+}
+

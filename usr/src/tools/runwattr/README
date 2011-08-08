@@ -1,0 +1,423 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)README	1.4	08/11/21 SMI"
+#
+
+runwattr - Run With Attributes
+
+	This tool provides a simple interface so that test cases can
+	execute programs with any desired credential level.  This
+	currently includes manipulation of the real/effective uid/gid,
+	privileges, and zone.  In addition, environment variables can
+	be changed or added.
+
+	runwattr can be thought of as a "filter" on the credentials of
+	the programs run under it.  In other words, invoking "runwattr
+	someutility" would have the same effect as invoking
+	"someutility" directly.  However, invoking "runwattr -z
+	somezone someutility" would switch to the alternate zone while
+	preserving as much as possible of the current context.  There
+	are additional options described below to alter other aspects
+	of the credential context; these can be used together in any
+	desired combination.
+
+Usage:
+
+	runwattr [-u uid] [-U uid] [-g gid] [-G gid]
+	         [-p priv_mod ...]
+	         [-z zonename]
+	         [-i] [-e name=value ...]
+	         [-D]
+	         [--] command [args ...]
+
+	The uid/gid options manipulate user and group ids:
+	-u and -g will set both the real and effective uid or gid.
+	-U and -G will set the real uid or gid only, and can also be
+	used together with -u and -g to set a real uid or gid that is
+	different from the effective uid or gid set by -u or -g.
+
+	The priv_mod syntax is: [=+-]priv_name[,priv_name]*
+	= will explicitly set the listed priv_name(s)
+	+ and - will add or remove the listed priv_name(s) to
+	the current privileges.
+
+	The -z option specifies the desired zone in which to execute
+	the command.  If the specified zone matches the current zone,
+	the option is ignored and no special action is taken.  When
+	runwattr is invoked in the global zone, this option can be
+	used to change to a non-global zone.  When runwattr is
+	invoked in a non-global zone, the only valid value for this
+	option is to specify the current zone, which would be ignored
+	as described above.
+
+	The -i and -e options manipulate environment variables.
+	By default, the current environment variables will be
+	propagated into the environment of the child process.
+	-i will clear all variables from the current environment.
+	-e can be used to add or change additional variables.
+
+	The -D option enables extra debugging information.
+
+Installation:
+
+	Several installation alternatives are available:
+
+	1) Package Installation:
+
+	   This method uses the standard STF techniques to create a
+	   Solaris package, which will be installed under the base
+	   directory "/opt/SUNWstc-runwattr".
+
+	   Briefly, this installation is performed as follows:
+
+                # set path to STF bin directory
+                PATH=<path-to-STF>/bin/`uname -p`:$PATH
+                export PATH
+
+		# WS_ROOT represents the root of the STC workspace
+                cd <WS_ROOT>/usr/src/tools/runwattr
+                stf_build package
+                cd <WS_ROOT>/packages/`uname -p`
+                pkgadd -d `pwd` SUNWstc-runwattr
+
+	   (NOTE: stf_build is part of the SUNWstc-stf package)
+
+	   To uninstall:
+
+		pkgrm SUNWstc-runwattr
+
+	2) Manual Installation:
+
+	   These steps can be used if STF or a SUNWstc-runwattr
+	   package are unavailable.  In addition, this method
+	   allows the flexibility to install runwattr in any
+	   location.
+
+	   The following steps will use the variable ${BASEDIR}
+	   to identify the root of the installation; this can
+	   be changed to any desired location.
+
+		# define location for installation
+		BASEDIR=/usr/local
+
+		# install runwattr script
+		mkdir -p ${BASEDIR}/bin
+		cp -p bin/runwattr.pl ${BASEDIR}/bin/runwattr
+		chmod +x ${BASEDIR}/bin/runwattr
+
+		# install "forcepriv" helper binaries
+		/usr/bin/ksh -p bin/runwattr_admin.ksh \
+		    install -s ${BASEDIR}/lib/forcepriv
+
+	   To uninstall:
+
+		# remove runwattr script
+		rm -f ${BASEDIR}/bin/runwattr
+
+		# remove "forcepriv" helper binaries
+		/usr/bin/ksh -p bin/runwattr_admin.ksh \
+		    uninstall ${BASEDIR}/lib/forcepriv
+
+	3) Network installation:
+
+	   This is simply a variation on the "manual" installation
+	   steps described above that can be used when the main
+	   runwattr script is already installed in a shared network
+	   location.  On the local system, only the "runwattr_admin"
+	   steps from the "manual" installation method need to be
+	   performed.
+
+	   Because the "forcepriv" scripts are not installed in a fixed
+	   location relative to the runwattr script, the environment
+	   variable RUNWATTR_FORCEPRIV may be used to tell the runwattr
+	   script where to find the "forcepriv" binaries.
+
+		RUNWATTR_FORCEPRIV=/usr/local/lib/forcepriv
+		export RUNWATTR_FORCEPRIV
+		runwattr_admin install -s ${RUNWATTR_FORCEPRIV}
+		# test execution steps using runwattr go here
+		runwattr_admin uninstall ${RUNWATTR_FORCEPRIV}
+
+	   The runwattr and runwattr_admin scripts both acknowledge
+	   the path "/var/tmp/SUNWstc-runwattr/forcepriv" as a
+	   default location for the "forcepriv" binaries.  If this
+	   location is used, no environment variable is required
+	   and the steps are simply as follows:
+
+		runwattr_admin install -s
+		# test execution steps using runwattr go here
+		runwattr_admin uninstall
+
+RBAC alternative for forcepriv:
+
+	All of the above procedures will create a setuid/setgid
+	root binary on the system.  This can then be used by any
+	system user to gain all privileges.  If this is not desired,
+	RBAC can be used to restrict the utility to designated users.
+
+	1) Remove the setuid bit from the forcepriv helper binary.
+
+	   If runwattr is installed via a package, this must be done
+	   with a command such as the following.  Be sure to replace
+	   the "/opt/SUNWstc-runwattr" portion of the pathname if
+	   another installation location was chosen.
+
+		chmod -s /opt/SUNWstc-runwattr/lib/forcepriv
+
+	   If runwattr is installed using the "manual" or "network"
+	   methods described above, simply omit the "-s" option
+	   from the "runwattr_admin install" command.
+
+	2) Add entries for the runwattr tools to the system's
+	   prof_attr(4) and exec_attr(4) databases.
+
+	   Sample entries are provided in the "etc/security"
+	   directory of this distribution.  Be sure to replace
+	   the "/opt/SUNWstc-runwattr" portion of the pathnames
+	   in exec_attr(4) if another installation location was
+	   chosen.
+
+	3) Add the "Solaris Test Collection runwattr" profile to
+	   the user_attr(4) database for user accounts that are
+	   authorized to use the tool.
+
+	For further details on RBAC, see the "Roles, Rights Profiles,
+	and Privileges" section of the __Solaris System Administration
+	Guide: Security Services__ and the prof_attr(4), exec_attr(4)
+	and user_attr(4) man pages.
+
+Further details on the location of "forcepriv" helper binaries:
+
+	The "forcepriv" helper binaries are located at runwattr
+	execution time by searching for the first match against
+	the following list of locations:
+
+	1) The full path specified by the RUNWATTR_FORCEPRIV
+	   environment variable, if it is set.
+
+	2) The standard path "/var/tmp/SUNWstc-runwattr/forcepriv",
+	   which is the default location for "network" installations.
+
+	3) The standard path "/opt/SUNWstc-runwattr/lib/forcepriv",
+	   which is the default location for "package" installations.
+
+	4) A path derived from the location of the runwattr script
+	   itself.  This algoritm assumes that if the runwattr script
+	   is installed as /some_path_name/bin/runwattr then the
+	   forcepriv binary would be /some_path_name/lib/forcepriv.
+
+	Like the runwattr script itself, copies of these binaries
+	must be created at the same location in each system zone.
+	The following commands are used to maintain these copies:
+
+	runwattr_admin install   [ -z <zonename> ] [ -s ] [ <forcepriv_path> ]
+	runwattr_admin uninstall [ -z <zonename> ] [ <forcepriv_path> ]
+
+	The "install" and "uninstall" subcommands indicate whether
+	the forcepriv binaries should be created or removed.
+
+	The "-z <zonename>" option (which may be repeated) indicates
+	which system zones are manipulated during each invocation of
+	runwattr_admin.  By default, when this command is used in the
+	global zone, ALL system zones are included; when used in a
+	non-global zone, only that zone is included.
+
+	The "-s" option indicates that the runwattr_admin script
+	should apply "setuid/setgid root" permissions to the forcepriv
+	binaries that are created.  The invoking prcess must already
+	have super-user credentials to use this option.
+
+	The optional "<forcepriv_path>" argument may be used to
+	explicitly state the location where the forcepriv binaries
+	should be created:
+
+	1) The path given in the "<forcepriv_path>" argument is
+	   always used when it is provided.
+
+	2) Otherwise, the path given in the RUNWATTR_FORCEPRIV
+	   environment variable is used if it is defined.
+
+	3) Otherwise, "/var/tmp/SUNWstc-runwattr/forcepriv" is
+	   used by default.
+
+	When "runwattr_admin install" is executed, a single final
+	subdirectory component of the "<forcepriv_path>" argument
+	(for example, the "SUNWstc-runwattr" directory from the
+	full path "/var/tmp/SUNWstc-runwattr/forcepriv") will be
+	created if needed.  Similarly, when "runwattr_admin uninstall"
+	is executed, the final subdirectory will be removed if it
+	would otherwise be empty.
+
+Limitations:
+
+	The restriction on movement between zones (with the -z
+	option) is imposed by the zones(5) model and applies in
+	all cases.
+
+	Modification of any attribute of a credential context which
+	has a security impact (with the -uUgGpz options) is subject
+	to the limitations described in ppriv(1) and privileges(5).
+
+	Typically, this requires that user invoking runwattr be able
+	to run the associated "forcepriv" utility with all privileges.
+	This can be achieved by the following methods:
+
+		- Installing forcepriv as a setuid/setgid 0 binary.
+		- Using RBAC profiles to asign this right to users.
+		- Invoking the runwattr utility as the super-user.
+
+	In other cases, modification of the credential context is
+	restricted to those changes that the invoking user would
+	have been able to achieve through their preexisting privilege
+	level:
+
+		- Switching zones may not be possible.
+		- Changes to uid/gid may not be possible.
+		- Privileges may only be reduced.
+
+	The -e and -i options may be used freely without limitation.
+
+Examples:
+
+	In the following two examples, the command "zonename ; id ;
+	ppriv -S $$" is executed twice.  The first invocation
+	displays the existing credential context, the second
+	shows how it is modified with runwattr:
+
+	1) From within the public zone, operating as a normal user,
+	   invoke a command as a different user with additional
+	   privileges:
+
+		% zonename ; id ; ppriv -S $$
+		public
+		uid=1001(tester) gid=10(staff)
+		143968: ksh
+		flags = <none>
+		        E: basic
+		        I: basic
+		        P: basic
+		        L: zone
+		% runwattr \
+			-u nobody -g nobody \
+			-p +file_dac_read \
+			'zonename ; id ; ppriv -S $$'
+		public
+		uid=60001(nobody) gid=60001(nobody)
+		144046: sh -c zonename ; id ; ppriv -S $$
+		flags = <none>
+		        E: basic,file_dac_read
+		        I: basic,file_dac_read
+		        P: basic,file_dac_read
+		        L: zone
+
+	2) From within the global zone, operating as the super user,
+	   enter the public zone and execute a command with altered
+	   uid, gid, and privilege:
+
+		# zonename ; id ; ppriv -S $$
+		global
+		uid=0(root) gid=0(root)
+		128876: ksh
+		flags = <none>
+		        E: all
+		        I: basic
+		        P: all
+		        L: all
+		# runwattr \
+			-z public \
+			-U tester -G staff \
+			-u nobody -g nobody \
+			-p -proc_info \
+			'zonename ; id ; ppriv -S $$'
+		public
+		uid=1001(tester) gid=10(staff) euid=60001(nobody) egid=60001(nobody)
+		144109: sh -c zonename ; id ; ppriv -S $$
+		flags = <none>
+		        E: basic,!proc_info
+		        I: basic,!proc_info
+		        P: basic,!proc_info
+		        L: zone
+
+	The following three examples show how environment variables
+	can be propagated between zones and manipulated with the
+	-e and -i options:
+
+	1) Propagating environment variables between zones
+	   automatically:
+
+		# zonename
+		global
+		# MY_SPECIAL_VARIABLE=foo
+		# export MY_SPECIAL_VARIABLE
+		# zlogin public 'env | grep MY_SPECIAL_VARIABLE'
+		# runwattr -z public 'env | grep MY_SPECIAL_VARIABLE'
+		MY_SPECIAL_VARIABLE=foo
+
+	2) Using -e to set extra environment variables:
+
+		# zonename
+		global
+		# unset MY_SPECIAL_VARIABLE
+		# env | grep MY_SPECIAL_VARIABLE
+		# runwattr \
+			-z public \
+			-e MY_SPECIAL_VARIABLE=foo \
+			'env | grep MY_SPECIAL_VARIABLE'
+		MY_SPECIAL_VARIABLE=foo
+
+	3) Using -i to severely limit the environment, removing
+	   even those variables set automatically with zlogin(1).
+	   "wc -l" is used to count the number of variables defined
+	   in the global zone, set by zlogin, and left after using
+	   "runwattr -i":
+
+		# zonename ; env | wc -l
+		global
+		      45
+		# zlogin public 'zonename ; env | wc -l'
+		public
+		       7
+		# runwattr -z public -i 'zonename ; env | wc -l'
+		public
+		       0
+
+Warnings:
+
+	This tool should only be installed on systems used for test
+	purposes, and never on a production or other sensitive system.
+
+	This tool will pass special shell environment variables
+	(such as PATH or IFS) along to the environment for the child
+	process.  Make certain that this does not have unintended
+	consequences.  In particular, make certain that the correct
+	child process commands are executed.
+
+Notes:
+
+	This tool is implemented as a Perl script, with a helper binary
+	to force privileges.  The helper is simply a copy of the normal
+	ppriv(1) program included in the OS.
+

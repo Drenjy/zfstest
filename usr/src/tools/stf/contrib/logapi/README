@@ -1,0 +1,91 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)README	1.2	07/03/14 SMI"
+#
+
+The logapi is a lightweight journaling API designed for use within the Solaris
+Test Framework (STF). This interface provides the following:
+
+1. Common human and machine readable output format.
+2. Combined evaluation and output functions to reduce test case line count. 
+3. Common exit handling and test case centric cleanup mechanism.
+4. Automatic severe error checking.
+
+#
+# Main Functions
+#
+
+log_assert	- Print an assertion message.
+
+log_note	- Print a comment line.
+
+log_pos		- (ksh) Execute and print command with label, where label
+		  equals SUCCESS when result is zero, and ERROR when result
+		  is non-zero.
+		  (c) Evaluate status and print message with label, where
+		  label equals SUCCESS when result is zero, and ERROR when
+		  result is non-zero.
+
+log_neg		- (ksh) Execute and print command with label, where label
+		  equals SUCCESS when result is non-zero, and ERROR when
+		  result is zero.
+		  (c) Evaluate status and print message with label, where
+		  label equals SUCCESS when result is non-zero, and ERROR
+		  when result is zero.
+
+log_neg_expect 	- (ksh only) Execute and print command with label, where label
+		  equals SUCCESS when result is non-zero or expected keyword
+		  is found in command output, and ERROR when result is zero or
+		  expected keyword is not found.
+
+log_must	- Perform log_pos and exit with FAIL when non-zero status.
+
+log_mustnot	- Perform log_neg and exit with FAIL when zero status.
+
+log_mustnot_expect - Perform log_neg_expect and exit with FAIL when zero status.
+
+log_onexit	- Set cleanup routine.
+
+(ksh only) Debug output is included automatically when unexpected command
+failures occur. In addition, The LOGAPI_DEBUG environment variable can be
+set to display command output when commands are successful.
+
+#
+# Exit Functions 
+#
+
+log_pass	- Perform cleanup, print message and exit STF_PASS.
+log_fail	- Perform cleanup, print message and exit STF_FAIL.
+log_unresolved	- Perform cleanup, print message and exit STF_UNRESOLVED.
+log_notinuse	- Perform cleanup, print message and exit STF_NOTINUSE.
+log_unsupported	- Perform cleanup, print message and exit STF_UNSUPPORTED.
+log_untested	- Perform cleanup, print message and exit STF_UNTESTED.
+log_uninitiated	- Perform cleanup, print message and exit STF_UNINITIATED.
+log_noresult	- Perform cleanup, print message and exit STF_NORESULT.
+log_warning	- Perform cleanup, print message and exit STF_WARNING.
+log_timed_out	- Perform cleanup, print message and exit STF_TIMED_OUT.
+log_other	- Perform cleanup, print message and exit STF_OTHER.
+

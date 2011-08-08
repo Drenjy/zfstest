@@ -1,0 +1,80 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)README.backup_files	1.2	07/04/12 SMI"
+#
+
+The backup_files.kshlib library provides an interface for STF test suites
+to easily back up existing system files, edit them as they wish, then
+restore after the test is finished.  The interfaces provided by
+backup_files.kshlib are very picky.  When given unexpected input, they will
+exit $STF_UNRESOLVED, which should help diagnose test script problems quickly.
+
+What might not be completely obvious:
+
+	- backup_files cannot be called recursively.  Second attempts to back up
+	  the same file will fail
+	
+	- backing up a symbolic link will backup _both_ the link and the data
+	  in it.  A restore regenerates the link, and cats it's original
+	  contents back into it.
+
+	- backing up a file that does not exist is supported.  On restore,
+	  the file will be deleted if it exists.  This could be used simply
+	  for files like /etc/defaultrouter
+
+
+backup_files file [ file ] ...
+
+Return codes:
+  0 =			Successfully backed up file
+
+Exit Codes:
+STF_UNRESOLVED =	Function called incorrectly
+
+restore_all_files [ -s ]
+restores all backed up files
+
+-s Restore the file, but leave it backed up
+
+Return codes:
+  0 =			Successfully restored all files
+
+Exit Codes:
+STF_UNRESOLVED =	Function could not complete
+
+restore_files [ -n ] [ -s ] file [ file ... ]
+
+restore the list of files
+
+-n Don't actually restore the file.  Return 0 if restore would succeed,
+   1 otherwise
+-s Restore the file, but leave it backed up
+
+Return codes:
+  0 =			Successfully backed up file
+
+Exit Codes:
+STF_UNRESOLVED =	Function called incorrectly

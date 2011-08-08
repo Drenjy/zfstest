@@ -1,0 +1,134 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)exists.kshlib	1.2	07/04/12 SMI"
+#
+
+#
+# Function: exists() - Simple function for checking an output file.
+# 
+# Usage:  exists <file> "<pattern>" [ "<pattern>" ] ... 
+#
+#       Each pattern can have one of the following control characters:
+#
+#       ?    means case insensitive argument should be in file.
+#	+    (default) means that the argument should be found in the file.
+#	-    means that the argument should not be found in the file.
+#	#(n) means that exactly (n) matching lines should be found in the file.
+#	     If (n) is not specified or incomplete, it will matched as a normal
+#	     string including the "#".
+#	|(n) same as #(n) except it is case insensitive.
+#
+# To escape +/-, just add the prefix +/-.  For example, "+-sample".
+# This is to check that "-sample" is not in the file.
+#
+# Return codes:
+#   0 = File meets the criteria of the search pattern.
+#   1 = Search pattern FAILed.
+#
+# NOTE: This shell file is intended to be sourced, and NOT executed directly!
+
+exists() {
+    FILE=$1
+    shift
+    
+    while [ $# -gt 0 ]
+    do
+	echo "exists() checking <$1>"
+	MATCH=`echo "$1" | sed "s/^\(.\).*/\1/"`
+
+	# Case InSeNsItIvE check - 9/20/99
+	if [ $MATCH = "?" ]
+	then
+		MATCH_STR=`echo "$1" | sed "s/^.\(.*\)$/\1/"`
+        	grep -i -- "$MATCH_STR" $FILE > /dev/null 2>&1
+		if [ $? -ne 0 ]
+		then
+		    echo "exists() ERROR: <$1> not present in $FILE"
+		    return 1
+		fi
+	elif [ $MATCH = "-" ]
+	then
+		MATCH_STR=`echo "$1" | sed "s/^.\(.*\)$/\1/"`
+        	grep -- "$MATCH_STR" $FILE > /dev/null 2>&1
+		if [ $? -eq 0 ]
+		then
+		    echo "exists() ERROR: <$1> is present in $FILE"
+		    return 1
+		fi
+	else
+		if [ $MATCH = "#" ]
+		then
+			MATCH_STR=`echo "$1" | sed "s/^.\(.*\)$/\1/"`
+			MATCH_NO=`echo $MATCH_STR | sed -n "s/^(\([0-9][0-9]*\)).*$/\1/p"`
+			if [ x"$MATCH_NO" != x"" ]
+			then
+				MATCH_STR=`echo "$MATCH_STR" | \
+					sed "s/^(${MATCH_NO})\(.*\)$/\1/"`
+				GREP_NO=`grep -c -- "$MATCH_STR" $FILE`
+				if [ $? -ne 0 -o $GREP_NO != $MATCH_NO ]
+				then
+					echo "exists() ERROR: <$1> looking for $MATCH_NO, found $GREP_NO"
+					return 1
+				fi
+				shift
+				continue
+			fi
+		fi
+		if [ $MATCH = "|" ]
+		then
+			MATCH_STR=`echo "$1" | sed "s/^.\(.*\)$/\1/"`
+			MATCH_NO=`echo $MATCH_STR | sed -n "s/^(\([0-9][0-9]*\)).*$/\1/p"`
+			if [ x"$MATCH_NO" != x"" ]
+			then
+				MATCH_STR=`echo "$MATCH_STR" | \
+					sed "s/^(${MATCH_NO})\(.*\)$/\1/"`
+				GREP_NO=`grep -ic -- "$MATCH_STR" $FILE`
+				if [ $? -ne 0 -o $GREP_NO != $MATCH_NO ]
+				then
+					echo "exists() ERROR: <$1> looking for $MATCH_NO, found $GREP_NO"
+					return 1
+				fi
+				shift
+				continue
+			fi
+		fi
+		if [ $MATCH = "+" ]
+		then
+			MATCH_STR=`echo "$1" | sed "s/^.\(.*\)$/\1/"`
+		else
+			MATCH_STR=$1
+		fi
+        	grep -- "$MATCH_STR" $FILE > /dev/null 2>&1
+		if [ $? -ne 0 ]
+		then
+		    echo "exists() ERROR: <$1> not present in $FILE"
+		    return 1
+		fi
+	fi
+	shift
+    done
+    return 0
+}

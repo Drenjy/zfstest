@@ -1,0 +1,673 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)testgen.kshlib	1.4	08/06/26 SMI"
+#
+
+###############################################################################
+#
+#	***************************README*****************************
+#
+#      This ksh library defines a general dynamic test case generator 
+#	conforming to the STF using stf_addassert. 
+#
+#	The dynamic test case feature offered by STF is very powerful, allowing
+#  developers to write a large number of testcases using a small number of 
+#  programs.  In order to use dynamic test cases in STF, one needs to write a 
+#  generator that gets various combinations of arguments and their values from 
+#  a so-called test matrix file.  Experience indicates that most programmers' 
+#  dynamic test cases are similar in construction and content: several big 
+#  loops depending on the number of arguments being parsed.  It is worthwhile 
+#  to separate out the common functionality into a generic dynamic test case 
+#  generator; it is expected that this will ease the development of dynamic 
+#  test cases in STF.
+#  
+#      The function gen_generator() is designed to compose arbitrary lines 
+#  from a configuration file (so called a test matrix). Currently, two kind of 
+#  test matrix file formats are supported: caseline and caseblock.
+#
+#  1.1 Usage
+#
+#      gen_generator [-m mode] [-t type] [-u root] <testmatrixfile>
+#
+#      		-m: true -- Create test cases, and put the composed lines to 
+#			the stdout.
+#		    false -- Put the composed line to the stdout only, no cases
+#			created.
+#
+#      		-u: root -- Create root test cases, 
+#		    otherwise create user test cases.
+#
+#       	-t: The format of the test matrix file. If not specified, the 
+#		    suffix of the test matrix file will be used as the type of
+#		    the file. See more details in 1.2 and 1.3.
+#
+#    		    caseline -- A set of test cases were defined in one line.
+#			Each line defines all the components of the target case
+#			line and contains a test name and many value lists.  
+#			It's a simplified version of the caseblock file.
+#    		    caseblock -- A set of test cases were defined in one block.
+#			Each block begins with a line of <testcases>, ends by a
+#			line of </testcases>, each other line within the block 
+#			defines a key-value pair to present in the target case 
+#			line and contains a type, a name list and a value list.
+#
+#	Output: 
+#		When 'mode' was set to true, the dynamic case line would have 
+#  		this like:
+#
+#		<test name>-<case number> <composed case line>
+#
+#		And the stdout of this function	would always be this like:
+#
+#		#<test name>-<case number>
+#		<composed case line> 
+#
+#	<composed case line>: 
+#		For caseline files, it is a combined value list, each one comes
+#		from a different value list in the caseline. 
+#		For caseblock files, it is a list of '<name> <value>', each 
+#		pair comes from a different line in the case-definition block.
+#
+#	<test name> ($TEST_NAME): See 1.4, built-in variables
+#
+#	<case number> ($casenumber): See 1.4, built-in variables
+#
+#	The test matrix file is a sort of ksh style, all case definition lines 
+#	have pre-defined number components identified by default ksh command 
+#	line seperators. Any line in the matrix file beginning with <DEFINE> 
+#	will be eval'ed before the target cases generated from the 
+#	corresponding case line/case block. This enables the user to define 
+#	environment variables and/or functions to be used in the case defintion
+#	line and/or case checker.
+#		
+#  	Only the last definition before the end of a case line file will be 
+#	effective; and the latest definition before the end of a case block 
+#	will take effect on that set of cases.
+#
+#	The $TEST_NAME will eventually be set till the case being valid, then 
+#	if there's a case checker ($CASE_CHECK), the checker can change 
+#	$TEST_NAME as wants.
+#
+#  1.2 caseline file format
+#
+#	Supposed to compose lines as:
+#	[<value>] ...
+#
+#	Every line defines a set of test cases. It's a simplified version of 
+#	the caseblock file format.
+#	Each line should contain an <name> (used as $TEST_NAME), many 
+#	<value list>.
+#
+#  <name>: 
+#	A name to be used as $TEST_NAME, the first component of the line when 
+#	read. 
+#
+#  <value list>: 
+#	When the case line is evaluated, each component other then the first 
+#	one ( $TEST_NAME ) will be identified as a value list and the members 
+#	of the list will present in the target case lines.
+#	Their members are recognized when the <value list> is evaluated, so 
+#	they can be environment variables or command line which could provide a 
+#	value/list. A value of "can_be_null" results into some target line(s) 
+#	without the corresponding component, i.e, they will have less 
+#	componemnts than other case lines. Value list will be eval'ed twice in 
+#	all to get different value for each target line, one on the time the 
+#	list is identified and the other on the time their memvers are 
+#	recognizedso there are some.
+#
+#  <DEFINE>:
+#	Lines beginning with this tag will be parsed specially: eval'ed 
+#	immediately after the generator sees it, it's supposed to define some 
+#	variables/routines in time to be used in the case definition lines or
+#	the case checker. TEST_NAME, and CASE_CHECK are built-in variables 
+#	and will be used by the generator itself. 
+#	See built-in variables in 1.4.
+#
+#	If we want to create lines like "part1 part2 part3 .....partn", then 
+#	using "caseline" file format is straight forward.
+#
+#	A case definition line will be of a format like:
+#
+#	<testname> 'p1value1 p1value2 ...' 'p2value1 p2value2...' ...
+#
+#	A value of "can_be_null" results into target case lines without it. 
+#
+#	With caseline files, the stdout of the generator will be:
+#
+#  	"#$TEST_NAME-$casenumber\npart1 part2 .....", 
+#
+#	and the test case added will be:
+#
+#	"part1 part2 ....."
+#  
+#
+#  1.3 caseblock file format
+#
+#	Supposed to compose lines as:
+#	[<name> <value>]..., here <name> and <value> are absent or present in 
+#	pairs.
+#
+#	Every block defines a set of test cases.
+#	Each block begins with a line of <testcases>, ends by the line of 
+#	</testcases>, if you want comment out one block temporarily, commenting
+#	out these two guys should work. And each other line between these two 
+#	tag lines defines a component of the target line and should contain a 
+#	<type>, two <value list> ( name list and values list ). These three guy
+#	 cannot be null, so another way to skip one case block is to let one or
+#	 both of the later two guys to be null.
+#
+#  <type>: 
+#	The type of the name/value list, it's the first component of the line  
+#	when read.
+#	string:
+#		The result case line will have double quote signs 
+#		surrounding the value from the value list ( not the name )
+#               with this type.
+#	escape:
+#		The target case line will has a back slash before the value 
+#		from the name list ( not the value ) with this type. This is
+#		convenient for composing multi-lined case "line".
+#	others:
+#		no special parse is deployed to the value/name, everything 
+#		presents as it is.
+#
+#  <name list> and <value list>: 
+#	<name list> is the second compnent of the line when evaluted.
+#	<value list> is the third compnent of the line when evaluted.
+#	Their members are recognized when the <list> is evaluated, so they can
+#	be environment variables or command lines which could provide a 
+#	value/list. A value ( not name ) of "can_be_null" results into some 
+#	target line(s) with the corresponding name but without a value, a value
+#	of "can_be_absent" results into some target line(s) without the 
+#	corresponding name-value pair. Value list will be eval'ed twice in all 
+#	to get different value for each target line, , one on the time the
+#	list is identified and the other on the time their memvers are 
+#	recognized.
+#
+#  <DEFINE>: See 1.2
+#
+#	When we want to create lines like "arg1 value arg2 value ....."
+#  ( argn is unnecessarily to be a real argument ), then using "caseblock"  
+#  file format is recommended. And when we need our configure file formats 
+#  tested. This could be a good way to generate such files.
+
+#      Every valid component definition line of the case block must be of the 
+#  format as:
+#
+#	<type> 'name1 name2 ...' 'value1 value2 ...'
+#
+#      (The name list is originally intended to test synonyms of the argument)
+#	
+#	With caseblock files, the stdout of the generator will be:
+#
+#  	"#$TEST_NAME-$casenumber\narg1 valuem arg2 valuen .....", 
+#
+#	and the test case added will be:
+#
+#	$TEST_NAME-$casenumber "arg1 valuem arg2 valuen ...."
+#
+#
+#  1.4 built-in variables
+#
+#	TEST_NAME: 
+#		A name used to differentiate one set of cases from others as 
+#		required by STF.
+#		It's required as the first part of the active line in a 
+#		caseline file to simplify the file format.
+#		In caseblock file, we should provide it using a line of 
+#		'<DEFINE> TEST_NAME=<value>', default to be 'testcase'.
+#		And the actual test name generated will be 
+#		${TEST_NAME}-$casenumber, to get unique names for each case.
+#
+#	casenumber:
+#		The sequence number of the case, it starts with 1 and increases
+#		by 1 as more case lines generated.
+#		
+#	CASE_CHECK:
+#		A routine to check the target case line, default to be null,
+#		the argument will be passed in is the target case line, and a 
+#		non-zero exit status would lead the generator to skip the 
+#		current case line.
+#
+#	GEN_ORDER:
+#		Used to define where to start the generation, beginning from 
+#		the  first component of a target line or from the last 
+#		component of a target line. Default to start from the end of 
+#		the target line, i.e, the last component of the target line 
+#		will be evaluated first. Set it to "ascend" will make the 
+#		generation start from the first component of the target line. 
+#		In other words, as we see the parsing routines are recursive 
+#		loops, then the GEN_ORDER of "ascend" places value list defined
+#		earlier in an outer loop.
+#
+#	_GEN_DEBUG_:
+#		To turn on the ksh xtrace option (for debugging).  This can
+#		help users find matrix files having invalid formats.
+#
+#  1.5 How to use
+#
+#	To use this generator through STF, one needs only to specify the 
+#	STF_ROOT_CASEFILES and/or STF_USER_CASEFILES in the Makefile and name 
+#	the test matrix files with a suffix of ".caseline" or ".caseblock".
+#	To call this generator directly, please source 
+#	$STF_TOOLS/include/testgen.kshlib first.
+#
+#	See example usage in the small-suite.  
+#  
+###############################################################################
+
+#
+# the first arg is an error code, 
+# the rest of args are the messages to be printed out.
+#
+function gen_fail
+{
+	if [[ $# -lt 1 ]]; then
+		echo "Usage: gen_fail <error_code> [description]" 1>&2
+		exit 1
+	fi
+	typeset -i ret=$1
+	shift 1
+        echo "$@" 1>&2
+        exit $ret
+}
+
+#
+# get a number to process, provide a way to switch the generation order:
+#  compose the target line starting from the first part or from the last part
+# default to start from the last one.
+# 
+function get_processnumber
+{
+	[[ -n "$_GEN_DEBUG_" ]] && set -o xtrace
+	typeset -i tmpnum=$(($gen_component_number - 1))
+	typeset order="-1";
+	if [[ "$GEN_ORDER" = "ascend" ]]; then
+		tmpnum=0;
+		order=1;
+	fi
+	[[ -n "$1" ]] && tmpnum=$(($1 + $order))
+	echo $tmpnum
+}
+
+#
+# Check the case line, if valid then
+# echo the case line and call $TEST_ADDER to add a test case
+#
+function add_case
+{
+	[[ -n "$_GEN_DEBUG_" ]] && set -o xtrace
+
+	casenumber=${builtins[0]}
+	TEST_NAME=${builtins[1]}
+	case_check=${builtins[2]}
+
+	if [[ -n $case_check ]]; then
+		$case_check $test_case || return 0
+	fi
+
+	testname=${TEST_NAME:-"testcase"}
+
+	casenumber=$((casenumber+1))
+	typeset casename="$testname-$casenumber"
+	echo "#$casename"
+	echo "$test_case"
+	[[ $gen_mode == "true" ]] && $TEST_ADDER -t "$casename" -c "$test_case"
+}
+
+#
+#  Case block parser
+#
+function processargs
+{
+	[[ -n "$_GEN_DEBUG_" ]] && set -o xtrace
+	[[ $# -ne 1 ]] && gen_fail 1 \
+	    "Usage: processargs <argument-number>"
+
+	[[ $1 -lt 0 ]] && return 0
+
+	typeset k=$1
+	typeset next=`get_processnumber $k`
+
+	eval set -A args -- ${argnames[k]}
+	typeset argname=""
+	typeset value=""
+	
+	for argname in "${args[@]}"
+	do
+	    eval set -A values -- ${argvalues[k]}
+	    for value in "${values[@]}"
+	    do
+		typeset origcase="$test_case"
+		typeset part="$argname"
+		case "$value" in
+			can_be_absent )
+				part=""
+				value="";;
+			can_be_null )
+				value="";;
+			* )
+				;;
+		esac
+
+		if [[ -n "$part" ]]; then
+			case ${argtypes[k]} in
+				string )
+					part="$part \"$value\"";;
+				escape )
+					part="\\$part";;
+				* )
+					part="$part $value";;
+			esac
+		fi
+
+		if [[ "$next" -lt "$k" ]]; then
+			test_case="$part $test_case"
+		else
+			test_case="$test_case $part"
+		fi
+		if (( next == -1 )) || (( next == gen_component_number )); then
+			eval set -A builtins -- \
+				"$casenumber" "$test_name" "$case_check"
+			add_case
+			test_case="$origcase"
+			continue
+		fi
+		processargs $next
+		test_case="$origcase"
+	    done
+	done
+}
+
+#
+#  Case line parser
+#
+function processparts
+{
+	[[ -n "$_GEN_DEBUG_" ]] && set -o xtrace
+	[[ $# -ne 1 ]] && gen_fail 1 \
+	    "Usage: processparts <component-number>"
+
+	[[ $1 -lt 0 ]] && return 0
+
+	typeset k=$1
+	typeset next=`get_processnumber $k`
+
+	eval set -A cmdpart -- ${caseline[k]}
+
+	for part in "${cmdpart[@]}"
+	do
+		typeset oldcase="$test_case"
+		[[ "$part" == "can_be_null" ]] && part=""
+		[[ "$part" == "can_be_absent" ]] && part=""
+		if [[ "$next" -lt "$k" ]]; then
+			test_case="$part $test_case"
+		else
+			test_case="$test_case $part"
+		fi
+		if (( next == -1 )) || (( next == gen_component_number )); then
+			eval set -A builtins -- \
+				"$casenumber" "$test_name" "$case_check"
+			add_case
+			test_case="$oldcase"
+			continue
+		fi
+		processparts $next
+		test_case="$oldcase"
+	done
+}
+
+#
+#  Read the "caseline" into a caseline array,
+#  then call the case line parser
+#
+function process_caseline
+{	
+	[[ -n "$_GEN_DEBUG_" ]] && set -o xtrace
+	[[ $# -ne 1 ]] && gen_fail 1 \
+		"Usage: process_caseline <gen_configure_file>"
+
+	typeset gen_configure_file=$1
+
+	#
+	# Remove comment-only lines and empty lines from gen_configure_file
+	# Note: comment-only lines match ^#, ^[blank|tab]*#
+	#
+	typeset tmpcfg=$STF_CONFIG/${gen_configure_file##*/}.$$
+	cp -f /dev/null $tmpcfg
+	egrep -v "^[ 	]*#|^[ 	]*$" $gen_configure_file >$tmpcfg
+
+	while read name cases
+	do
+		if [[ $name == "<DEFINE>" ]]; then
+			eval $cases
+			export case_check=$CASE_CHECK
+			continue
+		fi
+
+		[[ -z $cases ]] && gen_fail 1 \
+			"after $name:wrong line format, lack of <args>"
+		test_case=""
+		test_name=$name
+		eval set -A caseline -- $cases
+		export gen_component_number=${#caseline[*]}
+		(( gen_component_number < 1 )) && return 0
+
+		processparts `get_processnumber`
+	done < $tmpcfg
+
+	typeset -i rc=$?
+	/bin/rm -f ${tmpcfg}
+	return $rc
+}
+
+#
+#  Read the "caseblock" into tree argument arrays (name[], type[], value[]),
+#  then call the case block parser
+#
+function process_caseblock
+{
+
+	[[ -n "$_GEN_DEBUG_" ]] && set -o xtrace
+	[[ $# -ne 1 ]] && gen_fail 1 \
+		"Usage: process_caseblock <gen_configure_file>"
+
+	typeset gen_configure_file=$1
+
+	typeset -i line_num=0
+	typeset -i ind=1
+	typeset -i case_begin=0
+	set -A argtypes
+	set -A argnames
+	set -A argvalues
+	typeset skip=""
+
+	#
+	# Remove comment-only lines and empty lines from gen_configure_file
+	# Note: comment-only lines match ^#, ^[blank|tab]*#
+	#
+	typeset tmpcfg=$STF_CONFIG/${gen_configure_file##*/}.$$
+	cp -f /dev/null $tmpcfg
+	egrep -v "^[ 	]*#|^[ 	]*$" $gen_configure_file >$tmpcfg
+
+	test_case=""
+
+	while read this_argtype argspecific 
+	do
+		ind=$((ind + 1))
+
+		if [[ "$this_argtype" == "<DEFINE>" ]]; then
+			eval $argspecific
+			export test_name=$TEST_NAME
+			export case_check=$CASE_CHECK
+			continue
+		fi
+
+		#
+		# one set of cases begin
+		#
+		if [[ "$this_argtype" == "<testcases>" ]]; then
+			[[ $case_begin -eq 1 ]] && gen_fail 1 \
+				    "invalid file format:lack of </testcases>"
+			case_begin=1
+			line_num=0
+			set -A argtypes
+			set -A argnames
+			set -A argvalues
+			skip=""
+			continue
+		fi
+
+		if [[ "$this_argtype" == "</testcases>" ]]; then
+			[[ $case_begin -eq 0 ]] && gen_fail 1 \
+				    "invalid file format:lack of <testcases>"
+			(( line_num < 1 )) && continue
+
+			if [[ -z "$skip" ]]; then
+				export gen_component_number=$line_num
+				processargs `get_processnumber`|| 
+					gen_fail 1 "processargs failed"
+			fi
+
+			case_begin=0
+			line_num=0
+			set -A argtypes
+			set -A argnames
+			set -A argvalues
+			continue
+		fi		
+
+		if [[ $case_begin -eq 1 ]]; then
+			eval set -A argvars -- $argspecific
+			if [[ -z ${argvars[1]} ]]; then
+				echo "null list:"
+				echo "name list:${argvars[0]}"
+				echo "value list:${argvars[1]}"
+				echo "case generation skipped for this block"
+				skip=1
+			fi
+			argtypes[$line_num]=$this_argtype
+			argnames[$line_num]=${argvars[0]}
+			argvalues[$line_num]=${argvars[1]}
+			line_num=$((line_num+1))
+		fi
+	done < $tmpcfg
+
+	typeset -i rc=$?
+	/bin/rm -f ${tmpcfg}
+	return $rc
+}
+
+#
+# gen_generator [-m mode] [-t type] [-u root] <testmatrixfile>
+#
+#      		-m: true -- Generate test cases, and put the composed line to 
+#			the stdout.
+#		    false -- Put the composed line to the stdout only, no cases
+#			generated. ( for non-STF usage )
+#
+#      		-u: root -- Generate root test cases, 
+#		    otherwise generate user test cases.
+#
+#       	-t: The format of the testmatrix file. If not specified, the 
+#		    suffix of the test matrix file will be used as the type of
+#		    the file.
+#    		    caseline -- Every line defined a set of test cases.
+#			Each line contains a test name, and several value 
+#			lists. It's a simplified version of the caseblock file.
+#    		    caseblock -- Every block defines a set of test cases.
+#			Each block begins with a line of <testcases>, ends by 
+#			the line of </testcases>, each other line contains a 
+#			type, a name list and a value list.
+#	    
+function gen_generator
+{
+	[[ -n "$_GEN_DEBUG_" ]] &&  set -o xtrace
+	[[ $# -lt 3 ]] && gen_fail 1 "$USAGE" || typeset -i narg=$#
+
+	USAGE="Usage: gen_generator [-m mode] [-t type] [-u root] <testmatrix>"
+
+	# declare all built-in variables so all functions can see them
+	export TEST_NAME GEN_ORDER CASE_CHECK
+	export casenumber
+
+	# "global" variables
+	export test_case caseline
+	export test_name case_check
+
+	#
+	FILETYPES="caseline caseblock"
+
+	export gen_mode=true
+	typeset filetype=""
+
+	export TEST_ADDER=${TESTCASE_ADDER:-stf_addassert}
+
+	[[ -n "$_GEN_DEBUG_" ]] && echo	"args: ${@}"
+
+	typeset -i spaces=0
+	while getopts "t:m:u:" arg
+	do
+		case $arg in
+                u)
+                        [[ "$OPTARG" != "root" ]] && \
+                        	gen_fail 1 "warning:The only alternate user " \
+				    "currently supported is root."
+			
+			TEST_ADDER="$TEST_ADDER -u root"
+			((spaces = spaces + 2))
+			;;
+
+		m)	
+			gen_mode=$OPTARG
+			((spaces = spaces + 2))
+			;;
+		t)
+			filetype=$OPTARG
+			((spaces = spaces + 2))
+			;;
+
+		*)	;;
+		esac
+	done
+	
+	shift $spaces
+
+	casenumber=${casenumber:-0}
+
+	[[ $# -lt 1 ]] && gen_fail 1 "matrix file not set\n$USAGE"
+
+	[[ -r $1 ]] || gen_fail 1 "matrix file not readable:$1\n"
+	    
+	typeset gen_configure_file=$1
+
+	[[ -z "$filetype" ]] && filetype=${gen_configure_file##*.}
+	echo $FILETYPES | grep $filetype >/dev/null || gen_fail 1 \
+	    "Unknown file type: $filetype"
+
+	process_$filetype $gen_configure_file
+	return $?
+}

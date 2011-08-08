@@ -1,0 +1,68 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)stf.tcllib	1.2	07/04/12 SMI"
+#
+
+#
+# This file may be used in tclsh, wish, expect, psh, and xpsh.
+# Use the "source" command to include it.
+#
+
+set STF_PASS 0
+set STF_FAIL 1
+set STF_UNRESOLVED 2
+set STF_NOTINUSE 3
+set STF_UNSUPPORTED 4
+set STF_UNTESTED 5
+set STF_UNINITIATED 6
+set STF_NORESULT 7
+set STF_WARNING 8
+set STF_TIMED_OUT 9
+set STF_OTHER 10
+
+set stf_result_codes(STF_PASS) $STF_PASS
+set stf_result_codes(STF_FAIL) $STF_FAIL
+set stf_result_codes(STF_UNRESOLVED) $STF_UNRESOLVED
+set stf_result_codes(STF_NOTINUSE) $STF_NOTINUSE
+set stf_result_codes(STF_UNSUPPORTED) $STF_UNSUPPORTED
+set stf_result_codes(STF_UNTESTED) $STF_UNTESTED
+set stf_result_codes(STF_UNINITIATED) $STF_UNINITIATED
+set stf_result_codes(STF_NORESULT) $STF_NORESULT
+set stf_result_codes(STF_WARNING) $STF_WARNING
+set stf_result_codes(STF_TIMED_OUT) $STF_TIMED_OUT
+set stf_result_codes(STF_OTHER) $STF_OTHER
+
+set stf_result_names($STF_PASS) "STF_PASS"
+set stf_result_names($STF_FAIL) "STF_FAIL"
+set stf_result_names($STF_UNRESOLVED) "STF_UNRESOLVED"
+set stf_result_names($STF_NOTINUSE) "STF_NOTINUSE"
+set stf_result_names($STF_UNSUPPORTED) "STF_UNSUPPORTED"
+set stf_result_names($STF_UNTESTED) "STF_UNTESTED"
+set stf_result_names($STF_UNINITIATED) "STF_UNINITIATED"
+set stf_result_names($STF_NORESULT) "STF_NORESULT"
+set stf_result_names($STF_WARNING) "STF_WARNING"
+set stf_result_names($STF_TIMED_OUT) "STF_TIMED_OUT"
+set stf_result_names($STF_OTHER) "STF_OTHER"

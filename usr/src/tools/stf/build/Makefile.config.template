@@ -1,0 +1,174 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)Makefile.config.template	1.6	08/11/21 SMI"
+#
+
+#
+# Makefile.config[.template]
+#
+# Description:
+#	This file has two forms.  The first is the 'template' form,
+#	in which the file contents look like a Korn shell file defining
+#	environment variables and their	assigned values.  The template
+#	form is, however, specifically designed (with spaces padded 
+#	around the '=' sign, so as not to be directly sourced by a shell.
+#
+#	The second form is etc/Makefile.config, which is a Makefile 
+#	segment to be included by STF makefiles during build.
+#
+#	How this file is used can be rather confusing.  It's basically 
+#	the contrapositive of a Makefile -- a file in shell-like syntax
+#	which is used to create Makefile source.  In its template form,
+#	this file provides ksh-like commands, which are parsed by STF 
+#	and result in lines of makefile-syntax text.  These lines are
+#	written into a Makefile segment, which is included by STF's 
+#	Makefile.master during build.
+#
+#	STF provides some help for looking up certain information for
+#	use within the template:
+#
+#	    configlookup Binary
+#		Lookup the path for test suite binaries relative to
+#		the workspace root.
+#
+#	    configlookup Tool <name>
+#		Lookup the path of the specified tool.
+#
+#	    configlookup Flags <name>
+#		Lookup appropriate flags to the named tool.
+#
+#	configlookup is a parsing function implemented by the script 
+#	that parses Makefile.config.template.  configlookup merely 
+#	invokes the relevant lookup tool to retrieve the information
+#	pertinent to the processor architecture, MEMORY_MODEL and 
+#	FILE_OFFSET_MODEL.
+#
+#	For those modifying this file, one thing is important to 
+#	bear in mind: the result of "eval" for every line herein 
+#	must be a make-compatible variable assignment.  Additionally,
+#	all assignments in this file must follow the STF convention of
+#	allowing the environment to override anything that would be 
+#	computed.
+#
+
+#
+# STF-specific variables to be computed.
+#
+
+#
+# Compilation tool paths to be computed.
+#
+AR = ${AR:-$(configlookup Tool ar)}			# Library archiver
+
+AS = ${AS:-$(configlookup Tool as)}			# Assembler
+
+BUILD = ${BUILD:-$(configlookup Tool build)}		# ?? (SVR4)
+
+C++C = ${C++C:-$(configlookup Tool CC)}			# C++ Compiler (SVR4)
+CCC = ${CCC:-$(configlookup Tool CC)}			# C++ Compiler
+
+CC = ${CC:-$(configlookup Tool cc)}			# C Compiler
+
+CPS = ${CPS:-$(configlookup Tool cps)}			# NeWS?
+
+F77 = ${F77:-$(configlookup Tool f77)}			# Fortran 77 Compiler
+FC = ${FC:-$(configlookup Tool f77)}			# Fortran 77 Compiler
+
+F90C = ${F90C:-$(configlookup Tool f90)}		# Fortran 90 Compiler
+
+GET = ${GET:-$(configlookup Tool get)}			# SCCS Get
+
+JAVAC = ${JAVAC:-$(configlookup Tool javac)}		# JAVA Compiler
+
+LD = ${LD:-$(configlookup Tool ld)}			# Linker
+
+LEX = ${LEX:-$(configlookup Tool lex)}			# lex
+
+LINT = ${LINT:-$(configlookup Tool lint)}		# lint
+
+M2C = ${M2C:-$(configlookup Tool m2c)}			# Modula-2 Compiler
+
+MAKE = ${MAKE:-$(configlookup Tool make)}		# Make program
+
+PC = ${PC:-$(configlookup Tool pc)}			# Pascal Compiler
+
+PERL = ${PERL:-$(configlookup Tool perl)}		# PERL interpreter
+
+PKGMK = ${PKGMK:-$(configlookup Tool pkgmk)}		# pkgmk(1M) command
+
+RM = ${RM:-$(configlookup Tool rm) -f}			# Remove command
+
+YACC = ${YACC:-$(configlookup Tool yacc)}		# yacc
+
+#
+# Compiler flags to be augmented.
+#
+ARFLAGS += ${ARFLAGS:-$(configlookup Flags ar)}		# Archiver flags.
+
+ASFLAGS += ${ASFLAGS:-$(configlookup Flags as)}		# Assembler
+
+C++FLAGS += ${C++FLAGS:-$(configlookup Flags CC)}	# C++ Compiler (SVR4)
+CCFLAGS += ${CCFLAGS:-$(configlookup Flags CC)}		# C++ Compiler
+
+CFLAGS += ${CFLAGS:-$(configlookup Flags cc)}		# C Compiler
+
+CPPFLAGS += ${CPPFLAGS:-$(configlookup Flags cpp)}	# CC pre-processor
+
+CPSFLAGS += ${CPSFLAGS:-$(configlookup Flags cps)}	# NeWS?
+
+DEFFLAGS += ${DEFFLAGS:-$(configlookup Flags m2cDEF)}	# Modula-2 Compiler
+
+F90FLAGS += ${F90FLAGS:-$(configlookup Flags f90)}	# Fortran 90 Compiler
+
+FFLAGS += ${FFLAGS:-$(configlookup Flags f77)}		# Fortran 77 Compiler
+
+GFLAGS += ${GFLAGS:-$(configlookup Flags get)}		# SCCS Get
+
+JAVACFLAGS += ${JAVACFLAGS:-$(configlookup Flags javac)}	# JAVA Compiler
+
+LDFLAGS += ${LDFLAGS:-$(configlookup Flags ld)}		# Linker
+LDLIBS += ${LDLIBS:-$(configlookup Flags ldlibs)}	# Linker (libraries)??
+
+LFLAGS += ${LFLAGS:-$(configlookup Flags lex)}		# lex
+
+LINTFLAGS += ${LINTFLAGS:-$(configlookup Flags lint)}	# lint
+
+M2FLAGS += ${M2FLAGS:-$(configlookup Flags m2c)}	# Modula-2 Compiler
+
+MAKEFLAGS += ${MAKEFLAGS:-$(configlookup FLAGS make)}	# Make
+
+MODFLAGS += ${MODFLAGS:-$(configlookup Flags mod)}	# Modula-2 Compiler
+
+PFLAGS += ${PFLAGS:-$(configlookup Flags pc)}		# Pascal Compiler
+
+PLFLAGS += ${PLFLAGS:-$(configlookup Flags perl)}	# PERL interpreter
+
+RFLAGS += ${RFLAGS:-$(configlookup Flags RFLAGS)}	# ratfor Compiler
+
+SCCSFLAGS += ${SCCSFLAGS:-$(configlookup Flags get)}	# SCCS Get
+SCCSGETFLAGS += ${SCCSGETFLAGS:-$(configlookup Flags get)} # SCCS Get
+
+YFLAGS += ${YFLAGS:-$(configlookup Flags yacc)}		# yacc

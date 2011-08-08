@@ -1,0 +1,44 @@
+#
+# Create and destroy an empty table.
+#
+-create 1 4 0
+-destroy
+
+#
+# Create a table to pound on...
+#
+-create 16 4 0
+
+#
+# Insert a BUNCH of entries (10000).
+#
+-file insert.commands
+-file locate.commands
+
+#
+# Resize the loaded table a few times.
+#
+-file resize.commands
+
+#
+# Delete all the entries.
+#
+-file delete.commands
+
+#
+# Resize the table with a few special cases.
+#
+-resize 65536
+-file insert.commands
+-file locate.commands
+-resize 1
+-file locate.commands
+-resize 2
+-file locate.commands
+-resize 1000000
+-file locate.commands
+
+#
+# Finally, destroy the table.
+#
+-destroy

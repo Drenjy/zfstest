@@ -1,0 +1,355 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)mstf_launch.exp	1.3	07/04/12 SMI"
+#
+
+source $env(STF_TOOLS)/include/stf.tcllib
+source $env(STF_TOOLS)/include/mstf.tcllib
+
+if {$argc < 2} {
+	puts "Usage: mstf_launch <testname> \"<role> <prog> ?args?\" ..."
+	exit 1
+}
+
+set testname [lindex $argv 0]
+set prog_descs [lrange $argv 1 end]
+set rsh_cmd "/usr/bin/rsh"
+set bash_cmd "/usr/bin/bash"
+set env_base "/tmp/mstf_envfile"
+set prompt "(%|#|\\\$) "
+set jnl_chan stdout
+set syncserv_running 0
+
+if [info exists env(MSTF_RSH_CMD)] {
+	set rsh_cmd $env(MSTF_RSH_CMD)
+}
+
+if {![info exists env(STF_CONFIG_INPUTS)]} {
+	puts stderr "mstf_launch: STF_CONFIG_INPUTS is not set"
+	exit $STF_UNINITIATED
+}
+
+#
+# This table defines the precedence of STF result codes.  When the return
+# values from the launched scripts vary, the result with the highest precedence
+# is returned by mstf_launch.
+#
+set result_prec($STF_PASS) 1
+set result_prec($STF_WARNING) 2
+set result_prec($STF_FAIL) 3
+set result_prec($STF_TIMED_OUT) 4
+set result_prec($STF_NORESULT) 5
+set result_prec($STF_UNRESOLVED) 6
+set result_prec($STF_UNTESTED) 7
+set result_prec($STF_UNINITIATED) 8
+set result_prec($STF_UNSUPPORTED) 9
+set result_prec($STF_NOTINUSE) 10
+set result_prec($STF_OTHER) 11
+
+proc write_jnl {prog output} {
+	global prog_roles jnl_chan start_time
+
+	set output [string trimright $output "\n\r"]
+	set time [expr ([clock clicks] - $start_time) \
+	    / 1000000.0]
+	set time_str [format "%.2d:%.2d.%.3d" \
+	    [expr [lindex [split $time .] 0] / 60] \
+	    [expr [lindex [split $time .] 0] % 60] \
+	    [expr [string trimleft [lindex [split $time .] 1] 0] / 1000]]
+	puts $jnl_chan "$prog_roles($prog).$prog ${time_str}: $output"
+}
+
+#
+# Calculate the overall result of a test given a list of results from each
+# test part.
+#
+proc final_result {result_list} {
+
+	global result_prec STF_PASS STF_OTHER
+
+	set final_result $STF_PASS
+
+	foreach result $result_list {
+		if {[lsearch [array names result_prec] $result] == -1} {
+			set result $STF_OTHER
+		}
+		if {$result_prec($result) > $result_prec($final_result)} {
+			set final_result $result
+		}
+	}
+	return $final_result
+}
+
+#
+# Fix a path that has architecture dependant portions (i386, sparcv9, etc)
+# to be valid on the remote machine.
+#
+proc mode_replace {path old_mode new_mode} {
+
+	set new_path ""
+
+	foreach comp [split $path ":"] {
+
+		set split_comp [split $comp "/"]
+		if {[lindex $split_comp end] == $old_mode} {
+			set split_comp [lreplace $split_comp end end $new_mode]
+		}
+		set new_path [join "$new_path [join $split_comp /]" ":"]
+	}
+	return $new_path
+}
+
+proc stop_syncserv {} {
+	global STF_UNRESOLVED syncserv_running
+
+	if {!$syncserv_running} {
+		return
+	}
+	set chan [mstf_connect_syncserv]
+
+	if {[catch {puts $chan "stop"}] || [catch {flush $chan}]} {
+		puts "Error: mstf_launcher: failed to write to sync server"
+		exit $STF_UNRESOLVED
+	}
+	close $chan
+	set syncserv_running 0
+}
+
+
+proc remove_script_from_syncserv {} {
+	global STF_UNRESOLVED syncserv_running
+
+	if {!$syncserv_running} {
+		return
+	}
+	set chan [mstf_connect_syncserv]
+
+	if {[catch {puts $chan "sfin"}] || [catch {flush $chan}]} {
+		puts "Error: mstf_launcher: failed to write to sync server"
+		exit $STF_UNRESOLVED
+	}
+	close $chan
+}
+
+
+set i 1
+foreach prog_desc $prog_descs {
+	global env
+
+	set role [lindex $prog_desc 0]
+
+	if {![info exists env(${role}_NAME)]} {
+		puts stderr "mstf_launch: ${role}_NAME not defined"
+		exit $STF_UNINITIATED
+	}
+	set prog_systems($i) $env(${role}_NAME)
+	set prog_arch($i) $env(${role}_ARCH)
+	set prog_roles($i) $role
+	set prog_cmds($i) [lrange $prog_desc 1 end]
+	incr i
+}
+set prog_cnt $i
+
+if {$prog_cnt == "0"} {
+	puts stderr "mstf_launch: No test programs defined!"
+	exit $STF_UNINITIATED
+}
+
+if {![info exists env(STF_JNL_NAME)]} {
+	puts stderr "mstf_launch: STF_JNL_NAME is not set!"
+	exit $STF_UNINITIATED
+}
+
+set spawn_list ""
+log_user 0
+
+#
+# if MSTF_SYNC_SERV is set, launch the synchronization server
+#
+if {[info exists env(MSTF_SYNC_SERV)]} {
+	# The path to mstf_syncserv will change if it becomes a tool
+	spawn $rsh_cmd $env(MSTF_SYNC_SERV)
+	expect -re $prompt
+	send "uname -p\r"
+	expect {
+		"i386\r" {
+			set syncserv_arch i386
+		}
+		"sparc\r" {
+			set syncserv_arch sparc
+		}
+		timeout {
+			puts stderr "mstf_launch: syncsever timeout!"
+			exit $STF_UNINITIATED
+		}
+	}
+	expect -re $prompt
+	send "STF_TOOLS=$env(STF_TOOLS) export STF_TOOLS\r"
+	expect -re $prompt
+	send "$env(EXPECT) $env(STF_TOOLS)/bin/${syncserv_arch}/mstf_syncserv \
+	    $env(MSTF_SYNC_PORT) [expr $prog_cnt - 1]\r"
+	set spawn_to_prog($spawn_id) 0
+	set prog_systems(0) $env(MSTF_SYNC_SERV)
+	set prog_roles(0) SYNC
+	lappend spawn_list $spawn_id
+	expect "READY\r\n"
+	set syncserv_running 1
+	puts $jnl_chan "Synchronization server started on $env(MSTF_SYNC_SERV)"
+}
+
+set start_time [clock clicks]
+
+#
+# Launch all test parts.
+#
+for {set i 1} {$i < $prog_cnt} {incr i} {
+
+	#
+	# We will need to mangle PATH and LD_LIBRARY path if the system this
+	# program is running on is a different arch from the system launching
+	# the script
+	#
+	set new_path $env(PATH)
+	set new_ld_path $env(LD_LIBRARY_PATH)
+	set env_file "$env_base.$prog_roles($i)"
+	if [catch {eval exec $env(STF_TOOLS)/build/stf_configlookupmodes \
+	    ExecuteModes $env(STF_EXECUTE_MODE) \"\" $env(STF_CONFIG_INPUTS)} \
+	    build_mode] {
+		puts stderr "mstf_launch: failed to map execute to build mode"
+		puts stderr "mstf_launch: exec mode is $env(STF_EXECUTE_MODE)"
+		exit $STF_UNINITIATED
+	}
+	#
+	# stf_configlookupmodes gives us some tailing whitespace that can cause
+	# a problem with stf_checkmode.
+	#
+	set build_mode [string trim $build_mode]
+
+	if [catch {exec stf_checkmode $build_mode $prog_arch($i)}] {
+		#
+		# The current arch doesn't apply - fix the paths
+		# The switch below is a somewhat hackish attempt to find
+		# a build mode that will work.  The i386 and sparc build
+		# are assumed to be available.
+		#
+		switch -regexp $prog_arch($i) {
+			i386|amd64 {
+				set new_arch "i386"
+			}
+			sparc|sparcv9 {
+				set new_arch "sparc"
+			}
+			default {
+				puts stderr "mstf_launch: unknown remote\
+				    isainfo: $prog_arch($i)"
+				exit $STF_UNINITIATED
+			}
+		}
+		set new_path [mode_replace $env(PATH) \
+		    $build_mode $new_arch]
+		set new_ld_path [mode_replace $env(LD_LIBRARY_PATH) \
+		    $build_mode $new_arch]
+		puts $jnl_chan "Using $new_arch binaries on $prog_systems($i)"
+	}
+
+	puts $jnl_chan "Launching\
+	    \[$prog_cmds($i)\] as $prog_roles($i).$i \($prog_systems($i)\)"
+
+	#
+	# Prepend setting TESTNAME and sourcing the test config file to
+	# the command.
+	#
+	set prog_cmds($i) "TESTNAME=$testname; . $env_file; $prog_cmds($i)"
+
+	eval spawn $rsh_cmd $prog_systems($i)
+	lappend spawn_list $spawn_id
+	set prog_spawns($i) $spawn_id
+	set spawn_to_prog($spawn_id) $i
+	expect -re $prompt
+	send "exec $bash_cmd\r"
+	expect -re $prompt
+	send "export PATH=$new_path; export LD_LIBRARY_PATH=$new_ld_path\r"
+	expect -re $prompt
+	send "stty -echo\r"
+	expect -re $prompt
+	send "$prog_cmds($i) ; echo _MSTF-RETURN: \$? ; exit\r"
+}
+
+#
+# Initialize return_cnt to 1 because we aren't expecting the sync server
+# to return in this case.
+#
+set return_cnt 1
+set result_list ""
+
+while {$return_cnt < $prog_cnt} {
+	expect {
+		-i $spawn_list -re "^_MSTF-RETURN: (\[0-9\]+)(.*)\r" {
+			#
+			# This RE matches the special string printed by each
+			# remote process once the main test script finishes.
+			#
+			set id $expect_out(spawn_id)
+			set prog $spawn_to_prog($id)
+			set rval $expect_out(1,string)
+			wait -i $id
+
+			lappend result_list $rval
+			#
+			# Track the number of script returns so we know when to
+			# quit, and remove the spawn id from the spawn_list
+			# since we've already waited for it.
+			#
+			incr return_cnt
+			set where [lsearch -exact $spawn_list $id]
+			set spawn_list [lreplace $spawn_list $where $where]
+			write_jnl $prog "\[RETURNED $rval\]"
+
+			if {$rval == $STF_PASS} {
+				remove_script_from_syncserv
+			} else {
+				stop_syncserv
+			}
+		}
+		-i $spawn_list -re "\[^\r]*\r\n" {
+			#
+			# This RE is a bit touchy - we must match each line
+			# individually or risk having a remote process' special
+			# return value message matched and treated as ordinary
+			# output.
+			#
+			set prog $spawn_to_prog($expect_out(spawn_id))
+			write_jnl $prog $expect_out(0,string)
+		}
+		-i $spawn_list eof {
+			puts stderr "mstf_launch: test ended unexpectedly"
+			exit $STF_UNRESOLVED
+		}
+	}
+}
+
+stop_syncserv
+exit [final_result $result_list]

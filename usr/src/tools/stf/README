@@ -1,0 +1,101 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)README	1.2	08/11/21 SMI"
+#
+
+===============================================================================
+
+Overview
+
+The Solaris Test Framework (STF) is a test harness - a collection of software
+that builds, configures, executes, unconfigures, cleans and packages tests in
+a standard way. STF provides the framework needed to develop and execute test
+suites for Solaris technology in a consistent manner. 
+
+STF contains the following features:
+
+* Commands for building (stf_build), configuring (stf_configure), executing 
+(stf_execute) and unconfiguring (stf_unconfigure) test suites and tools
+* Makefile support that defines macros and targets helpful for test development
+* Support for assertion-based testing and standard result codes
+* Standard build environment that can be customized if needed
+* Support for building and running on all Solaris-supported platforms
+* Configurable timeout values for test case execution
+* Journaling interfaces for complete, parsable test suite logging
+* Support for running tests as regular user and super user
+* Support for test-case specific setup and cleanup
+* Seamless integration with STC 2.0 packaging and checkenv features
+* Journal parsing tool (stf_filter)
+* Extensible user-defined execution modes
+* Support for table-driven testing and automated test case generation
+* Support for synchronized execution of multi-system tests (mstf)
+
+===============================================================================
+
+Installing the Package
+
+To install the STF package, use the following command as super user:
+
+	% pkgadd -d <package location>  SUNWstc-stf
+
+Where <package location> refers to the path containing the SUNWstc-stf
+package directory. This will install STF into the /opt/SUNWstc-stf
+directory.
+
+===============================================================================
+
+Removing the Package
+
+It is recommended that you install the package from scratch, rather than on
+top of an existing installation.  Thus, if an old version of the package is
+present use the following command as super user to remove the package:
+
+        % pkgrm SUNWstc-stf
+
+===============================================================================
+
+Building the Package (Optional)
+
+If you need to create the STF package from the source code use the following
+steps:
+
+	# build STF proto area (See Note 1 below)
+	% cd <workspace_path>/usr/src/tools/stf
+	% make
+
+	# set path to STF bin directory
+	% PATH=<workspace_path>/proto/tools/stf/bin/`uname -p`:$PATH
+	% export PATH
+
+	# build STF package
+	% stf_build package
+
+The binaries will be located in the proto area at:
+<workspace_path>/proto/tools/stf
+
+The SUNWstc-stf package will be located at:
+<workspace_path>/packages/`uname -p`
+

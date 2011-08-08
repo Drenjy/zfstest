@@ -1,0 +1,344 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)BuildConfig.master	1.21	08/11/21 SMI"
+#
+
+#
+# File: BuildConfig.master
+#
+# Description:
+#	Master build configuration file for STC. This file contains tables of
+#	information used to configure compilation tools used in STC Makefiles.
+#
+#	Tables are denoted in this file by %Table: followed by the name of the 
+#	table. Any given table continues until the next %Table: directive or
+#	the end of the file.
+#
+#	Each table name also contains the names of the keys required for
+#	searching/and computing default values, and the names of the fields
+#	returned from the search.
+#
+# Conventions:
+#	Preceding and trailing white space are deemed irrelavent. All fields
+#	are presumed to be a single string seperated from other fields by some
+#	amount of white space. Consequently repeated mixtures of white space
+#	characters (spaces and tabs) behave as a single separator.
+#
+#	*  
+#		Denotes a default or wild card key value that matches any/all
+#		keys.
+#
+#	{na}
+#		Denotes a non-applicable field to be returned as a null
+#		string.
+#
+#	These tables have a first match binding precedence.
+#
+#
+#
+%Table: BuildModes:	Arch		Mode Name
+#
+#	Arch.		Mode Name
+#	=====		=========
+	sparc		sparc
+	sparc		sparc-f64
+	sparc		sparcv9
+	i386		i386
+	i386		i386-f64
+	i386		amd64
+	i386		amd64-gcc
+
+%Table: ExecuteModes:
+#
+#	Mode		Build Mode	Configure Check
+	sparc		sparc		stf_checkmode $mode
+	sparc-f64	sparc-f64	stf_checkmode $mode
+	sparcv9		sparcv9		stf_checkmode $mode
+	i386		i386		stf_checkmode $mode
+	i386-f64	i386-f64	stf_checkmode $mode
+	amd64		amd64		stf_checkmode $mode
+	amd64-gcc	amd64-gcc	stf_checkmode $mode
+
+%Table: ExecuteToBuildModes:
+#
+#       Execute Mode    Build Mode	
+	sparc		sparc
+        sparcv9         sparcv9		
+        sparcv9         sparc-f64	
+        sparcv9         sparc		
+	sparc-f64	sparc-f64	
+	sparc-f64	sparc		
+        i386            i386 		
+	i386-f64	i386-f64 	
+	i386-f64	i386		
+	amd64		amd64
+	amd64		i386-f64
+	amd64		i386
+	amd64-gcc	amd64-gcc
+
+#	Table Name:	Search Keys:	Returned Field(s)
+%Table: BinaryLocation: Mode		Location
+#
+# Description:
+#	This table contains the suffix to be appended to WS_ROOT/proto to
+#	derive the name of the directory for installed binaries, aka the
+#	proto area for a given build.  WS_ROOT is the workspace root.
+#	
+#	Mode.		Location
+#	======		=========
+	sparc		sparc
+	sparc-f64	sparc-f64
+	sparcv9		sparcv9
+	i386		i386
+	i386-f64	i386-f64
+	amd64		amd64
+	amd64-gcc	amd64-gcc
+
+#
+#	Table Name:	Search Keys:	Returned Field(s)
+%Table: BuildTools: 	Mode		Alias Path Directives
+#
+# Description:
+#	 This table contains paths to tools and tool directives. Not all tools
+#	 need to be listed, but there should be a good general default value
+#	 for any tools that require no special directives based on machine
+#	 architecture, memory, or file offset model.
+#
+#	*
+#		Denotes a default key value that matches any/all keys. The
+#		fewer of these used as keys in the table, the tighter they
+#		bind. So, a line with only one * will bind tighter, and be
+#		used instead of, a line that contains two.
+#
+#	{na}
+#		Denotes a non-applicable field to be returned as a null
+#		string.
+#
+#	Path represents a search path used to locate the tool. Its format is
+#	identical to the PATH environment variable. All of the directories
+#	named in the path will be searched for a file matching the name of the 
+#	tool, and the absolute path of that file will be returned. So,
+#	directory order is important.
+#
+#	Also, the directives will be evaluated prior to return. So if any
+#	variable references exist in the text of the table, they will be
+#	reduced. The format of all varaibles references must be Korn shell
+#	compatible.
+#
+#	Mode	Tool	Alias	Path			Directives
+#	======	======	======	======================= ==========
+	*	M2C	M2C	${PATH}			{na}
+	*	ar	ar	/usr/ccs/bin		{na}
+	*	build	build	${PATH}			{na}
+	*	cat	cat	/usr/bin		{na}
+	*	chmod	chmod	/usr/bin		-f
+	*	cp	cp	/usr/bin		-f
+	*	cps	cps	${PATH}			{na}
+	*	echo	echo	/usr/bin		{na}
+	*	get	get	/usr/ccs/bin		{na}
+	*	install	install	/usr/sbin		{na}
+	*	javac	javac	/usr/bin		{na}
+	*	ksh	ksh	/usr/bin		{na}
+	*	ld	ld	/usr/ccs/bin		{na}
+	*	ln	ln	/usr/bin		-f
+	*	lex	lex	/usr/ccs/bin		{na}
+	*	make	make	/usr/ccs/bin		-ke
+	*	mkdir	mkdir	/usr/bin		-m ${STF_DIRMODE} -p
+	*	mcs	mcs	/usr/ccs/bin		{na}
+	*	mv	mv	/usr/bin		-f
+	*	pc	pc	${PATH}			{na}
+	*	perl	perl	/usr/bin		{na}	
+	*	pkgmk	pkgmk	/usr/bin		{na}
+	*	rm	rm	/usr/bin		-f
+	*	rpcgen	rpcgen	/usr/bin		{na}
+	*	yacc	yacc	/usr/ccs/bin		{na}
+
+#
+# Assembler.
+#
+	sparc		as	as	/usr/ccs/bin	{na}
+
+	sparc-f64	as	as	/usr/ccs/bin	{na}
+
+	sparcv9		as	as	/usr/ccs/bin	-xarch=v9
+
+	i386		as	as	/usr/ccs/bin	{na}
+
+	i386-f64	as	as	/usr/ccs/bin	{na}
+	
+	amd64		as	as	/usr/ccs/bin	-xarch=amd64
+
+	amd64-gcc	as	gas	/usr/sfw/bin	--64
+
+	none		as	as	/usr/ccs/bin	{na}
+
+#
+# C Compiler.
+#
+	sparc		cc	cc	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-g -xO0 -v
+
+	sparc-f64	cc	cc	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-D_LARGEFILE_SOURCE \
+					-D_FILE_OFFSET_BITS=64 -g -xO0 -v
+
+	sparcv9		cc	cc	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-xarch=v9 -g -xO0 -v
+
+	i386		cc	cc	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-g -xO0 -v
+
+	i386-f64	cc	cc	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-D_LARGEFILE_SOURCE \
+					-D_FILE_OFFSET_BITS=64 -g -xO0 -v
+
+	amd64		cc	cc	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-xarch=amd64 -g -xO0 -v
+
+	amd64-gcc	cc	gcc	/usr/sfw/bin:$PATH -m64 -g -D__GNUC
+
+	none		cc	cc	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-D_LARGEFILE_SOURCE \
+					-D_FILE_OFFSET_BITS=64 -g -xO0 -v
+
+#
+# C++ Compiler.
+
+	sparc		CC	CC	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-g -xO0
+
+	sparc-f64	CC	CC	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-D_LARGEFILE_SOURCE \
+					-D_FILE_OFFSET_BITS=64 -g -xO0
+
+	sparcv9		CC	CC	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-xarch=v9 -g -xO0
+
+	i386		CC	CC	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-g -xO0
+
+	i386-f64	CC	CC	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-D_LARGEFILE_SOURCE \
+					-D_FILE_OFFSET_BITS=64 -g -xO0
+
+	amd64		cc	CC	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-xarch=amd64 -g -xO0 -v
+
+	amd64-gcc	CC	g++	/usr/sfw/bin:$PATH -m64 -g
+
+	none		CC	CC	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-g -xO0
+
+#
+# Lint.
+#
+	sparc		lint	lint	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					{na}
+
+	sparc-f64	lint	lint	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-D_LARGEFILE_SOURCE \
+					-D_FILE_OFFSET_BITS=64
+
+	sparcv9		lint	lint	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-Xarch=v9
+
+	i386		lint	lint	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					{na}
+
+	i386-f64	lint	lint	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-D_LARGEFILE_SOURCE \
+					-D_FILE_OFFSET_BITS=64
+
+	amd64		lint	lint	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-Xarch=amd64
+
+	amd64-gcc	lint	lint	{na}	{na}
+
+	none		lint	lint	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					{na}
+
+#
+# Fortan 77 Compiler.
+#
+	sparc		f77	f77	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-g -xO0
+
+	sparc-f64	f77	f77	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-D_LARGEFILE_SOURCE \
+					-D_FILE_OFFSET_BITS=64 -g -xO0
+
+	sparcv9		f77	f77	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-xarch=v9 -g -xO0
+
+	i386		f77	f77	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-g -xO0
+
+	i386-f64	f77	f77	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-D_LARGEFILE_SOURCE \
+					-D_FILE_OFFSET_BITS=64 -g -xO0
+
+	amd64		f77	f77	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-xarch=amd64 -g -xO0
+
+	amd64-gcc	f77	g77	/ws/amd64-gate/public/tools/gcc-3.4.3/bin:$PATH \
+					{na}
+
+	none		f77	f77	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-g -xO0
+
+#
+# Fortan 90 Compiler.
+#
+	sparc		f90	f90	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-g -xO0
+
+	sparc-f64	f90	f90	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-D_LARGEFILE_SOURCE \
+					-D_FILE_OFFSET_BITS=64 -g -xO0
+
+	sparcv9		f90	f90	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-xarch=v9 -g -xO0
+
+	i386		f90	f90	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-g -xO0
+
+	i386-f64	f90	f90	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-D_LARGEFILE_SOURCE \
+					-D_FILE_OFFSET_BITS=64 -g -xO0
+
+	amd64		f90	f90	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-xarch=amd64 -g -xO0
+
+	amd64-gcc	f90	f90	{na}	{na}
+
+	none		f90	f90	/ws/onnv-tools/SUNWspro/SOS10/bin:$PATH \
+					-g -xO0
+
+#
+# Generic Default Entry.
+#
+	*	*	*	${PATH} {na}
+

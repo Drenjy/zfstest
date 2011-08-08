@@ -1,0 +1,167 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)target-all	1.21	08/07/30 SMI"
+#
+
+#
+# Except for special cases used in build the STC harness itself, Makefiles
+# should NEVER include this file directly. All test suites should include
+# $(MASTER)Makefile.targets which, in turn, will include this file.
+#
+
+_STF_CHECKENV=		${STF_ROOT_CHECKENV} ${STF_USER_CHECKENV}
+_STF_CONFIGURE=		${STF_ROOT_CONFIGURE} ${STF_USER_CONFIGURE}
+_STF_UNCONFIGURE=	${STF_ROOT_UNCONFIGURE} ${STF_USER_UNCONFIGURE}
+_STF_SETUP=		${STF_ROOT_SETUP} ${STF_USER_SETUP}
+_STF_CLEANUP=		${STF_ROOT_CLEANUP} ${STF_USER_CLEANUP}
+_STF_TESTCASES_GEN=	${STF_TESTCASES_GEN}
+_STF_TESTCASES=		${STF_ROOT_TESTCASES} ${STF_USER_TESTCASES}
+_STF_EXECUTABLES=	${STF_EXECUTABLES}
+_STF_DATAFILES=		${STF_DATAFILES}
+_STF_INCLUDES=		${STF_INCLUDES}
+_STF_LIBRARIES=		${STF_LIBRARIES}
+_STF_CASEFILES=		${STF_ROOT_CASEFILES} ${STF_USER_CASEFILES}
+
+_STF_CONFIGURE_TARGETS= ${_STF_CHECKENV} \
+			${_STF_DATAFILES} \
+			${_STF_INCLUDES} \
+			${STF_ENVFILES} \
+			${STF_CONFIGFILES} \
+			${_STF_CASEFILES}
+
+_STF_EXECUTE_TARGETS=   ${_STF_LIBRARIES} \
+			${_STF_SETUP} \
+			${_STF_CLEANUP} \
+			${_STF_TESTCASES} \
+			${_STF_EXECUTABLES} \
+			${_STF_TESTCASES_GEN} \
+			${_STF_CONFIGURE} \
+			${_STF_UNCONFIGURE}
+
+_STF_BUILD_MODE_LIST_SH =	\
+	if [ "${STF_BUILD_MODE}" = "" -a \
+	     "${STF_DONTBUILDMODES}" != "true" ] ; then \
+		dirs="" ;    \
+		for mode in `echo ${STF_BUILD_MODES}` ; do  \
+			dir=`${STF_TOOLS_BUILD}/stf_configlookupmodes \
+					BinaryLocation $${mode} \
+			      		 "" ${STF_CONFIG_INPUTS}` ; \
+			dirs="$${dir} $${dirs}" ;  \
+		done ;	\
+		echo $${dirs}  ; \
+	fi
+
+_STF_BUILD_MODE_LIST = ${_STF_BUILD_MODE_LIST_SH:sh}
+
+_STF_BUILD_MODE_DIRS_SH =	\
+	if [ "`echo ${_STF_EXECUTE_TARGETS}`" != "" ] ; then \
+		echo ${_STF_BUILD_MODE_LIST:%=%-dir} ; \
+	fi
+
+_STF_BUILD_MODE_DIRS = ${_STF_BUILD_MODE_DIRS_SH:sh}
+
+_STF_DESCRIPTION_SH = \
+	if [ "${STF_BUILD_MODE}" = "" ] ; then \
+		echo stf_description ; \
+	fi
+
+_STF_DESCRIPTION= ${_STF_DESCRIPTION_SH:sh}
+
+create_stf_description:
+	@if [ "${STF_DONTBUILDMODES}" = "true" ] ; then \
+		modelist="none" ; \
+	else \
+		modelist=`${STF_TOOLS_BUILD}/stf_getmodelist \
+		    "${STF_SUITE_BUILD_MODES}" "${STF_BUILDONLY}" \
+		    "${STF_DONTBUILD}"` ; \
+	fi ; \
+	execlist=`${STF_TOOLS_BUILD}/stf_getmodelist \
+	    "${STF_SUITE_EXECUTE_MODES}" "${STF_EXECUTEONLY}" \
+	    "${STF_DONTEXECUTE}"` ; \
+            ${STF_TOOLS_BUILD}/stf_create_description_file \
+	    "$$modelist" "$$execlist" \
+	    "${STF_ROOT_CHECKENV}" "${STF_USER_CHECKENV}" \
+	    "${STF_ROOT_CONFIGURE}" "${STF_USER_CONFIGURE}" \
+	    "${STF_ROOT_UNCONFIGURE}" "${STF_USER_UNCONFIGURE}" \
+	    "${STF_ROOT_SETUP}" "${STF_USER_SETUP}" \
+	    "${STF_ROOT_CLEANUP}" "${STF_USER_CLEANUP}" \
+	    "${STF_TESTCASES_GEN}" \
+	    "${STF_ROOT_TESTCASES}" "${STF_USER_TESTCASES}" \
+	    "${STF_DATAFILES}" "${STF_ENVFILES}" "${STF_CONFIGFILES}" \
+	    "${STF_EXECUTE_SUBDIRS}" \
+	    "${STF_DONTBUILDMODES}" \
+	    "${MSTF_ROLES}" "${MSTF_ENVMAPS}" \
+	    "${STF_ROOT_CASEFILES}" "${STF_USER_CASEFILES}"
+
+_STF_ALL_SH = \
+	if [ "${STF_BUILD_MODE}" != "" -o \
+	     "${STF_DONTBUILDMODES}" = "true" ] ; then \
+		echo "${_STF_EXECUTE_TARGETS}" ; \
+	fi ; \
+	echo ${_STF_DESCRIPTION:%=create_%}
+
+_STF_INSTALL_SH = \
+	if [ "${STF_BUILD_MODE}" != "" -o \
+	     "${STF_DONTBUILDMODES}" = "true" ] ; then \
+		echo "${_STF_EXECUTE_TARGETS}" ; \
+	fi ; \
+        echo ${_STF_DESCRIPTION} ; \
+	if [ "${STF_BUILD_MODE}" = "" ] ; then \
+		echo ${_STF_CONFIGURE_TARGETS} ; \
+	fi; \
+	if [ -f STF.INFO ] ; then \
+		echo STF.INFO ; \
+	fi; \
+	if [ -f STC.INFO ] ; then \
+		echo STC.INFO ; \
+	fi
+
+_STF_ALL = ${_STF_ALL_SH:sh}
+
+_STF_INSTALL = ${_STF_INSTALL_SH:sh}
+
+_STF_PROTO_INSTALL = ${_STF_INSTALL:%=${STF_PROTO}/%}
+
+all: ${_STF_ALL}
+
+install all clobber clean: ${_STF_BUILD_MODE_DIRS}
+
+%-dir: %
+	@[ ! -f $?/Makefile ] && makeargs="-f ../Makefile VPATH=.." ; \
+	${MAKEIN} $? ${MAKE} ${TARGET} $$makeargs STF_BUILD_MODE=$? \
+	    STF_SUITE=$(STF_SUITE) \
+	    STF_BUILD_CONFIG=${STF_BUILD_CONFIG} \
+	    "STF_SUITE_BUILD_MODES=${STF_SUITE_BUILD_MODES}" \
+	    "STF_MACH_BUILD_MODES=${STF_MACH_BUILD_MODES}" \
+	    "STF_SRC=${STF_SRC}" \
+	    "BUILD_SUBDIRS_SWITCH=#" \
+	    STF_PROTO=${STF_PROTO}/$?
+
+
+${STF_BUILD_MODES}:
+	@/usr/bin/mkdir $@
+
+install: all ${_STF_PROTO_INSTALL}

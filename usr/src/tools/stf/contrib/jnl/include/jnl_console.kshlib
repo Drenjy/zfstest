@@ -1,0 +1,94 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# ident	"@(#)jnl_console.kshlib	1.2	07/04/30 SMI"
+#
+
+#
+# This is a journalizing library for shell scripts.  This script contains
+# The journalizing functions for retreive and display console messages.
+#
+
+. ${STF_TOOLS}/include/stf.kshlib
+. ${STF_TOOLS}/contrib/include/jnl.kshlib
+
+# return variable
+jc_ret=0
+
+# This obtains the file length of /var/adm/messages
+#
+jnl_logcount() {
+	x=`wc -l /var/adm/messages`
+	jc_ret=`echo $x | cut -f 1 -d " " `
+}
+
+
+# This initializes the variables for monitoring the console messages.
+#
+jnl_init_consolemsg() {
+	if [ -n $1 -a $1 = "1" ] ; then
+		jnl_lognowait=1;
+	fi
+	jnl_logcount
+	jnl_consolemsg_start=$jc_ret;
+}
+
+# This gets the console messages from the /var/adm/messages file by checking
+# the current file length and comparing it to the previous file length.  If
+# There is no size change, it will sleep for a short period of time to wait
+# for syslog to write the log.  It maybe wise to set syslog to write
+# immediately if you run into problems
+#
+# $1 - Where to send the logfile.  Default is /dev/stdout
+#
+jnl_get_consolemsg() {
+	MAX_WAIT=5
+	SLEEP_WAIT=2
+	LOG=$1
+	if [ -z $1 ] ; then
+		LOG=/dev/stdout
+	fi
+	echo "---- start console messages ----" >> $LOG
+	jnl_consolemsg_end=$jnl_consolemsg_start
+	i=0
+	while [ $i -lt $MAX_WAIT -a 
+		$jnl_consolemsg_end -eq $jnl_consolemsg_start ] ; do
+		jnl_logcount
+		jnl_consolemsg_end=$jc_ret
+		if [ $i -gt 0 ] ; then
+			sleep $SLEEP_WAIT
+		fi
+		if [ $jnl_lognowait -eq 1 ] ; then
+			i=$MAX_WAIT
+		else
+			jnl_print "Waiting $SLEEP_WAIT sec(s) for syslog info"
+		fi
+		i=$(( $i + 1 ))
+	done
+	tail -$(( $jnl_consolemsg_end - $jnl_consolemsg_start )) \
+		/var/adm/messages >> $LOG
+	echo "---- end console messages ----" >> $LOG
+	jnl_consolemsg_start=$jnl_consolemsg_end
+}
