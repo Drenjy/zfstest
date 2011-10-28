@@ -19,13 +19,12 @@
 # CDDL HEADER END
 #
 
-#!/usr/bin/ksh -p
 #
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
-#ident	"@(#)commands.txt	1.8	09/01/13 SMI"
-#
+
 # All the commands in this file are converted into environment variables
 # with the same name as the command e.g.
 #
@@ -80,7 +79,6 @@
 /usr/bin/id
 /usr/bin/isainfo
 /usr/sbin/iscsiadm
-/usr/sbin/iscsitadm
 /usr/bin/getent
 /usr/bin/grep
 /usr/bin/groups

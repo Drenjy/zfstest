@@ -23,8 +23,7 @@
 #
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-#
-# ident	"@(#)cache_010_neg.ksh	1.1	08/05/14 SMI"
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/tests/functional/cache/cache.kshlib
@@ -36,12 +35,12 @@
 # ID: cache_010_neg
 #
 # DESCRIPTION:
-#	Verify cache device can only be disk or slice.
+#	Verify cache device must be a block device.
 #
 # STRATEGY:
 #	1. Create a pool
-#	2. Loop to add different object as cache
-#	3. Verify it fails
+#	2. Add different object as cache
+#	3. Verify character devices and files fail
 #
 # TESTABILITY: explicit
 #
@@ -63,31 +62,32 @@ function cleanup_testenv
 	fi
 }
 
-log_assert "Cache device can only be disk or slice."
+log_assert "Cache device can only be block devices."
 log_onexit cleanup_testenv
 
 dsk1=${DISKS%% *}
 log_must $ZPOOL create $TESTPOOL ${DISKS#$dsk1}
 
-# Add nomal disk
-log_must $ZPOOL add $TESTPOOL cache $dsk1
-log_must verify_cache_device $TESTPOOL $dsk1 'ONLINE'
+# Add nomal /dev/rdsk device
+log_mustnot $ZPOOL add $TESTPOOL cache /dev/rdsk/${dsk1}s0
+#log_must verify_cache_device $TESTPOOL $dsk1 'ONLINE'
+
 # Add nomal file
 log_mustnot $ZPOOL add $TESTPOOL cache $VDEV2
 
-# Add lofi device
+# Add /dev/rlofi device
 lofidev=${VDEV2%% *}
 log_must $LOFIADM -a $lofidev
 lofidev=$($LOFIADM $lofidev)
-log_mustnot $ZPOOL add $TESTPOOL cache $lofidev
+log_mustnot $ZPOOL add $TESTPOOL cache "/dev/rlofi/${lofidev#/dev/lofi/}"
 if [[ -n $lofidev ]]; then
 	log_must $LOFIADM -d $lofidev
 	lofidev=""
 fi
 
-#Add zvol
+# Add /dev/zvol/rdsk device
 log_must $ZPOOL create $TESTPOOL2 $VDEV2
 log_must $ZFS create -V $SIZE $TESTPOOL2/$TESTVOL
-log_mustnot $ZPOOL add $TESTPOOL cache /dev/zvol/dsk/$TESTPOOL2/$TESTVOL
+log_mustnot $ZPOOL add $TESTPOOL cache /dev/zvol/rdsk/$TESTPOOL2/$TESTVOL
 
-log_pass "Cache device can only be disk or slice."
+log_pass "Cache device can only be block devices."
