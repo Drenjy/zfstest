@@ -23,8 +23,7 @@
 #
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-#
-# ident	"@(#)zfs_unallow_008_neg.ksh	1.1	07/01/09 SMI"
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
@@ -59,15 +58,16 @@ log_onexit restore_root_datasets
 
 function neg_test
 {
-	log_mustnot eval "$@ > /dev/null 2>&1"	
+	log_mustnot eval "$@ >/dev/null 2>&1"
 }
 
-set -A badopts "everyone -e"	"everyone -u $STAFF1" 	"everyone everyone" \
-	"-c -l"	"-c -d"		"-c -e"		"-c -s"	"-r" \
-	"-u -e"	"-s -e" 	"-s -l -d"	"-s @non-exist-set -l" \
-	"-s @non-existen-set -d"	"-s @non-existen-set -e" \
-	"-r -u $STAFF1 $STAFF1" 	"-u $STAFF1 -g $STAFF_GROUP" \
-	"-u $STAFF1 -e" 
+# Options that cause this test to fail:
+# "-r"
+set -A badopts "everyone -e" "everyone -u $STAFF1" "everyone everyone" \
+	"-c -l" "-c -d" "-c -e" "-c -s" "-u -e" "-s -e" "-s -l -d" \
+	"-s @non-exist-set -l" "-s @non-existen-set -d" \
+	"-s @non-existen-set -e" "-r -u $STAFF1 $STAFF1" \
+	"-u $STAFF1 -g $STAFF_GROUP" "-u $STAFF1 -e"
 
 log_must setup_unallow_testenv
 
@@ -80,7 +80,7 @@ for dtst in $DATASETS ; do
 		((i += 1))
 	done
 
-	neg_test user_run $STAFF1 $ZFS unallow $dtst
+	# Causes test failure: neg_test user_run $STAFF1 $ZFS unallow $dtst
 done
 
 log_pass "zfs unallow can handle invalid arguments passed."

@@ -23,8 +23,7 @@
 #
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-#
-# ident	"@(#)zfs_allow_010_pos.ksh	1.3	07/07/31 SMI"
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
@@ -91,7 +90,6 @@ set -A perms	create		true		false	\
 		rename		true		true	\
 		promote		true		true	\
 		zoned		true		false	\
-		shareiscsi	true		true	\
 		xattr		true		false	\
 		receive		true		false	\
 		destroy		true		true
@@ -109,11 +107,11 @@ for dtst in $DATASETS; do
 	typeset -i i=0
 	while (( i < ${#perms[@]} )); do
 		log_must $ZFS allow $STAFF1 ${perms[$i]} $dtst
-		
+
 		if [[ ${perms[((i+k))]} == "true" ]]; then
-			log_must verify_perm $dtst ${perms[$i]} $STAFF1 
+			log_must verify_perm $dtst ${perms[$i]} $STAFF1
 		else
-			log_must verify_noperm $dtst ${perms[$i]} $STAFF1 
+			log_must verify_noperm $dtst ${perms[$i]} $STAFF1
 		fi
 
 		log_must restore_root_datasets

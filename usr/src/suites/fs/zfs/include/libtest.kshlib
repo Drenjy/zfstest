@@ -22,8 +22,7 @@
 #
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-#
-# ident	"@(#)libtest.kshlib	1.15	09/08/06 SMI"
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
 
 . ${STF_TOOLS}/contrib/include/logapi.kshlib
@@ -2400,18 +2399,17 @@ function gen_dataset_name
 # Get cksum tuple of dataset
 # $1 dataset name
 #
-# zdb output is like below
-# " Dataset pool/fs [ZPL], ID 978, cr_txg 2277, 19.0K, 5 objects, 
-# rootbp [L0 DMU objset] 400L/200P DVA[0]=<0:1880c00:200> 
-# DVA[1]=<0:341880c00:200> fletcher4 lzjb LE contiguous birth=2292 fill=5 
-# cksum=989930ccf:4014fe00c83:da5e388e58b4:1f7332052252ac "
-#
+# sample zdb output:
+# Dataset data/test [ZPL], ID 355, cr_txg 2413856, 31.0K, 7 objects, rootbp
+# DVA[0]=<0:803046400:200> DVA[1]=<0:81199000:200> [L0 DMU objset] fletcher4
+# lzjb LE contiguous unique double size=800L/200P birth=2413856L/2413856P
+# fill=7 cksum=11ce125712:643a9c18ee2:125e25238fca0:254a3f74b59744
 function datasetcksum
 {
 	typeset cksum
 	$SYNC
 	cksum=$($ZDB -vvv $1 | $GREP "^Dataset $1 \[" | $GREP "cksum" \
-		| $AWK -F= '{print $6}')
+		| $AWK -F= '{print $7}')
 	$ECHO $cksum
 }
 

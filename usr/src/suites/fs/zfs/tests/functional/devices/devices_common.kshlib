@@ -22,8 +22,7 @@
 #
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-#
-# ident	"@(#)devices_common.kshlib	1.3	07/03/14 SMI"
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/include/libtest.kshlib
@@ -96,7 +95,7 @@ function create_dev_file
 			#
 			# Create device file '/dev/null'
 			#
-			log_must $MKNOD $filename c 13 2
+			log_must $MKNOD $filename c $($GETMAJOR mm) 2
 			;;
 		*)
 			log_fail "'$filetype' is wrong."

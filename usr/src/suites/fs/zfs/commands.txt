@@ -80,6 +80,7 @@
 /usr/bin/isainfo
 /usr/sbin/iscsiadm
 /usr/bin/getent
+/usr/sbin/getmajor
 /usr/bin/grep
 /usr/bin/groups
 /usr/sbin/groupadd

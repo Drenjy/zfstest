@@ -23,8 +23,7 @@
 #
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-#
-# ident	"@(#)zfs_allow_007_pos.ksh	1.3	08/11/03 SMI"
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
@@ -95,8 +94,8 @@ log_must $ZFS allow $STAFF1 @set $childfs
 #
 log_must verify_noperm $ROOT_TESTFS $perms1 $STAFF1
 for fs in $childfs $grandchild ; do
-	log_must verify_noperm $childfs $perms1 $STAFF1
-	log_must verify_perm $childfs $perms2 $STAFF1
+	log_must verify_noperm $fs $perms1 $STAFF1
+	log_must verify_perm $fs $perms2 $STAFF1
 done
 
 #
@@ -106,15 +105,15 @@ done
 log_must $ZFS allow $STAFF1 @set $ROOT_TESTFS
 log_must verify_perm $ROOT_TESTFS $perms1 $STAFF1
 for fs in $childfs $grandchild ; do
-	log_must verify_noperm $childfs $perms1 $STAFF1
-	log_must verify_perm $childfs $perms2 $STAFF1
+	log_must verify_noperm $fs $perms1 $STAFF1
+	log_must verify_perm $fs $perms2 $STAFF1
 done
 
 # Remove the mask, $perms1 will be allowed to its descendent datasets
 log_must $ZFS unallow -s @set $childfs
 for fs in $childfs $grandchild ; do
-	log_must verify_noperm $childfs $perms2 $STAFF1
-	log_must verify_perm $childfs $perms1 $STAFF1
+	log_must verify_noperm $fs $perms2 $STAFF1
+	log_must verify_perm $fs $perms1 $STAFF1
 done
 
-log_pass "Verify permission set can be masked on descendetn dataset pass."
+log_pass "Verify permission set can be masked on descendent dataset pass."

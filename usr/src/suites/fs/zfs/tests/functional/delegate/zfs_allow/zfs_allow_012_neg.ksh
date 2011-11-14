@@ -23,8 +23,7 @@
 #
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-#
-# ident	"@(#)zfs_allow_012_neg.ksh	1.1	07/07/31 SMI"
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
@@ -68,10 +67,10 @@ log_onexit cleanup
 
 
 set -A perms	create snapshot mount send allow quota reservation \
-	    	recordsize mountpoint checksum compression canmount atime \
+		recordsize mountpoint checksum compression canmount atime \
 		devices exec volsize setuid readonly snapdir userprop \
 		aclmode aclinherit rollback clone rename promote \
-		zoned shareiscsi xattr receive destroy sharenfs share
+		zoned xattr receive destroy sharenfs share
 
 log_must $ZPOOL set delegation=off $TESTPOOL
 
