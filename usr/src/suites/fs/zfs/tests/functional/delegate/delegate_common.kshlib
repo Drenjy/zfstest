@@ -190,7 +190,7 @@ function common_perm
 			verify_copies $user $perm $dtst
 			ret=$?
 			;;
-		reservation) 
+		reservation)
 			verify_reservation $user $perm $dtst
 			ret=$?
 			;;
@@ -214,39 +214,39 @@ function check_fs_perm
 			verify_fs_create $user $perm $fs
 			ret=$?
 			;;
-		destroy) 
+		destroy)
 			verify_fs_destroy $user $perm $fs
 			ret=$?
 			;;
-		snapshot) 
+		snapshot)
 			verify_fs_snapshot $user $perm $fs
 			ret=$?
 			;;
-		rollback) 
+		rollback)
 			verify_fs_rollback $user $perm $fs
 			ret=$?
 			;;
-		clone) 
+		clone)
 			verify_fs_clone $user $perm $fs
 			ret=$?
 			;;
-		rename) 
+		rename)
 			verify_fs_rename $user $perm $fs
 			ret=$?
 			;;
-		mount) 
+		mount)
 			verify_fs_mount $user $perm $fs
 			ret=$?
 			;;
-		share) 
+		share)
 			verify_fs_share $user $perm $fs
 			ret=$?
 			;;
-		mountpoint) 
+		mountpoint)
 			verify_fs_mountpoint $user $perm $fs
 			ret=$?
 			;;
-		promote) 
+		promote)
 			verify_fs_promote $user $perm $fs
 			ret=$?
 			;;
@@ -254,11 +254,11 @@ function check_fs_perm
 			verify_fs_canmount $user $perm $fs
 			ret=$?
 			;;
-		recordsize) 
+		recordsize)
 			verify_fs_recordsize $user $perm $fs
 			ret=$?
 			;;
-		quota) 
+		quota)
 			verify_fs_quota $user $perm $fs
 			ret=$?
 			;;
@@ -282,12 +282,8 @@ function check_fs_perm
 			verify_fs_zoned $user $perm $fs
 			ret=$?
 			;;
-		sharenfs) 
+		sharenfs)
 			verify_fs_sharenfs $user $perm $fs
-			ret=$?
-			;;
-		shareiscsi)
-			verify_fs_shareiscsi $user $perm $fs
 			ret=$?
 			;;
 		receive)
@@ -311,11 +307,11 @@ function check_vol_perm
 
 	typeset -i ret=1
 	case $perm in
-		destroy) 
+		destroy)
 			verify_vol_destroy $user $perm $vol
 			ret=$?
 			;;
-		snapshot) 
+		snapshot)
 			verify_vol_snapshot $user $perm $vol
 			ret=$?
 			;;
@@ -323,24 +319,20 @@ function check_vol_perm
 			verify_vol_rollback $user $perm $vol
 			ret=$?
 			;;
-		clone) 
+		clone)
 			verify_vol_clone $user $perm $vol
 			ret=$?
 			;;
-		rename) 
+		rename)
 			verify_vol_rename $user $perm $vol
 			ret=$?
 			;;
-		promote) 
+		promote)
 			verify_vol_promote $user $perm $vol
 			ret=$?
 			;;
-		volsize) 
+		volsize)
 			verify_vol_volsize $user $perm $vol
-			ret=$?
-			;;
-		shareiscsi)  
-			verify_vol_shareiscsi $user $perm $vol
 			ret=$?
 			;;
 		*)
@@ -430,7 +422,7 @@ function verify_fs_receive
 	if is_global_zone ; then
 		log_must $ZFS create -V $VOLSIZE $newvol
 		datasets="$newfs $newvol"
-	fi	
+	fi
 
 	for dtst in $datasets ; do
 
@@ -465,7 +457,7 @@ function verify_fs_receive
 		if ! datasetexists $dtstsnap ; then
 			return 1
 		fi
-			
+
 		# check the data integrity
 		log_must eval "$ZFS send $dtstsnap > $bak_user"
 		log_must $ZFS destroy -rf $dtst
@@ -610,7 +602,7 @@ function verify_fs_create
 		fi
 		log_must $ZFS destroy $newvol
 
-		# mount and reserveration permission are 
+		# mount and reserveration permission are
 		# required for normal volume
 		user_run $user $ZFS create -V 150m $newvol
 		if datasetexists $newvol ; then
@@ -679,7 +671,7 @@ function verify_fs_destroy
 			return 1
 		fi
 
-		# mount permission is required 
+		# mount permission is required
 		log_must $ZFS allow $user mount $fs
 		user_run $user $ZFS destroy $fs
 		if datasetexists $fs ; then
@@ -930,7 +922,7 @@ function verify_fs_mount
 			return 1
 		fi
 		log_must $ZFS umount $fs
-		log_must $RM -rf $newmntpt			
+		log_must $RM -rf $newmntpt
 		log_must $ZFS set mountpoint=$mntpt $fs
 	fi
 
@@ -955,7 +947,7 @@ function verify_fs_share
 			return 1
 		fi
 
-		# sharenfs=on 
+		# sharenfs=on
 		log_must $ZFS set sharenfs=on $fs
 		user_run $user $ZFS share $fs
 		if is_shared $fs; then
@@ -1049,7 +1041,7 @@ function verify_fs_promote
 
 	log_must $ZFS snapshot $snap
 	log_must $ZFS clone $snap $clone
-	log_must $ZFS promote $clone		
+	log_must $ZFS promote $clone
 
 	typeset fs_orig=$(get_prop origin $fs)
 	typeset clone_orig=$(get_prop origin $clone)
@@ -1061,7 +1053,7 @@ function verify_fs_promote
 		$clone_orig != $(get_prop origin $clone) ]]; then
 		return 1
 	fi
-	
+
 	log_must $ZFS allow $user promote $clone
 	user_run $user $ZFS promote $fs
 	log_must $ZFS unallow $user promote $clone
@@ -1069,7 +1061,7 @@ function verify_fs_promote
 		$clone_orig != $(get_prop origin $clone) ]]; then
 		return 1
 	fi
-	
+
 	log_must $ZFS allow $user mount $fs
 	user_run $user $ZFS promote $fs
 	log_must $ZFS unallow $user mount $fs
@@ -1077,7 +1069,7 @@ function verify_fs_promote
 		$clone_orig != $(get_prop origin $clone) ]]; then
 		return 1
 	fi
-	
+
 	log_must $ZFS allow $user mount $fs
 	log_must $ZFS allow $user promote $clone
 	user_run $user $ZFS promote $fs
@@ -1120,7 +1112,7 @@ function verify_fs_canmount
 	# fs is mounted
 	if ismounted $fs ; then
 		# property value does not change if
-		# no mount permission 
+		# no mount permission
 		set -A modes "on" "off"
 		oldval=$(get_prop $perm $fs)
 		if [[ $oldval == "on" ]]; then
@@ -1378,7 +1370,7 @@ function verify_fs_sharenfs
 		return 1
 	fi
 
-	# share permission is needed 
+	# share permission is needed
 	log_must $ZFS allow $user share $fs
 	user_run $user $ZFS share $fs
 	log_must $ZFS unallow $user share $fs
@@ -1401,29 +1393,6 @@ function verify_fs_sharenfs
 	return 0
 }
 
-function verify_fs_shareiscsi
-{
-	typeset user=$1
-	typeset perm=$2
-	typeset fs=$3
-
-	typeset oldval
-	set -A modes "on" "off"
-	oldval=$(get_prop $perm $fs)
-	if [[ $oldval == "on" ]]; then
-		n=1
-	elif [[ $oldval == "off" ]]; then
-		n=0
-	fi
-	log_note "$user $ZFS set $perm=${modes[$n]} $fs"
-	user_run $user $ZFS set $perm=${modes[$n]} $fs
-	if [[ ${modes[$n]} != $(get_prop $perm $fs) ]]; then
-		return 1
-	fi
-
-	return 0
-}
-
 function verify_vol_destroy
 {
 	typeset user=$1
@@ -1435,7 +1404,7 @@ function verify_vol_destroy
 		return 1
 	fi
 
-	# mount permission is required 
+	# mount permission is required
 	log_must $ZFS allow $user mount $vol
 	user_run $user $ZFS destroy $vol
 	if datasetexists $vol ; then
@@ -1538,7 +1507,7 @@ function verify_vol_clone
 	fi
 
 	# require create permission on parent and
-	# mount permission on itself as well 
+	# mount permission on itself as well
 	log_must $ZFS allow $user mount $basevol
 	log_must $ZFS allow $user create $basevol
 	user_run $user $ZFS clone $snap $clone
@@ -1583,7 +1552,7 @@ function verify_vol_rename
 	fi
 
 	# require both create permission on parent and
-	# mount permission on parent as well 
+	# mount permission on parent as well
 	log_must $ZFS allow $user mount $basevol
 	log_must $ZFS allow $user create $basevol
 	user_run $user $ZFS rename $vol $renamevol
@@ -1611,7 +1580,7 @@ function verify_vol_promote
 
 	log_must $ZFS snapshot $snap
 	log_must $ZFS clone $snap $clone
-	log_must $ZFS promote $clone		
+	log_must $ZFS promote $clone
 
 	typeset vol_orig=$(get_prop origin $vol)
 	typeset clone_orig=$(get_prop origin $clone)
@@ -1621,11 +1590,11 @@ function verify_vol_promote
 	# case 1
 	user_run $user $ZFS promote $vol
 	if [[ $vol_orig != $(get_prop origin $vol) || \
-		$clone_orig != $(get_prop origin $clone) ]]; 
+		$clone_orig != $(get_prop origin $clone) ]];
 	then
 		return 1
 	fi
-	
+
 	# promote should fail if $vol and $clone
 	# miss either mount or promote permission
 	# case 2
@@ -1633,11 +1602,11 @@ function verify_vol_promote
 	user_run $user $ZFS promote $vol
 	log_must $ZFS unallow $user promote $clone
 	if [[ $vol_orig != $(get_prop origin $vol) || \
-		$clone_orig != $(get_prop origin $clone) ]]; 
+		$clone_orig != $(get_prop origin $clone) ]];
 	then
 		return 1
 	fi
-	
+
 	# promote should fail if $vol and $clone
 	# miss either mount or promote permission
 	# case 3
@@ -1645,11 +1614,11 @@ function verify_vol_promote
 	user_run $user $ZFS promote $vol
 	log_must $ZFS unallow $user mount $vol
 	if [[ $vol_orig != $(get_prop origin $vol) || \
-		$clone_orig != $(get_prop origin $clone) ]]; 
+		$clone_orig != $(get_prop origin $clone) ]];
 	then
 		return 1
 	fi
-	
+
 	# promote should fail if $vol and $clone
 	# miss either mount or promote permission
 	# case 4
@@ -1657,11 +1626,11 @@ function verify_vol_promote
 	user_run $user $ZFS promote $vol
 	log_must $ZFS unallow $user mount $clone
 	if [[ $vol_orig != $(get_prop origin $vol) || \
-		$clone_orig != $(get_prop origin $clone) ]]; 
+		$clone_orig != $(get_prop origin $clone) ]];
 	then
 		return 1
 	fi
-	
+
 	# promote should fail if $vol and $clone
 	# miss either mount or promote permission
 	# case 5
@@ -1671,7 +1640,7 @@ function verify_vol_promote
 	log_must $ZFS unallow $user promote $clone
 	log_must $ZFS unallow $user mount $vol
 	if [[ $vol_orig != $(get_prop origin $vol) || \
-		$clone_orig != $(get_prop origin $clone) ]]; 
+		$clone_orig != $(get_prop origin $clone) ]];
 	then
 		return 1
 	fi
@@ -1685,7 +1654,7 @@ function verify_vol_promote
 	log_must $ZFS unallow $user promote $clone
 	log_must $ZFS unallow $user mount $vol
 	if [[ $vol_orig != $(get_prop origin $vol) || \
-		$clone_orig != $(get_prop origin $clone) ]]; 
+		$clone_orig != $(get_prop origin $clone) ]];
 	then
 		return 1
 	fi
@@ -1699,7 +1668,7 @@ function verify_vol_promote
 	log_must $ZFS unallow $user mount $vol
 	log_must $ZFS unallow $user mount $clone
 	if [[ $vol_orig != $(get_prop origin $vol) || \
-		$clone_orig != $(get_prop origin $clone) ]]; 
+		$clone_orig != $(get_prop origin $clone) ]];
 	then
 		return 1
 	fi
@@ -1737,7 +1706,7 @@ function verify_vol_volsize
 		check_refrev=true
 	fi
 	typeset reserv_size
-	
+
 	if [[ $check_refrev == true ]]; then
 		reserv_size=$(get_prop refreservation $vol)
 	else
@@ -1779,43 +1748,6 @@ function verify_vol_volsize
 	return 0
 }
 
-function verify_vol_shareiscsi
-{
-	typeset user=$1
-	typeset perm=$2
-	typeset vol=$3
-
-	typeset oldval
-	set -A modes "on" "off"
-	oldval=$(get_prop $perm $vol)
-	if [[ $oldval == "on" ]]; then
-		n=1
-	elif [[ $oldval == "off" ]]; then
-		n=0
-	fi
-	log_note "$user $ZFS set $perm=${modes[$n]} $vol"
-	user_run $user $ZFS set $perm=${modes[$n]} $vol
-	if [[ ${modes[$n]} != $(get_prop $perm $vol) ]]; then
-		return 1
-	fi
-
-	iscsitgt_setup
-
-	if [[ $n -eq 1 ]] && is_iscsi_target $vol ; then
-		iscsitgt_cleanup
-		return 1
-	fi
-
-	if [[ $n -eq 0 ]] && ! is_iscsi_target $vol ; then
-		iscsitgt_cleanup
-		return 1
-	fi
-
-	iscsitgt_cleanup
-
-	return 0
-}
-
 function verify_allow
 {
 	typeset user=$1
@@ -1845,7 +1777,7 @@ function verify_allow
 function support_refrev
 {
 	typeset dataset=$1
-	
+
 	$ZFS get refreservation $dataset > /dev/null 2>&1
 	if (( $? != 0 )); then
 		return 1

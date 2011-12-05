@@ -22,8 +22,7 @@
 #
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-#
-# ident	"@(#)rsend.kshlib	1.3	09/01/12 SMI"
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/include/libtest.kshlib
@@ -199,8 +198,8 @@ function cmp_ds_prop
 	for item in "type" "origin" "volblocksize" "aclinherit" "aclmode" \
 		"atime" "canmount" "checksum" "compression" "copies" "devices" \
 		"exec" "quota" "readonly" "recordsize" "reservation" "setuid" \
-		"shareiscsi" "sharenfs" "snapdir" "version" "volsize" "xattr" \
-		"zoned" "mountpoint";
+		"sharenfs" "snapdir" "version" "volsize" "xattr" "zoned" \
+		"mountpoint";
 	do
 		$ZFS get -H -o property,value,source $item $dtst1 >> \
 			$BACKDIR/dtst1
@@ -348,7 +347,7 @@ function fs_inherit_prop
 #
 function vol_inherit_prop
 {
-	$ECHO "checksum readonly shareiscsi"
+	$ECHO "checksum readonly"
 }
 
 #

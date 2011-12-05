@@ -23,8 +23,7 @@
 #
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-#
-# ident	"@(#)hotspare_detach_001_pos.ksh	1.3	09/06/22 SMI"
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
 . $STF_SUITE/tests/functional/hotspare/hotspare.kshlib
 
@@ -34,7 +33,7 @@
 #
 # ID: hotspare_detach_001_pos
 #
-# DESCRIPTION: 
+# DESCRIPTION:
 #	If a hot spare have been activated,
 #	and invoke "zpool detach" with this hot spare,
 #	it will be returned to the set of available spares,
@@ -70,16 +69,25 @@ function cleanup
 function verify_assertion # dev
 {
 	typeset dev=$1
-	typeset fsize
 
 	for odev in $pooldevs ; do
+		typeset -i fsize
+
 		fsize=$(get_prop available $TESTPOOL)
 		(( fsize = fsize * 3 / 4 ))
+
 		log_must $MKFILE $fsize /$TESTPOOL/$TESTFILE1
 		log_must $SYNC
 		log_must $ZPOOL replace $TESTPOOL $odev $dev
 
-		log_must is_pool_resilvering "$TESTPOOL"
+		# It's possible (likely, even) for the resilvering to complete
+		# before zpool status can complete. So wait for the resilvering
+		# to finish, then check that it resilvered. In practice, this
+		# while loop is never entered.
+		while is_pool_resilvering; do
+			$TRUE
+		done
+		log_must is_pool_resilvered "$TESTPOOL"
 		log_must check_hotspare_state "$TESTPOOL" "$dev" "INUSE"
 
 		log_must $ZPOOL detach $TESTPOOL $dev
@@ -89,7 +97,8 @@ function verify_assertion # dev
 	done
 }
 
-log_assert "'zpool detach <pool> <vdev> ...' should deactivate the spared-in hot spare device successfully." 
+log_assert "'zpool detach <pool> <vdev> ...' should deactivate the spared-in \
+hot spare device successfully."
 
 log_onexit cleanup
 
@@ -103,4 +112,5 @@ for keyword in "${keywords[@]}" ; do
 	destroy_pool "$TESTPOOL"
 done
 
-log_pass "'zpool detach <pool> <vdev> ...' deactivate the spared-in hot spare device successfully." 
+log_pass "'zpool detach <pool> <vdev> ...' deactivate the spared-in hot \
+spare device successfully."

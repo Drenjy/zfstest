@@ -22,8 +22,7 @@
 #
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-#
-# ident	"@(#)scrub_mirror_common.kshlib	1.5	07/10/09 SMI"
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
 
 function overwrite_verify_mirror
@@ -51,13 +50,8 @@ function overwrite_verify_mirror
 
 	log_must $ZPOOL scrub $POOL
 
-	typeset scrubbed="false"
-	while [[ "$scrubbed" != "true" ]]; do
-		$ZPOOL status $POOL | $GREP -s "scrub" \
-		    | $GREP -i "completed"
-		if [[ $? -eq 0 ]]; then
-			scrubbed="true"
-		fi
+	while is_pool_scrubbing $POOL; do
+		$SLEEP 2
 	done
 
 	atfile=0

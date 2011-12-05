@@ -23,8 +23,7 @@
 #
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-#
-# ident	"@(#)hotspare_onoffline_003_neg.ksh	1.3	09/06/22 SMI"
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
 . $STF_SUITE/tests/functional/hotspare/hotspare.kshlib
 
@@ -35,17 +34,17 @@
 # ID: hotspare_onoffline_003_neg
 #
 # DESCRIPTION:
-#	Regardless a hot spare is only in the available hot spare list,
-#	or have been activated,
-#	invoke "zpool offline" & "zpool online" with this hot spare
-#	will fail with a return code of 1 and issue an error message.
+#	A hot spare may be made offline or online if it is currently active
+#	as a spare, but not if it is an unused spare. Invoke "zpool offline"
+#	and "zpool online" with this a hot spare. This will fail with a return
+#	code of 1 if idle, and succeed if active.
 #
 # STRATEGY:
 #	1. Create a storage pool with hot spares
-#	2. Try 'zpool offline' & 'zpool online' with each hot spare 
-#		of following condition
+#	2. Try 'zpool offline' & 'zpool online' with each hot spare in the
+#	following states:
 #		- only in the list of available hot spares (fail)
-#		- have been activated (fail)
+#		- have been activated (succeed)
 #	3. Verify offline/online results as expected.
 #
 # TESTABILITY: explicit
@@ -78,25 +77,24 @@ function verify_assertion # dev
 	log_mustnot $ZPOOL online $TESTPOOL $dev
 	log_must check_hotspare_state $TESTPOOL $dev "AVAIL"
 
-	for odev in $pooldevs ; do 
+	for odev in $pooldevs ; do
 		log_must $ZPOOL replace $TESTPOOL $odev $dev
-		while check_state "$TESTPOOL" "replacing" \
-			"online" || \
-			! is_pool_resilvered $TESTPOOL ; do
-			$SLEEP 2
+		while check_state "$TESTPOOL" "resilvering" "online" || \
+		    ! is_pool_resilvered $TESTPOOL ; do
+			$SLEEP 1
 		done
 
-		log_mustnot $ZPOOL offline $TESTPOOL $dev
-		log_must check_state $TESTPOOL $dev "online"
+		log_must $ZPOOL offline $TESTPOOL $dev
+		log_must check_state $TESTPOOL $dev "offline"
 
-		log_mustnot $ZPOOL online $TESTPOOL $dev
+		log_must $ZPOOL online $TESTPOOL $dev
 		log_must check_state $TESTPOOL $dev "online"
 
 		log_must $ZPOOL detach $TESTPOOL $dev
 	done
 }
 
-log_assert "'zpool offline/online <pool> <vdev>' against a hot spare works as expect."
+log_assert "'zpool on/offline' against a hot spare works as expected"
 
 log_onexit cleanup
 
@@ -110,4 +108,4 @@ for keyword in "${keywords[@]}" ; do
 	destroy_pool "$TESTPOOL"
 done
 
-log_pass "'zpool offline/online <pool> <vdev>' against a hot spare works as expected."
+log_pass "'zpool on/offline' against a hot spare works as expected"

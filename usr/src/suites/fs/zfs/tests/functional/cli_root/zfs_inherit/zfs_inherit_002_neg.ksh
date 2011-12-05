@@ -23,8 +23,7 @@
 #
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-#
-# ident	"@(#)zfs_inherit_002_neg.ksh	1.2	08/05/14 SMI"
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/include/libtest.kshlib
@@ -36,7 +35,7 @@
 # ID: zfs_inherit_002_neg
 #
 # DESCRIPTION:
-# 'zfs inherit' should return an error with bad parameters in one command. 
+# 'zfs inherit' should return an error with bad parameters in one command.
 #
 # STRATEGY:
 # 1. Set an array of bad options and invlid properties to 'zfs inherit'
@@ -55,21 +54,23 @@
 
 verify_runnable "both"
 
-function cleanup 
+function cleanup
 {
 	if snapexists $TESTPOOL/$TESTFS@$TESTSNAP; then
 		log_must $ZFS destroy $TESTPOOL/$TESTFS@$TESTSNAP
 	fi
 }
 
-log_assert "'zfs inherit' should return an error with bad parameters in one command." 
+log_assert "'zfs inherit' should return an error with bad parameters in \
+one command."
 log_onexit cleanup
 
 set -A badopts "r" "R" "-R" "-rR" "-a" "-" "-?" "-1" "-2" "-v" "-n"
 set -A props "recordsize" "mountpoint" "sharenfs" "checksum" "compression" \
-	"atime" "devices" "exec" "setuid" "readonly" "zoned" "snapdir" "aclmode" \
-	"aclinherit" "shareiscsi" "xattr" "copies"
-set -A illprops "recordsiz" "mountpont" "sharen" "compres" "atme" "???" "***" "blah"
+    "atime" "devices" "exec" "setuid" "readonly" "zoned" "snapdir" "aclmode" \
+    "aclinherit" "xattr" "copies"
+set -A illprops "shareiscsi" "recordsiz" "mountpont" "sharen" "compres" \
+    "atme" "???" "***" "blah"
 
 log_must $ZFS snapshot $TESTPOOL/$TESTFS@$TESTSNAP
 
@@ -80,7 +81,8 @@ for ds in $TESTPOOL $TESTPOOL/$TESTFS $TESTPOOL/$TESTVOL \
 	#zfs inherit should fail with bad options
 	for opt in ${badopts[@]}; do
 		for prop in ${props[@]}; do
-			log_mustnot eval "$ZFS inherit $opt $prop $ds >/dev/null 2>&1"
+			log_mustnot eval "$ZFS inherit $opt $prop $ds \
+			    >/dev/null 2>&1"
 		done
 	done
 
@@ -99,7 +101,7 @@ for ds in $TESTPOOL $TESTPOOL/$TESTFS $TESTPOOL/$TESTVOL \
 				${props[(( i + 1 ))]} $ds >/dev/null 2>&1"
 
 		(( i = i + 2 ))
-	done	
+	done
 
 done
 
@@ -107,6 +109,6 @@ done
 for prop in ${props[@]}; do
 	log_mustnot eval "$ZFS inherit $prop >/dev/null 2>&1"
 	log_mustnot eval "$ZFS inherit -r $prop >/dev/null 2>&1"
-done	
+done
 
 log_pass "'zfs inherit' failed as expected when passing illegal arguments."

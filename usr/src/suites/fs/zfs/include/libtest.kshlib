@@ -847,7 +847,7 @@ function poolexists
 		return 1
 	fi
 
-	$ZPOOL list -H "$pool" > /dev/null 2>&1
+	$ZPOOL get name "$pool" > /dev/null 2>&1
 	return $?
 }
 
@@ -862,7 +862,7 @@ function datasetexists
 	fi
 
 	while (( $# > 0 )); do
-		$ZFS list -H -t filesystem,snapshot,volume $1 > /dev/null 2>&1 || \
+		$ZFS get name $1 > /dev/null 2>&1 || \
 			return $?
 		shift
 	done
@@ -1534,31 +1534,31 @@ function check_pool_status # pool token keyword
 #
 function is_pool_resilvering #pool
 {
-	check_pool_status "$1" "scrub" "resilver in progress"
+	check_pool_status "$1" "scan" "resilver in progress since "
 	return $?
 }
 
 function is_pool_resilvered #pool
 {
-	check_pool_status "$1" "scrub" "resilver completed"
+	check_pool_status "$1" "scan" "resilvered "
 	return $?
 }
 
 function is_pool_scrubbing #pool
 {
-	check_pool_status "$1" "scrub" "scrub in progress"
+	check_pool_status "$1" "scan" "scrub in progress since "
 	return $?
 }
 
 function is_pool_scrubbed #pool
 {
-	check_pool_status "$1" "scrub" "scrub completed"
+	check_pool_status "$1" "scan" "scrub repaired"
 	return $?
 }
 
 function is_pool_scrub_stopped #pool
 {
-	check_pool_status "$1" "scrub" "scrub stopped"
+	check_pool_status "$1" "scan" "scrub canceled"
 	return $?
 }
 

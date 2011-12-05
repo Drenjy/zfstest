@@ -23,8 +23,7 @@
 #
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-#
-# ident	"@(#)zfs_set_002_neg.ksh	1.1	07/10/09 SMI"
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/tests/functional/cli_root/zfs_set/zfs_set_common.kshlib
@@ -36,7 +35,7 @@
 # ID: zfs_set_002_neg
 #
 # DESCRIPTION:
-# 'zfs set' should fail with invalid arguments 
+# 'zfs set' should fail with invalid arguments
 #
 # STRATEGY:
 # 1. Create an array of invalid arguments
@@ -60,7 +59,7 @@ log_assert "'zfs set' fails with invalid arguments"
 set -A editable_props "quota" "reservation" "reserv" "volsize" "recordsize" "recsize" \
 		"mountpoint" "checksum" "compression" "compress" "atime" \
 		"devices" "exec" "setuid" "readonly" "zoned" "snapdir" "aclmode" \
-		"aclinherit" "canmount" "shareiscsi" "xattr" "copies" "version" 
+		"aclinherit" "canmount" "xattr" "copies" "version"
 
 for ds in $TESTPOOL $TESTPOOL/$TESTFS $TESTPOOL/$TESTVOL \
 	$TESTPOOL/$TESTFS@$TESTSNAP; do

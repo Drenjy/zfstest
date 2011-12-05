@@ -23,8 +23,7 @@
 #
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-#
-# ident	"@(#)history_001_pos.ksh	1.3	07/05/25 SMI"
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/tests/functional/history/history_common.kshlib
@@ -92,12 +91,12 @@ exec_record $ZPOOL online $MPOOL $VDEV1
 exec_record $ZPOOL attach $MPOOL $VDEV1 $VDEV4
 exec_record $ZPOOL detach $MPOOL $VDEV4
 exec_record $ZPOOL replace -f $MPOOL $VDEV1 $VDEV4
-exec_record $ZPOOL scrub -s $MPOOL
+exec_record $ZPOOL scrub $MPOOL
 exec_record $ZPOOL export $MPOOL
 exec_record $ZPOOL import -d $mntpnt $MPOOL
 exec_record $ZPOOL destroy $MPOOL
 exec_record $ZPOOL import -D -f -d $mntpnt $MPOOL
-exec_record $ZPOOL clear $MPOOL 
+exec_record $ZPOOL clear $MPOOL
 
 format_history $MPOOL $REAL_HISTORY
 log_must $DIFF $REAL_HISTORY $EXPECT_HISTORY
@@ -106,7 +105,7 @@ log_must $DIFF $REAL_HISTORY $EXPECT_HISTORY
 # Check current system ZFS version.
 # If ZFS version > 4, do upgrade test. Otherwise, ignore it.
 #
-# Format: 
+# Format:
 #
 #	This system is currently running ZFS version 6.
 #

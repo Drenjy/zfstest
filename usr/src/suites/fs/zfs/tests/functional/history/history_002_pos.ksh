@@ -23,8 +23,7 @@
 #
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-#
-# ident	"@(#)history_002_pos.ksh	1.5	09/01/12 SMI"
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/tests/functional/history/history_common.kshlib
@@ -100,7 +99,6 @@ set -A props \
 	aclinherit	discard		aclinherit	noallow		\
 	aclinherit	secure		aclinherit	passthrough	\
 	canmount	off		canmount	on		\
-	shareiscsi	on		shareiscsi	off		\
 	xattr		on		xattr		off		\
 	compression	gzip		compression	gzip-$((RANDOM%9 + 1)) \
 	copies		$((RANDOM%3 +1))

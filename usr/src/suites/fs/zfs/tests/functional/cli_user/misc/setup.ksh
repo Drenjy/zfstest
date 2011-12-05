@@ -23,8 +23,7 @@
 #
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-#
-# ident	"@(#)setup.ksh	1.2	08/02/27 SMI"
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/include/libtest.kshlib
@@ -69,7 +68,7 @@ log_must $ZFS unmount $TESTPOOL/$TESTFS/$TESTFS2.unmounted
 $ZFS send $TESTPOOL/$TESTFS@snap > /tmp/zfstest_datastream.dat
 if [ ! -s /tmp/zfstest_datastream.dat ]
 then
-	log_fail "Zfs send datafile was not created!"
+	log_fail "ZFS send datafile was not created!"
 fi
 log_must $CHMOD 644 /tmp/zfstest_datastream.dat
 
@@ -87,7 +86,6 @@ do
 	log_must $ZFS set $prop_name=$prop_val $TESTPOOL/$TESTFS/prop
         i=$(( $i + 1 ))
 done
-
 
 # create a filesystem we don't mind renaming
 log_must $ZFS create $TESTPOOL/$TESTFS/renameme
@@ -137,8 +135,8 @@ then
 	# and create a pool we can perform attach remove replace,
 	# etc. operations with
 	log_must $ZPOOL create $TESTPOOL.virt mirror /$TESTDIR/disk1.dat \
-	 /$TESTDIR/disk2.dat /$TESTDIR/disk3.dat /$TESTDIR/disk-offline.dat \
-	 spare /$TESTDIR/disk-spare1.dat
+	/$TESTDIR/disk2.dat /$TESTDIR/disk3.dat /$TESTDIR/disk-offline.dat \
+	spare /$TESTDIR/disk-spare1.dat
 
 
 	# Offline one of the disks to test online
@@ -150,7 +148,7 @@ then
 	log_must $ZPOOL export $TESTPOOL.exported
 
 	# Now setup pool properties if they're supported
-	GET=$($ZPOOL 2>&1 | $FGREP "get <all")
+	GET=$($ZPOOL 2>&1 | $GREP "get <\"all")
 	if [ -n "$GET" ]
 	then
 		set -A props $POOL_PROPS

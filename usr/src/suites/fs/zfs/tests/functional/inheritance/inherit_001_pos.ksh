@@ -23,8 +23,7 @@
 #
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-#
-# ident	"@(#)inherit_001_pos.ksh	1.5	09/08/06 SMI"
+# Copyright (c) 2011 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/include/libtest.kshlib
@@ -403,15 +402,6 @@ set -A local_val "off" "on" "off" "off" "off" \
 	"off" "on" "" \
 	"$TESTDIR" "visible" "discard" "discard" \
 	"off"
-
-$ZFS get shareiscsi > /dev/null 2>&1
-if [[ $? -eq 0 ]]; then
-	typeset -i i=${#prop[*]}
-	prop[i]="shareiscsi"
-	prop[((i+1))]=""
-	def_val[((i/2))]="off"
-	local_val[((i/2))]="on"
-fi
 
 #
 # Global flag indicating whether the default record size had been
