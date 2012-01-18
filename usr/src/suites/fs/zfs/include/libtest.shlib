@@ -325,7 +325,7 @@ function destroy_mirrors
 function default_raidz_setup
 {
 	typeset disklist="$*"
-	set -A disks $disklist
+	disks=(${disklist[*]})
 
 	if [[ ${#disks[*]} -lt 2 ]]; then
 		log_fail "A raid-z requires a minimum of two disks."
@@ -381,9 +381,9 @@ function default_cleanup_noexit
 					destroy_pool $pool
 				fi
 				ALL_POOLS=$($ZPOOL list -H -o name \
-		    		| $GREP -v "$NO_POOLS" \
-		    		| $EGREP -v "$exclude" \
-		    		)
+				| $GREP -v "$NO_POOLS" \
+				| $EGREP -v "$exclude" \
+				)
 			done
 		done
 
@@ -535,7 +535,7 @@ function snapexists
 # Sets a property of the dataset to the value as passed in.
 # @param:
 #	$1 dataset who's property is being set
-# 	$2 property to set
+#	$2 property to set
 #	$3 value to set property to
 # @return:
 #	0 if the property could be set.
@@ -1040,11 +1040,9 @@ function verify_runnable # zone limit
 	if is_global_zone ; then
 		case $limit in
 			global|both)
-				break
 				;;
 			local)  log_unsupported "Test is unable to run from \
 					global zone."
-				break
 				;;
 			*)      log_note "Warning: unknown limit $limit - " \
 				    "use both."
@@ -1053,11 +1051,9 @@ function verify_runnable # zone limit
 	else
 		case $limit in
 			local|both)
-				break
 				;;
 			global) log_unsupported "Test is unable to run from \
 					local zone."
-				break
 				;;
 			*)      log_note "Warning: unknown limit $limit - " \
 				    "use both."
@@ -1079,7 +1075,7 @@ function verify_runnable # zone limit
 function verify_runtime # time
 {
 	typeset -i time=$1
-	set -A str "" "short" "medium" "long"
+	str=("" "short" "medium" "long")
 
 	if (( time > RUNTIME )) ; then
 		log_unsupported  \
@@ -1247,15 +1243,15 @@ function zfs_zones_setup #zone_name zone_root zone_ip
 	# Install sysidcfg file
 	#
 	typeset sysidcfg=$zone_root/$zone_name/root/etc/sysidcfg
-  	$ECHO "system_locale=C" > $sysidcfg
-  	$ECHO  "terminal=dtterm" >> $sysidcfg
-  	$ECHO  "network_interface=primary {" >> $sysidcfg
-  	$ECHO  "hostname=$zone_name" >> $sysidcfg
-  	$ECHO  "}" >> $sysidcfg
-  	$ECHO  "name_service=NONE" >> $sysidcfg
-  	$ECHO  "root_password=mo791xfZ/SFiw" >> $sysidcfg
-  	$ECHO  "security_policy=NONE" >> $sysidcfg
-  	$ECHO  "timezone=US/Eastern" >> $sysidcfg
+	$ECHO "system_locale=C" > $sysidcfg
+	$ECHO  "terminal=dtterm" >> $sysidcfg
+	$ECHO  "network_interface=primary {" >> $sysidcfg
+	$ECHO  "hostname=$zone_name" >> $sysidcfg
+	$ECHO  "}" >> $sysidcfg
+	$ECHO  "name_service=NONE" >> $sysidcfg
+	$ECHO  "root_password=mo791xfZ/SFiw" >> $sysidcfg
+	$ECHO  "security_policy=NONE" >> $sysidcfg
+	$ECHO  "timezone=US/Eastern" >> $sysidcfg
 
 	# Boot this zone
 	log_must $ZONEADM -z $zone_name boot
@@ -1372,7 +1368,7 @@ function get_disklist # pool
 	typeset disklist=""
 
 	disklist=$($ZPOOL iostat -v $1 | $NAWK '(NR >4 ) {print $1}' | \
- 		$GREP -v "\-\-\-\-\-" | \
+		$GREP -v "\-\-\-\-\-" | \
 		$EGREP -v -e "^(mirror|raidz1|raidz2|spare|log|cache)$" )
 
 	$ECHO $disklist
@@ -2111,7 +2107,7 @@ function iscsitgt_setup
 		return
 	fi
 
-    	log_must $SVCADM enable -t $ISCSITGT_FMRI
+	log_must $SVCADM enable -t $ISCSITGT_FMRI
 
 	typeset -i retry=20
 	while [[ "ON" != $($SVCS -H -o sta $ISCSITGT_FMRI) && \
@@ -2574,7 +2570,7 @@ function fs_prop_exist
 	$ZFS get 2>&1 | \
 		$AWK '/PROPERTY/ {start=1; next}
 			/Sizes/ {start=0}
-		  	start==1 {print $1}' | \
+			start==1 {print $1}' | \
 		$GREP -w "$prop" > /dev/null 2>&1
 
 	return $?

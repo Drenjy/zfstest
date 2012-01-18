@@ -23,11 +23,11 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)Makefile	1.2	07/03/14 SMI"
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
 
 STF_PROTODIR            = contrib/include
-STF_INCLUDES		= logapi.kshlib logapi.h
+STF_INCLUDES		= logapi.shlib logapi.h
 STF_DONTBUILDMODES	= true
 
 include ${STF_TOOLS_MAKEFILES}/Makefile.master

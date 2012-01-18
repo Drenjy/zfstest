@@ -23,13 +23,13 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)zfs_destroy_common.kshlib	1.3	07/03/14 SMI"
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/include/libtest.kshlib
 
 #
-# Create or recover a set of test environment which include ctr, vol, fs, 
+# Create or recover a set of test environment which include ctr, vol, fs,
 # snap & clone. It looks like the following.
 #
 # pool
@@ -68,7 +68,7 @@ function setup_testenv #[dtst]
 			log_must $MKDIR $TESTDIR1
 		fi
 		log_must $MOUNT /dev/zvol/dsk/$VOL $TESTDIR1
-	fi 
+	fi
 
 	if [[ $dtst == snap || $dtst == clone ]]; then
 		if ! datasetexists $FSSNAP; then
@@ -78,7 +78,7 @@ function setup_testenv #[dtst]
 			log_must $ZFS snapshot $VOLSNAP
 		fi
 	fi
-	
+
 	if [[ $dtst == clone ]]; then
 		if ! datasetexists $FSCLONE; then
 			log_must $ZFS clone $FSSNAP $FSCLONE
@@ -93,10 +93,6 @@ function setup_testenv #[dtst]
 #
 function cleanup_testenv
 {
-	if (( ${#init_dir} != 0 )); then
-		cd $init_dir
-		init_dir=""
-	fi
 	if is_global_zone && ismounted "$TESTDIR1" "ufs" ; then
 		log_must $UMOUNT -f $TESTDIR1
 	fi
@@ -104,7 +100,7 @@ function cleanup_testenv
 		log_must $RM -rf $TESTDIR1
 	fi
 
-	$PKILL ${DD##*/}
+	$PKILL $MKBUSY
 
 	if datasetexists $CTR; then
 		log_must $ZFS destroy -Rf $CTR
@@ -112,7 +108,7 @@ function cleanup_testenv
 }
 
 #
-# Delete volume and related datasets from list, if the test cases was 
+# Delete volume and related datasets from list, if the test cases was
 # runing in local zone. Then check them are existed or non-exists.
 #
 # $1   function name
@@ -138,6 +134,10 @@ function check_dataset
 	done
 
 	if (( ${#newlist} != 0 )); then
-		log_must eval "$funname $newlist"
+		# Run each item in $newlist individually so on failure, the
+		# probelmatic dataset is listed in the logs.
+		for i in $newlist; do
+			log_must $funname $i
+		done
 	fi
 }

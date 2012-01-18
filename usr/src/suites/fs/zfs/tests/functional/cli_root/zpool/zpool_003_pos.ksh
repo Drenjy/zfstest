@@ -24,7 +24,7 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)zpool_003_pos.ksh	1.1	07/10/09 SMI"
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
 . $STF_SUITE/include/libtest.kshlib
 
@@ -66,14 +66,16 @@ else
 	log_mustnot $ZPOOL freeze ${TESTPOOL%%/*}
 fi
 
-log_mustnot $ZPOOL freeze fakepool	
+log_mustnot $ZPOOL freeze fakepool
+
+# Remove corefile possibly left by previous failing run of this test.
+[[ -f core ]] && log_must rm -f core
 
 ZFS_ABORT=1; export ZFS_ABORT
 $ZPOOL > /dev/null 2>&1
-typeset ret=$?
 unset ZFS_ABORT
-if [[ $ret != 134 ]]; then
-	log_fail "$ZPOOL not dump core by request."
-fi
+
+[[ -f core ]] || log_fail "$ZPOOL did not dump core by request."
+[[ -f core ]] && log_must rm -f core
 
 log_pass "Debugging features of zpool succeed."

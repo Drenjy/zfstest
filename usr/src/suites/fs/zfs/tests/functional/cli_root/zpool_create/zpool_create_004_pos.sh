@@ -1,4 +1,4 @@
-#!/bin/ksh -p
+#!/usr/bin/bash
 #
 # CDDL HEADER START
 #
@@ -24,10 +24,10 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)zpool_create_004_pos.ksh	1.4	08/11/03 SMI"
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.kshlib
+
+. $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.shlib
 
 ################################################################################
 #
@@ -36,14 +36,14 @@
 # ID: zpool_create_004_pos
 #
 # DESCRIPTION:
-# 'zpool create [-f]' can create a storage pool with large number of 
+# 'zpool create [-f]' can create a storage pool with large number of
 # file-in-zfs-filesystem-based vdevs without any errors.
 #
 # STRATEGY:
-# 1. Create assigned number of files in ZFS filesystem as vdevs 
+# 1. Create assigned number of files in ZFS filesystem as vdevs
 # 2. Creating a new pool based on the vdevs should get success
 # 3. Fill in the filesystem and create a partially writen file as vdev
-# 4. Add the new file into vdevs list and create a pool 
+# 4. Add the new file into vdevs list and create a pool
 # 5. Creating a storage pool with the new vdevs list should be failed.
 #
 # TESTABILITY: explicit
@@ -66,7 +66,7 @@ function cleanup
 		poolexists $pool && \
 			destroy_pool $pool
 	done
-	
+
 	if datasetexists $TESTPOOL/$TESTFS; then
 		log_must $ZFS destroy -f $TESTPOOL/$TESTFS
 	fi
@@ -82,19 +82,18 @@ function cleanup
 	partition_disk $SIZE $disk 6
 }
 
-	
 #
-# Create a pool and fs on the assigned disk, and dynamically create large numbers of
-# files as vdevs.(the default value is <VDEVS_NUM>) 
+# Create a pool and fs on the assigned disk, and dynamically create large
+# numbers of files as vdevs.(the default value is <VDEVS_NUM>)
 #
 
-function setup_vdevs #<disk> 
+function setup_vdevs #<disk>
 {
 	typeset disk=$1
 	typeset -i largest_num=0
 	typeset -i slice_size=0
 	typeset vdev=""
-	
+
 
 	#
 	# Get disk size for zfs filesystem
@@ -104,10 +103,10 @@ function setup_vdevs #<disk>
 	typeset -i fs_size=$(get_prop "available" foo/fs)
 	destroy_pool foo
 
-	(( largest_num = fs_size / (1024 * 1024 * ${POOL_MINSIZE}) )) 
+	(( largest_num = fs_size / (1024 * 1024 * ${POOL_MINSIZE}) ))
 	if (( largest_num < $VDEVS_NUM )); then
-		#minus $largest_num/$MD_OVERHEAD to leave space for metadata 
-		(( vdevs_num=largest_num - largest_num/$MD_OVERHEAD )) 
+		#minus $largest_num/$MD_OVERHEAD to leave space for metadata
+		(( vdevs_num=largest_num - largest_num/$MD_OVERHEAD ))
 		file_size=$POOL_MINSIZE
 		vdev=$disk
 	else
@@ -115,28 +114,30 @@ function setup_vdevs #<disk>
 		(( file_size = fs_size / \
 		 (1024 * 1024 * (vdevs_num + vdevs_num/$MD_OVERHEAD)) ))
 		if (( file_size > FILE_SIZE )); then
-			# if file_size too large, the time cost will increase. so
-                        # we limit the file_size to $FILE_SIZE, and thus the total
-                        # time spent on creating file can be controlled within
-                        # $STF_TIMEOUT
+			# If file_size too large, the time cost will increase so
+                        # we limit the file_size to $FILE_SIZE, and thus the
+			# total time spent on creating file can be controlled
+			# within $STF_TIMEOUT
 			file_size=$FILE_SIZE
-		fi		
-		# plus $vdevs_num/$MD_OVERHEAD to provide enough space for metadata
-		(( slice_size = file_size * (vdevs_num + vdevs_num/$MD_OVERHEAD) )) 
+		fi
+		# Add $vdevs_num/$MD_OVERHEAD to provide enough space for
+		# metadata
+		(( slice_size = file_size * (vdevs_num + \
+		    vdevs_num/$MD_OVERHEAD) ))
 		set_partition 0 "" ${slice_size}m $disk
 		vdev=${disk}s0
         fi
 
-	create_pool $TESTPOOL $vdev  
+	create_pool $TESTPOOL $vdev
 	[[ -d $TESTDIR ]] && \
-		log_must $RM -rf $TESTDIR  
-        log_must $MKDIR -p $TESTDIR  
-        log_must $ZFS create $TESTPOOL/$TESTFS 
-        log_must $ZFS set mountpoint=$TESTDIR $TESTPOOL/$TESTFS  
+		log_must $RM -rf $TESTDIR
+        log_must $MKDIR -p $TESTDIR
+        log_must $ZFS create $TESTPOOL/$TESTFS
+        log_must $ZFS set mountpoint=$TESTDIR $TESTPOOL/$TESTFS
 
 	typeset -i count=0
 	typeset PIDLIST=""
-	while (( count < vdevs_num )); do 
+	while (( count < vdevs_num )); do
 		$MKFILE ${file_size}m ${TESTDIR}/file.$count &
 		PIDLIST="$PIDLIST $!"
 		vdevs_list="$vdevs_list ${TESTDIR}/file.$count"
@@ -152,8 +153,8 @@ function setup_vdevs #<disk>
         return 0
 }
 
-log_assert " 'zpool create [-f]' can create a storage pool with large numbers of vdevs " \
-		"without any errors."
+log_assert " 'zpool create [-f]' can create a storage pool with large " \
+    "numbers of vdevs without any errors."
 log_onexit cleanup
 
 if [[ -n $DISK ]]; then
@@ -162,7 +163,8 @@ else
         disk=$DISK0
 fi
 
-log_note "Create storage pool with number of $VDEVS_NUM file vdevs should succeed."
+log_note "Create storage pool with number of $VDEVS_NUM file vdevs should " \
+    "succeed."
 vdevs_list=""
 vdevs_num=$VDEVS_NUM
 file_size=$FILE_SIZE
@@ -173,18 +175,19 @@ create_pool $TESTPOOL1 $vdevs_list
 if poolexists $TESTPOOL1; then
 	destroy_pool $TESTPOOL1
 else
-	log_fail " Creating pool with large of numbers of file-vdevs fail."
+	log_fail " Creating pool with large numbers of file-vdevs fail."
 fi
-	
-log_note "Creating storage pool with partially written file as vdev should be failed."
+
+log_note "Creating storage pool with partially written file as vdev should " \
+    "fail."
 
 left_space=$(get_prop "available" $TESTPOOL/$TESTFS)
 # Count the broken file size. make sure it should be greater than $left_space
 # so, here, we plus a number -- $file_size, this number can be any other number.
 (( file_size = left_space / (1024 * 1024) + file_size ))
-log_mustnot $MKFILE ${file_size}m ${TESTDIR}/broken_file 
+log_mustnot $MKFILE ${file_size}m ${TESTDIR}/broken_file
 vdevs_list="$vdevs_list ${TESTDIR}/broken_file"
 
-log_mustnot $ZPOOL create -f $TESTPOOL2 $vdevs_list 
+log_mustnot $ZPOOL create -f $TESTPOOL2 $vdevs_list
 
 log_pass "'zpool create [-f]' with $vdevs_num vdevs success."

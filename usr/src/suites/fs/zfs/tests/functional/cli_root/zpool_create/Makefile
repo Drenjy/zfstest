@@ -23,7 +23,7 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)Makefile	1.5	09/05/19 SMI"
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
 
 STF_ROOT_CONFIGURE=
@@ -58,7 +58,7 @@ STF_ROOT_TESTCASES=zpool_create_001_pos zpool_create_002_pos \
 STF_USER_TESTCASES=
 
 STF_ENVFILES=zpool_create.cfg
-STF_INCLUDES=zpool_create.kshlib
+STF_INCLUDES=zpool_create.kshlib zpool_create.shlib
 
 STF_DONTBUILDMODES=true
 

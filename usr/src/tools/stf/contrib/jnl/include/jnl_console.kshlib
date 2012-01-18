@@ -23,7 +23,7 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)jnl_console.kshlib	1.2	07/04/30 SMI"
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
 
 #
@@ -31,7 +31,7 @@
 # The journalizing functions for retreive and display console messages.
 #
 
-. ${STF_TOOLS}/include/stf.kshlib
+. ${STF_TOOLS}/include/stf.shlib
 . ${STF_TOOLS}/contrib/include/jnl.kshlib
 
 # return variable

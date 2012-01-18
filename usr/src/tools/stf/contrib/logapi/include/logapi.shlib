@@ -23,15 +23,10 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)logapi.kshlib	1.2	07/03/14 SMI"
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
 
-#
-# This is a ksh function library. It is intended to be sourced into
-# other ksh scripts and not executed directly.
-#
-
-. ${STF_TOOLS}/include/stf.kshlib
+. ${STF_TOOLS}/include/stf.shlib
 
 # Output an assertion
 #
@@ -86,7 +81,7 @@ function log_mustnot
 # Execute a negative test with keyword expected, and exit
 # $STF_FAIL if test passes
 #
-# $1 - keyword expected 
+# $1 - keyword expected
 # $2-$@ - command to execute
 
 function log_mustnot_expect
@@ -98,7 +93,7 @@ function log_mustnot_expect
 # Execute and print command with status where success equals non-zero result
 # or output includes expected keyword
 #
-# $1 - keyword expected 
+# $1 - keyword expected
 # $2-$@ - command to execute
 #
 # return 0 if command fails, or the output contains the keyword expected,
@@ -202,7 +197,7 @@ function log_pos
 		fi
 	fi
 	_recursive_output $logfile "false"
-	return $status	
+	return $status
 }
 
 # Set an exit handler
@@ -321,7 +316,7 @@ function log_other
 # Internal functions
 #
 
-# Perform cleanup and exit 
+# Perform cleanup and exit
 #
 # $1 - stf exit code
 # $2-$n - message text
@@ -344,7 +339,7 @@ function _endlog
 }
 
 # Output a formatted line
-# 
+#
 # $@ - message text
 
 function _printline

@@ -23,16 +23,9 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)stf.shlib	1.2	07/04/12 SMI"
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
 
-#
-# This file is for bourne shell functionality only.
-# Any ksh functionality must go into stf.kshlib.
-# stf.kshlib includes this file, so any code here must
-# work for ksh also or the sharable code must be moved
-# to a different (new) common file
-#
 
 STF_PASS=0
 STF_FAIL=1
@@ -58,3 +51,7 @@ STF_RESULT_NAME_7="NORESULT"
 STF_RESULT_NAME_8="WARNING"
 STF_RESULT_NAME_9="TIMED_OUT"
 STF_RESULT_NAME_10="OTHER"
+
+# do this to use the array: ${STF_RESULT_NAMES[$result]}
+STF_RESULT_NAMES=( "PASS" "FAIL" "UNRESOLVED" "NOTINUSE" "UNSUPPORTED" \
+    "UNTESTED" "UNINITIATED" "NORESULT" "WARNING" "TIMED_OUT" "OTHER" )

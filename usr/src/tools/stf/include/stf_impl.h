@@ -22,13 +22,11 @@
 /*
  * Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
  * Use is subject to license terms.
- *
+ * Copyright (c) 2012 by Delphix. All rights reserved.
  */
 
 #ifndef _STF_IMPL_H
 #define	_STF_IMPL_H
-
-#pragma ident	"@(#)stf_impl.h	1.9	08/11/21 SMI"
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,7 +47,7 @@ extern "C" {
 #include <synch.h>
 
 #define	LIBVERS 1.4	/* libtpi version number, same as VERS in Makefile */
-#define	MAXCHAR 1024
+#define	MAXCHAR 8192
 
 /* reference codes */
 #define	JNL_START		"Start"

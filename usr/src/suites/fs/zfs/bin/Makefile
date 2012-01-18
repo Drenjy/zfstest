@@ -23,15 +23,25 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)Makefile	1.4	08/11/03 SMI"
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
 STF_CFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
 STF_LDFLAGS += -ldevid
 
-STF_EXECUTABLES=devname2devid file_check file_write file_trunc \
-	largest_file mmapwrite readmmap chg_usr_exec \
-	mktree randfree_file dir_rd_update rm_lnkcnt_zero_file \
-	rename_dir
+STF_EXECUTABLES=chg_usr_exec \
+	devname2devid \
+	dir_rd_update \
+	file_check \
+	file_trunc \
+	file_write \
+	largest_file \
+	mkbusy \
+	mktree \
+	mmapwrite \
+	randfree_file \
+	readmmap \
+	rename_dir \
+	rm_lnkcnt_zero_file
 
 STF_BUILD_SUBDIRS=scripts
 

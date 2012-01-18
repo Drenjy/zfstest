@@ -24,13 +24,13 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)zfs_destroy_001_pos.ksh	1.3	09/08/06 SMI"
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_destroy/zfs_destroy_common.kshlib
 
-#################################################################################
+################################################################################
 #
 # __stc_assertion_start
 #
@@ -60,7 +60,7 @@
 verify_runnable "both"
 
 #
-# According to parameters, 1st, create suitable testing environment. 2nd, 
+# According to parameters, 1st, create suitable testing environment. 2nd,
 # run 'zfs destroy $opt <dataset>'. 3rd, check the system status.
 #
 # $1 option of 'zfs destroy'
@@ -80,8 +80,9 @@ function test_n_check
 
 	# '-f' has no effect on non-filesystems
 	if [[ $opt == -f ]]; then
-		if [[ $dtst != $FS || $dtst != $CTR ]]; then
-			log_note "UNSUPPORTED: '-f ' is only available for FS."
+		if [[ $dtst != $FS ]]; then
+			log_note "UNSUPPORTED: '-f ' is only available for " \
+			    "leaf FS."
 			return
 		fi
 	fi
@@ -108,28 +109,45 @@ function test_n_check
 		$CTR|$FS)
 			if [[ $opt == *f* ]]; then
 				mpt_dir=$(get_prop mountpoint $FS)
-				$DD if=/dev/zero of=$mpt_dir/$TESTFILE0 &
-				log_note "$DD if=/dev/zero " \
-					"of=$mpt_dir/$TESTFILE0"
-				log_must $SLEEP 3
+				pidlist="$pidlist $($MKBUSY \
+				    $mpt_dir/$TESTFILE0)"
+				log_note "$MKBUSY $mpt_dir/$TESTFILE0 " \
+				    "(pidlist: $pidlist)"
+				[[ -z $pidlist ]] && \
+				    log_fail "Failure from $MKBUSY"
 				log_mustnot $ZFS destroy -rR $dtst
 			fi
 			;;
-		$VOL)	
+		$VOL)
 			if [[ $opt == *f* ]]; then
-				$DD if=/dev/zero of=$TESTDIR1/$TESTFILE0 &
-				log_note "$DD if=/dev/zero " \
-					"of=$mpt_dir/$TESTFILE0"
-				log_must $SLEEP 3
+				pidlist="$pidlist $($MKBUSY \
+				    $TESTDIR1/$TESTFILE0)"
+				log_note "$MKBUSY $TESTDIR1/$TESTFILE0 " \
+				    "(pidlist: $pidlist)"
+				[[ -z $pidlist ]] && \
+				    log_fail "Failure from $MKBUSY"
 				log_mustnot $ZFS destroy -rR $dtst
 			fi
 			;;
-		$FSSNAP|$VOLSNAP)
+		$VOLSNAP)
+			if [[ $opt == *f* ]]; then
+				pidlist="$pidlist $($MKBUSY \
+				    $TESTDIR1/$TESTFILE0)"
+				log_note "$MKBUSY $TESTDIR1/$TESTFILE0 " \
+				    "(pidlist: $pidlist)"
+				[[ -z $pidlist ]] && \
+				    log_fail "Failure from $MKBUSY"
+				log_must $ZFS destroy -rR $dtst
+				log_must $ZFS snapshot $dtst
+			fi
+			;;
+		$FSSNAP)
 			if [[ $opt == *f* ]]; then
 				mpt_dir=$(snapshot_mountpoint $dtst)
-				init_dir=$PWD
-				log_note "cd $mpt_dir to make it busy"
-				cd $mpt_dir
+				pidlist="$pidlist $($MKBUSY $mpt_dir)"
+				log_note "$MKBUSY $mpt_dir (pidlist: $pidlist)"
+				[[ -z $pidlist ]] && \
+				    log_fail "Failure from $MKBUSY"
 				log_must $ZFS destroy -rR $dtst
 				log_must $ZFS snapshot $dtst
 			fi
@@ -141,8 +159,14 @@ function test_n_check
 	if is_global_zone; then
 		log_must $UMOUNT -f $TESTDIR1
 	fi
+
 	# Invoke 'zfs destroy [-rRf] <dataset>'
 	log_must $ZFS destroy $opt $dtst
+
+	# Kill any lingering instances of mkbusy, and clear the list.
+	[[ -z $pidlist ]] || log_must $KILL -TERM $pidlist
+	pidlist=""
+	log_mustnot $PGREP -fl $MKBUSY
 
 	case $dtst in
 		$CTR)	check_dataset datasetnonexists \
@@ -197,6 +221,7 @@ log_onexit cleanup_testenv
 
 typeset dtst=""
 typeset opt=""
+typeset pidlist=""
 for dtst in $CTR $FS $VOL $FSSNAP $VOLSNAP; do
 	for opt in "-r" "-R" "-f" "-rf" "-Rf"; do
 		log_note "Starting test: $ZFS destroy $opt $dtst"

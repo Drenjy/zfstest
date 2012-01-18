@@ -23,12 +23,12 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)Makefile	1.9	07/04/12 SMI"
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
 
 STF_FILEMODE=444
 
-STF_DATAFILES=stf.h stf.kshlib stf.tcllib stf.pm stf_common.kshlib stf.explib \
+STF_DATAFILES=stf.h stf.shlib stf.tcllib stf.pm stf_common.kshlib stf.explib \
 	stf.shlib errors.kshlib mstf.h mstf.tcllib testgen.kshlib
 
 all: errors.kshlib

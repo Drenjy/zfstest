@@ -23,9 +23,9 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)Makefile	1.3	07/05/25 SMI"
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
 
-STF_INCLUDES=libtest.kshlib libremote.kshlib
+STF_INCLUDES=libtest.kshlib libtest.shlib libremote.kshlib
 STF_DONTBUILDMODES=true
 include ${STF_TOOLS}/Makefiles/Makefile.master

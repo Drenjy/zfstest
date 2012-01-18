@@ -1,0 +1,126 @@
+#
+# This file and its contents are supplied under the terms of the
+# Common Development and Distribution License ("CDDL"), version 1.0.
+# You may only use this file in accordance with the terms of version
+# 1.0 of the CDDL.
+#
+# A full copy of the text of the CDDL should have accompanied this
+# source.  A copy of the CDDL is also available via the Internet at
+# http://www.illumos.org/license/CDDL.
+#
+
+#
+# Copyright (c) 2012 by Delphix.
+# All rights reserved.
+#
+
+ZFS Test Suite README
+
+Table of Contents
+
+1. Repository Contents
+2. Building And Installing From Source
+3. Configuring And Running The Tests
+4. Results
+
+-------------------------------------------------------------------------------
+
+1. Repository Contents
+This repository contains source for the four packages required to build and
+run the ZFS test suite.
+
+usr/src/tools/checkenv
+	A series of environment checks required by the STF package
+
+usr/src/tools/runwattr
+	A package to allow processes to run with arbitrary privilege
+
+usr/src/tools/stf
+	The Solaris Test Framework
+
+usr/src/suites/fs/zfs/
+	The ZFS tests
+
+2. Building And Installing From Source
+
+2.1. Get the source
+
+The source can be cloned from this repository:
+
+	$ git clone git://github.com/delphix/zfstest.git $WS
+
+and includes the source for all four packages described in the previous section.
+
+2.2. Build the STF package and its dependents
+
+The first step is to create a proto area that STF will use to build its own
+package, which in turn is used to build the various tests (like the ZFS suite)
+written for the framework. The sources here all require the Sun Studio
+compilers, and can't be compiled with gcc.
+
+	$ cd $WS/usr/src/tools/stf
+	$ make
+
+This will create a proto area in $WS/proto that must be part of $PATH to
+continue building the framework. Once the framework is built the proto area
+should be removed from $PATH, and replaced with the path to the installed
+framework binaries.
+
+	$ export SAVED_PATH=$PATH
+	$ export PATH=$WS/usr/src/tools/stf/bin/$(uname -p):$PATH
+	$ stf_build package
+	$ sudo sudo pkgadd -d $WS/packages/$(uname -p) SUNWstc-stf
+	$ export PATH=/opt/SUNWstc-stf/bin/$(uname -p):$SAVED_PATH
+
+Now you can use stf_build to build the dependent runwattr package and the ZFS
+suite itself, but first build the checkenv package, which doesn't get built by
+the framework, but rather with Makefiles.
+
+	$ cd $WS/usr/src/tools/checkenv
+	$ make package
+	$ sudo sudo pkgadd -d $WS/packages/$(uname -p) SUNWstc-checkenv
+
+And finally, build the runwattr and ZFS packages (note that the ZFS suite must
+be built on a system that has the STF package already installed. Use the
+stf_build binary found under /opt/SUNWstc-stf, as STF delivers some headers
+that the ZFS package requires but aren't found in the proto area):
+
+	$ cd $WS/usr/src/tools/runwattr
+	$ stf_build package
+	$ cd $WS/usr/src/suites/fs/zfs
+	$ stf_build package
+	$ sudo sudo pkgadd -d $WS/packages/$(uname -p) SUNWstc-runwattr
+	$ sudo sudo pkgadd -d $WS/packages/$(uname -p) SUNWstc-fs-zfs
+
+3. Configuring And Running The Tests
+
+The user running the test must not be root, and must have no privileges defined
+in /etc/user_attr.
+
+	$ cd /opt/SUNWstc-fs-zfs
+	$ stf_configure -c DISKS="$DISKS" -c KEEP="poolA poolB"
+	$ cd tests/functional/
+	$ stf_execute -m $(uname -p) $TESTS
+
+Notes:
+
+The value of $TESTS is evaluated recursively from the directory in which
+stf_execute is launched. If $TESTS is empty, and $PWD is
+/opt/SUNWstc-fs-zfs/tests/functional then all the regression tests will run. If
+$PWD is ...tests/functional/cli_root/zpool or ...tests/functional/acl then only
+those tests will run. To run a test individually, cd into its directory and run
+"stf_execute -m $(uname -p) $TESTNAME". Note that there is currently no way to
+specify a list of individual tests from a variety of directories.
+
+$DISKS is a space delimited list of disks specified as cxtydz. Any data on
+these disks is destroyed, and three or more should be specified.
+
+$KEEP specifies a list of pools that won't be destroyed. Specifying rpool is
+not required. Avoid using the test suite on systems that have valuable data as
+a precaution.
+
+4. Results
+
+Results can be found in /var/tmp/SUNWstc-fs-zfs/results, and summarized with
+stf_filter. The -r option is particularly useful for getting a summary based on
+a particular result type, such as "!PASS", "UNSUPPORTED" or "TIMED_OUT".

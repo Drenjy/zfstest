@@ -24,7 +24,7 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)zdb_001_neg.ksh	1.4	08/02/27 SMI"
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
 . $STF_SUITE/include/libtest.kshlib
 
@@ -69,8 +69,8 @@ set -A args "create" "add" "destroy" "import fakepool" \
     "setvprop" "blah blah" "-%" "--?" "-*" "-=" \
     "-a" "-f" "-g" "-h" "-j" "-k" "-m" "-n" "-o" "-p" "-p /tmp" \
     "-q" "-r" "-t" "-w" "-x" "-y" "-z" \
-    "-A" "-D" "-E" "-F" "-G" "-H" "-I" "-J" "-K" "-M" \
-    "-N" "-P" "-Q" "-R" "-S" "-T" "-V" "-W" "-X" "-Y" "-Z"
+    "-D" "-E" "-G" "-H" "-I" "-J" "-K" "-M" \
+    "-N" "-Q" "-R" "-S" "-T" "-V" "-W" "-Y" "-Z"
 
 log_assert "Execute zdb using invalid parameters."
 
