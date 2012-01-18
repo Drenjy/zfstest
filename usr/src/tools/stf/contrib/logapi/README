@@ -23,8 +23,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)README	1.2	07/03/14 SMI"
-#
 
 The logapi is a lightweight journaling API designed for use within the Solaris
 Test Framework (STF). This interface provides the following:

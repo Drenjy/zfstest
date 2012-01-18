@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)zfs_unmount_007_neg.ksh	1.3	07/10/09 SMI"
-#
 
 . $STF_SUITE/tests/functional/cli_root/zfs_mount/zfs_mount.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_unmount/zfs_unmount.kshlib

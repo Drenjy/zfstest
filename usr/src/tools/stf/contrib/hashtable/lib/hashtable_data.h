@@ -27,8 +27,6 @@
 #ifndef _HASHTABLE_DATA_H
 #define	_HASHTABLE_DATA_H
 
-#pragma ident	"@(#)hashtable_data.h	1.3	07/04/12 SMI"
-
 /*
  *	Hash table data definitions.
  *

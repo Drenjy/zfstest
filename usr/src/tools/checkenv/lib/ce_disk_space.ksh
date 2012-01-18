@@ -2,8 +2,6 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)ce_disk_space.ksh	1.2	09/01/21 SMI"
-#
 
 #
 # Check the remote host is alive and rsh reachable

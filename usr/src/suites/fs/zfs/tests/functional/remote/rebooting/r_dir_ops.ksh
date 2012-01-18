@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)r_dir_ops.ksh	1.2	07/01/09 SMI"
-#
 RTEST_ROOT=$1
 prog=`whence -p $0`
 progpath=${prog%/*}

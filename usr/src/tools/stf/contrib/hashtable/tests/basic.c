@@ -24,8 +24,6 @@
  * Use is subject to license terms.
  */
 
-#pragma ident	"@(#)basic.c	1.15	07/05/04 SMI"
-
 /*
  * basic.c
  *

@@ -23,8 +23,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)mstf_launch.exp	1.3	07/04/12 SMI"
-#
 
 source $env(STF_TOOLS)/include/stf.tcllib
 source $env(STF_TOOLS)/include/mstf.tcllib

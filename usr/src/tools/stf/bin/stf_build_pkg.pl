@@ -24,8 +24,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)stf_build_pkg.pl	1.13	08/11/21 SMI"
-#
 
 #
 # This tool is designed to be run from within the STF build framework

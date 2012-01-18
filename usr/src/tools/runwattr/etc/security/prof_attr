@@ -23,6 +23,4 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)prof_attr	1.2	07/01/30 SMI"
-#
 Solaris Test Collection runwattr:::Run a process with arbitrary credentials:

@@ -24,8 +24,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)stf_unconfigure.ksh	1.15	08/07/30 SMI"
-#
 
 me=`whence $0`
 prog=${0##*/}

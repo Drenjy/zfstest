@@ -24,8 +24,6 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)zpool_upgrade_009_neg.ksh	1.4	09/05/19 SMI"
-#
 
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zpool_upgrade/zpool_upgrade.kshlib

@@ -23,8 +23,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)Makefile.config.template	1.6	08/11/21 SMI"
-#
 
 #
 # Makefile.config[.template]

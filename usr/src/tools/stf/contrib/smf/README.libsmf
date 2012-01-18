@@ -23,8 +23,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 # 
-# ident	"@(#)README.libsmf	1.3	07/04/12 SMI"
-#
 
 Since many of the existing suites in the STC 2.0 gate require a common
 way to interact with SMF, the following will be added to the contributed

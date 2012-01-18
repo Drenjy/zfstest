@@ -23,8 +23,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)target-all	1.21	08/07/30 SMI"
-#
 
 #
 # Except for special cases used in build the STC harness itself, Makefiles

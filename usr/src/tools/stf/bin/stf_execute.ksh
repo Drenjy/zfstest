@@ -24,8 +24,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)stf_execute.ksh	1.22	08/06/26 SMI"
-#
 
 (( ${#__DEBUG} > 0 )) &&
 	[[ :${__DEBUG}: == *:stf_execute:* ]] && 

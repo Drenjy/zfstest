@@ -24,8 +24,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)stf_create_Makefile.config.ksh	1.7	08/11/21 SMI"
-#
 
 #
 # Description:

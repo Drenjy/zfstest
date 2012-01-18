@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)ce_number_of_processors.ksh	1.5	07/11/01 SMI"
-#
 
 #
 # Function ce_number_of_processors

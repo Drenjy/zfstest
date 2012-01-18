@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)smf_cmd_FMRI_wait_test_02.sh	1.2	07/04/12 SMI"
-#
 
 . ${STF_TOOLS}/contrib/include/libsmf.shlib
 

@@ -23,8 +23,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)Makefile	1.5	08/11/03 SMI"
-#
 
 STF_BUILD_SUBDIRS=include .WAIT bin tests etc
 STF_EXECUTE_SUBDIRS=tests

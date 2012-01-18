@@ -28,8 +28,6 @@
 #ifndef _STF_H
 #define	_STF_H
 
-#pragma ident	"@(#)stf.h	1.4	07/05/04 SMI"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

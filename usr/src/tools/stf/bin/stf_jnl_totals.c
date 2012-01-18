@@ -25,8 +25,6 @@
  *
  */
 
-#pragma ident	"@(#)stf_jnl_totals.c	1.4	07/05/04 SMI"
-
 /*
  * stf_jnl_totals differs from the function because you can't pass
  * an array from a script, so each individual result and count

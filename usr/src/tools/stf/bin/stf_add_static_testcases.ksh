@@ -24,8 +24,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)stf_add_static_testcases.ksh	1.5	08/06/26 SMI"
-#
 
 . ${STF_TOOLS}/include/stf_common.kshlib
 

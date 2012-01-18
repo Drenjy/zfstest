@@ -24,8 +24,6 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)r_cleanup.ksh	1.3	09/08/06 SMI"
-#
 RTEST_ROOT=$1
 prog=`whence -p $0`
 progpath=${prog%/*}

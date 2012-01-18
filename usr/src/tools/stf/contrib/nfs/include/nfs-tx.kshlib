@@ -23,8 +23,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)nfs-tx.kshlib	1.6	08/12/12 SMI"
-#
 
 # ------------------------------------------------------------------------
 # is_cipso

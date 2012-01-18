@@ -25,8 +25,6 @@
  *
  */
 
-#pragma ident	"@(#)stf_timeout.c	1.8	08/12/12 SMI"
-
 /*
  * stf_timeout - limit the execution time of a command and report start/stop
  *

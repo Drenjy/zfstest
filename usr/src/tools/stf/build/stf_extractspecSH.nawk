@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)stf_extractspecSH.nawk	1.3	07/04/12 SMI"
-#
 
 #
 # Extract STC .spec file contents from the comments in a C source file.

@@ -23,8 +23,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)Makefile	1.9	08/11/21 SMI"
-#
 
 WD :sh			= pwd
 

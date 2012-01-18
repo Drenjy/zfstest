@@ -24,8 +24,6 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)zfs_acl_chmod_xattr_001_pos.ksh	1.4	09/01/13 SMI"
-#
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 

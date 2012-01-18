@@ -24,8 +24,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)stf_jnl_spec.ksh	1.3	08/06/26 SMI"
-#
 
 #
 # This is a shell script spec file generator that will extract the assertions,

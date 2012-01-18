@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)mv_files_002_pos.ksh	1.2	07/01/09 SMI"
-#
 
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/mv_files/mv_files_common.kshlib

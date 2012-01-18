@@ -27,8 +27,6 @@
 #ifndef	_JNL_FEATURE_TEST_H
 #define	_JNL_FEATURE_TEST_H
 
-#pragma ident	"@(#)jnl_feature_test.h	1.3	07/04/12 SMI"
-
 /*
  * Compiler version dependencies.
  *

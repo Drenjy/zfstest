@@ -24,8 +24,6 @@
  * Use is subject to license terms.
  */
 
-#pragma ident	"@(#)libstf.c	1.15	08/12/12 SMI"
-
 #include <sys/utsname.h>
 #include <sys/types.h>
 #include <sys/stat.h>

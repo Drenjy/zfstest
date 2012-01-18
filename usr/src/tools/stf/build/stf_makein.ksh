@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)stf_makein.ksh	1.3	07/04/13 SMI"
-#
 
 #
 # If a directory exists, and there is a Makefile in it, then change to that

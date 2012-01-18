@@ -24,8 +24,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)zfs_send_004_neg.ksh	1.5	08/02/27 SMI"
-#
 
 . $STF_SUITE/tests/functional/cli_root/cli_common.kshlib
 

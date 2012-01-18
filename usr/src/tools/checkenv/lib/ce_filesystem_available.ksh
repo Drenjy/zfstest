@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)ce_filesystem_available.ksh	1.2	07/01/04 SMI"
-#
 
 #
 # Function ce_filesystem_available

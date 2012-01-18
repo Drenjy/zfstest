@@ -24,8 +24,6 @@
  * Use is subject to license terms.
  */
 
-#pragma ident	"@(#)mktree.c	1.3	07/05/25 SMI"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

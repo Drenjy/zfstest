@@ -23,7 +23,5 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)depend	1.1	07/05/25 SMI"
-#
 P	SUNWstc-checkenv Environment Verification Tool
 P	SUNWstc-runwattr User Specific Execution Tool

@@ -23,8 +23,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)Makefile	1.12	07/08/03 SMI"
-#
 
 CHECKENV_TARGETS = \
 	ce_event_ports \

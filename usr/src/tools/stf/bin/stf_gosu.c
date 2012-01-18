@@ -25,8 +25,6 @@
  *
  */
 
-#pragma ident	"@(#)stf_gosu.c	1.5	07/04/12 SMI"
-
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -23,8 +23,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)Makefile	1.1	08/02/27 SMI"
-#
 
 STF_USER_CONFIGURE=
 STF_ROOT_CONFIGURE=

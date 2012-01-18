@@ -25,8 +25,6 @@
  *
  */
 
-#pragma ident	"@(#)stf_jnl_end.c	1.5	07/05/04 SMI"
-
 /*
  *  stf_jnl_end.c
  */

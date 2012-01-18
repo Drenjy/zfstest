@@ -23,8 +23,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)Makefile	1.3	08/02/27 SMI"
-#
 
 STF_BUILD_SUBDIRS=trivial nontrivial cifs
 STF_EXECUTE_SUBDIRS=trivial nontrivial cifs

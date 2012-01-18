@@ -24,8 +24,6 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)reservation_017_pos.ksh	1.5	09/01/12 SMI"
-#
 
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/reservation/reservation.kshlib

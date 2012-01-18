@@ -23,8 +23,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)Makefile	1.1	08/11/03 SMI"
-#
 
 STF_DATAFILES=hex_key_file raw_key_file passphrase_file
 

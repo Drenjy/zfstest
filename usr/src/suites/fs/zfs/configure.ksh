@@ -24,8 +24,6 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)configure.ksh	1.11	09/05/19 SMI"
-#
 
 # max and min pool version
 typeset -i MAX_POOL_VERSION=$($ZPOOL upgrade|$HEAD -1|$AWK '{print $NF}'|$SED -e   's/\.//g')

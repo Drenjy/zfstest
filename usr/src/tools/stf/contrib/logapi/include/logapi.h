@@ -27,8 +27,6 @@
 #ifndef _LOGAPI_H
 #define	_LOGAPI_H
 
-#pragma ident	"@(#)logapi.h	1.2	07/03/14 SMI"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

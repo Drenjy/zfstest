@@ -23,8 +23,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)Makefile	1.3	07/10/09 SMI"
-#
 
 SUBDIRS=mirror_stress_002 mirror_stress_003 mirror_stress_004 \
 	mirror_stress_005 mirror_stress_006 \

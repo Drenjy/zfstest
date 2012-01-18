@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)dataset_create_write_destroy_exattr.ksh	1.2	07/01/09 SMI"
-#
 
 #	Assertion: That creating and destroying datasets with
 #	files that have attributes do not cause the depletion of

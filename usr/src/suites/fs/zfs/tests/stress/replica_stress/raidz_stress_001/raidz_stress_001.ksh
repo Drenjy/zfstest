@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)raidz_stress_001.ksh	1.1	07/10/09 SMI"
-#
 
 . ${STF_SUITE}/include/libtest.kshlib
 . ${STF_SUITE}/tests/stress/replica_stress/replica_stress_common.kshlib

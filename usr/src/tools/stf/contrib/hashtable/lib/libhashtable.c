@@ -24,8 +24,6 @@
  * Use is subject to license terms.
  */
 
-#pragma ident	"@(#)libhashtable.c	1.3	07/04/12 SMI"
-
 #include <errno.h>
 #include <limits.h>
 #include <note.h>

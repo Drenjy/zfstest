@@ -24,8 +24,6 @@
  * Use is subject to license terms.
  */
 
-#pragma ident	"@(#)generate.c	1.8	07/04/12 SMI"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

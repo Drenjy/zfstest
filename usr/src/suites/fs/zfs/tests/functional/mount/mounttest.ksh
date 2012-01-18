@@ -25,8 +25,6 @@
 # Use is subject to license terms.
 #
 #
-# ident	"@(#)mounttest.ksh	1.2	07/01/09 SMI"
-#
 . $STF_SUITE/include/libtest.kshlib
 
 ################################################################################

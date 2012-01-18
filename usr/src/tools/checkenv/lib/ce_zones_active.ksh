@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)ce_zones_active.ksh	1.3	07/01/04 SMI"
-#
 
 # 
 # Function ce_zones_active

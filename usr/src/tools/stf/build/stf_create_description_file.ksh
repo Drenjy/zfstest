@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)stf_create_description_file.ksh	1.11	07/04/12 SMI"
-#
 
 cat > /tmp/stf_description.$$ <<EOF
 STF_BUILD_MODES="` echo $1`"

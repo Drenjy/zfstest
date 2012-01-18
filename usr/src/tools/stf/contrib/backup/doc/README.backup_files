@@ -23,8 +23,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)README.backup_files	1.2	07/04/12 SMI"
-#
 
 The backup_files.kshlib library provides an interface for STF test suites
 to easily back up existing system files, edit them as they wish, then

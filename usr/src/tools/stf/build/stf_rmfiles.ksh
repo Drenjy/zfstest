@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)stf_rmfiles.ksh	1.3	07/04/12 SMI"
-#
 
 #
 # Ensure that SOME file names were passed. Otherwise the ls to get the list

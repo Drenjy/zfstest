@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)zfs_acl_cp_002_neg.ksh	1.2	07/01/09 SMI"
-#
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 

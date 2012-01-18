@@ -24,8 +24,6 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)ce_host_reachable.ksh	1.5	09/03/29 SMI"
-#
 
 #
 # Function check_reachability

@@ -23,8 +23,6 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)Makefile	1.3	09/05/19 SMI"
-#
 STF_PROTODIR=bin
 
 STF_EXECUTABLES=zpool zfs \

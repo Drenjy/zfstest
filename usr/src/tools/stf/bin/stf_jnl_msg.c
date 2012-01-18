@@ -25,8 +25,6 @@
  *
  */
 
-#pragma ident	"@(#)stf_jnl_msg.c	1.3	07/05/04 SMI"
-
 /*
  *  stf_jnl_msg.c
  */

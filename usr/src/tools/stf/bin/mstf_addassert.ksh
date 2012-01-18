@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)mstf_addassert.ksh	1.2	07/04/12 SMI"
-#
 
 function usage {
 	cat >&2 <<-EOF

@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 # 
-# ident	"@(#)nfs_smf_kshlib_test.ksh	1.3	07/04/12 SMI"
-#
 
 # The caller needs root permission to run the script.
 . ${STF_TOOLS}/contrib/include/nfs-smf.kshlib

@@ -23,8 +23,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)Makefile	1.1	07/01/09 SMI"
-#
 
 STF_ROOT_TESTCASES=zfs_unallow_001_pos zfs_unallow_002_pos \
 	zfs_unallow_003_pos zfs_unallow_004_pos zfs_unallow_005_pos \

@@ -24,8 +24,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 # 
-# ident	"@(#)stf_getpath.ksh	1.1	08/11/21 SMI"
-#
 
 # This script is intended to be used by STF Makefiles for determining
 # various directory paths required for building, packaging and execution

@@ -24,8 +24,6 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)ce_tool_exist.ksh	1.3	09/06/15 SMI"
-#
 
 # 
 # Function ce_tool_exist

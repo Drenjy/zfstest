@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)stf.explib	1.2	07/04/12 SMI"
-#
 
 set STF_PASS 0
 set STF_FAIL 1

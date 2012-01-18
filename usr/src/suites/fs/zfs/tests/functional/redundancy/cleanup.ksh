@@ -24,8 +24,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)cleanup.ksh	1.1	08/05/14 SMI"
-#
 
 . $STF_SUITE/tests/functional/redundancy/redundancy.kshlib
 

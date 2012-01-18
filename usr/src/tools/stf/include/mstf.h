@@ -27,8 +27,6 @@
 #ifndef _MSTF_H
 #define	_MSTF_H
 
-#pragma ident	"@(#)mstf.h	1.2	07/04/12 SMI"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

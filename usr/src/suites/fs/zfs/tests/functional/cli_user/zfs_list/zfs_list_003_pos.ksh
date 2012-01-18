@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)zfs_list_003_pos.ksh	1.1	07/06/05 SMI"
-#
 . $STF_SUITE/include/libtest.kshlib
 
 ################################################################################

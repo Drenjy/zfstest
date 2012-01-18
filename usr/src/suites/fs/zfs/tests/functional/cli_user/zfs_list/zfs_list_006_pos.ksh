@@ -24,8 +24,6 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)zfs_list_006_pos.ksh	1.1	09/05/19 SMI"
-#
 . $STF_SUITE/tests/functional/cli_user/zfs_list/zfs_list.kshlib
 
 #################################################################################

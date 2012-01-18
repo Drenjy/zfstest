@@ -23,8 +23,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)target-subdirs	1.7	07/04/12 SMI"
-#
 
 #
 # Rules & targets for executing make in a subdirectory.

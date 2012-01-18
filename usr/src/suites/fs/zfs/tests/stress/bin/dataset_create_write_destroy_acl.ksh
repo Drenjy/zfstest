@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)dataset_create_write_destroy_acl.ksh	1.3	07/10/09 SMI"
-#
 
 #
 # create a truckload of files with ACLS and destroy them.

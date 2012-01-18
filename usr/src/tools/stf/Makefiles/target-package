@@ -23,8 +23,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)target-package	1.5	08/11/21 SMI"
-#
 
 package: install
 	STF_PKGMODE=${STF_PKGMODE} && \

@@ -23,8 +23,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)target-clobber	1.6	07/04/12 SMI"
-#
 
 clobber: clean
 	@$(RMFILES)	$(_STF_EXECUTABLES) \

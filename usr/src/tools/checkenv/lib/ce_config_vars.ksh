@@ -3,8 +3,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)ce_config_vars.ksh	1.2	07/11/09 SMI"
-#
 
 #
 # Check that a set of variables has the values set

@@ -24,8 +24,6 @@
  * Use is subject to license terms.
  */
 
-#pragma ident	"@(#)libmstf.c	1.2	07/05/04 SMI"
-
 #include <errno.h>
 #include <netdb.h>
 #include <stddef.h>

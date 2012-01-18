@@ -24,8 +24,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)zfs_acl_chmod_aclmode_001_pos.ksh	1.3	08/08/15 SMI"
-#
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 

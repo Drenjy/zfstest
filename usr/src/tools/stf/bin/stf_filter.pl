@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)stf_filter.pl	1.9	07/04/12 SMI"
-#
 
 # File: stf_filter
 ## read in journal file and filter out important stuff

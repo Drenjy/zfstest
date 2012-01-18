@@ -27,8 +27,6 @@
 #ifndef _HASHTABLE_H
 #define	_HASHTABLE_H
 
-#pragma ident	"@(#)hashtable.h	1.3	07/04/12 SMI"
-
 /*
  *	Hash table external prototypes, data types and options.
  */

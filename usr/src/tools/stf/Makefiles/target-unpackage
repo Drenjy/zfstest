@@ -23,8 +23,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)target-unpackage	1.4	08/11/21 SMI"
-#
 
 unpackage:
 	STF_PKGMODE=${STF_PKGMODE} && \

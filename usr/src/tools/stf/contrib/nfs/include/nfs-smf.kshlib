@@ -23,8 +23,6 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)nfs-smf.kshlib	1.14	09/07/01 SMI"
-#
 
 nfs_server="svc:/network/nfs/server:default"
 PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin

@@ -27,8 +27,6 @@
 #ifndef _JNL_PRIVATE_H
 #define	_JNL_PRIVATE_H
 
-#pragma ident	"@(#)jnl_private.h	1.3	07/04/12 SMI"
-
 /*
  *	Private declaration for jnl.c
  */

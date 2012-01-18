@@ -24,8 +24,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)stf_build.ksh	1.20	08/11/21 SMI"
-#
 
 (( ${#__DEBUG} > 0 )) &&
 	[[ :${__DEBUG}: == *:stf_build:* ]] &&

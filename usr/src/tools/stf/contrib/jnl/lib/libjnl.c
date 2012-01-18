@@ -25,8 +25,6 @@
  *
  */
 
-#pragma ident	"@(#)libjnl.c	1.5	07/04/12 SMI"
-
 #include <ctype.h>
 #include <errno.h>
 #include <limits.h>

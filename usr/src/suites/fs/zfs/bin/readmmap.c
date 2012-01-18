@@ -24,8 +24,6 @@
  * Use is subject to license terms.
  */
 
-#pragma ident	"@(#)readmmap.c	1.4	07/05/25 SMI"
-
 /*
  * --------------------------------------------------------------
  *	BugId 5047993 : Getting bad read data.

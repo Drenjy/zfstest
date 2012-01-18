@@ -23,8 +23,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)stf.pm	1.6	07/04/12 SMI"
-#
 
 package		stf;
 require		Exporter;

@@ -23,8 +23,6 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)nfs-util.kshlib	1.31	09/08/02 SMI"
-#
 
 #
 # Function to remotely execute one or more commands, using korn shell.

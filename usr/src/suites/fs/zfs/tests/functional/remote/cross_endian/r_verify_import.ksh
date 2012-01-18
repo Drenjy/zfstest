@@ -24,8 +24,6 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)r_verify_import.ksh	1.4	09/05/19 SMI"
-#
 . ${STF_SUITE}/include/libtest.kshlib
 
 RTEST_ROOT=$1

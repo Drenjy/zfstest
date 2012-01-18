@@ -24,8 +24,6 @@
  * Use is subject to license terms.
  */
 
-#pragma ident	"@(#)liblogapi.c	1.3	07/05/04 SMI"
-
 /*
  * logapi C library
  */

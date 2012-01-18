@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)zpool_destroy_001_neg.ksh	1.3	07/10/09 SMI"
-#
 . $STF_SUITE/include/libtest.kshlib
 
 ################################################################################

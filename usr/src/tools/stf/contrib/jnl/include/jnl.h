@@ -27,8 +27,6 @@
 #ifndef	_JNL_H
 #define	_JNL_H
 
-#pragma ident	"@(#)jnl.h	1.4	07/04/12 SMI"
-
 #ifdef	__cplusplus
 extern "C" {
 #endif

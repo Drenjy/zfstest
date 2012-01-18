@@ -25,8 +25,6 @@
  *
  */
 
-#pragma ident	"@(#)stf_jnl_context.c	1.12	07/05/07 SMI"
-
 /*
  * stf_jnl_context.c - set up the pipes for capturing output for journal
  *	start-up.

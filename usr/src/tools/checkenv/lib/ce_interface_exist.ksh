@@ -3,8 +3,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)ce_interface_exist.ksh	1.1	07/07/02 SMI"
-#
 
 #
 # Function ce_interface_exist

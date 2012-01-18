@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)checkenv.ksh	1.7	07/01/04 SMI"
-#
 
 export PASS=0
 export FAIL=1

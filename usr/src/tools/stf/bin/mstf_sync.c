@@ -24,8 +24,6 @@
  * Use is subject to license terms.
  */
 
-#pragma ident	"@(#)mstf_sync.c	1.2	07/04/12 SMI"
-
 #include <stdio.h>
 #include <sys/socket.h>
 #include <errno.h>

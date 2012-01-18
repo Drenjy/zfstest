@@ -24,8 +24,6 @@
  * Use is subject to license terms.
  */
 
-#pragma ident	"@(#)daemonize.c	1.2	07/04/12 SMI"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>

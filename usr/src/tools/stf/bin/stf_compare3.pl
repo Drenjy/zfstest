@@ -24,8 +24,6 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)stf_compare3.pl	1.5	07/04/12 SMI"
-#
 
 ## This is copied from the perl library as a workaround for missing libraries
 ## on target machines at the moment.

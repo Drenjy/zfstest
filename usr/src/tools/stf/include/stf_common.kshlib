@@ -23,8 +23,6 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# ident	"@(#)stf_common.kshlib	1.53	08/11/21 SMI"
-#
 
 export STF_COMMON_OPTIONS_USAGE=\
 "	-h|-?      Usage help
