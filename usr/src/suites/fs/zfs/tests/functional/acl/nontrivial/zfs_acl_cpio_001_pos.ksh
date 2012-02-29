@@ -24,6 +24,8 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
+# Copyright (c) 2012 by Marcelo Leal. All rights reserved.
+#
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
 ################################################################################
@@ -70,12 +72,12 @@ function cleanup
 log_assert "Verify that '$CPIO' command supports to archive ZFS ACLs."
 log_onexit cleanup
 
-set -A ops "A+everyone@:execute:allow" \
+set -A ops "A+user:$ZFS_ACL_OTHER1:execute:allow" \
 	"A3+user:$ZFS_ACL_OTHER1:write_data:deny" \
-	"A5+group:$ZFS_ACL_OTHER_GROUP:read_data:deny" \
 	"A0+user:$ZFS_ACL_OTHER1:write_data:deny" \
+	"A3+group:$ZFS_ACL_OTHER_GROUP:read_data:deny" \
 	"A1=user:$ZFS_ACL_STAFF1:write_data:deny" \
-	"A5=group:$ZFS_ACL_STAFF_GROUP:write_data:deny"
+	"A1=group:$ZFS_ACL_STAFF_GROUP:write_data:deny"
 
 log_note "Create second zfs file system to restore the cpio archive."
 log_must $ZFS create $TESTPOOL/$TESTFS1
