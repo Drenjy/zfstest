@@ -24,6 +24,8 @@
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
+# Copyright (c) 2012 by Marcelo Leal. All rights reserved.
+#
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
 ################################################################################
@@ -70,7 +72,7 @@ log_assert "Verify that '$TAR' command supports to archive ZFS ACLs."
 
 log_onexit cleanup
 
-set -A ops " A+everyone@:execute:allow" "a-x" "777"
+set -A ops " A+user:other1:add_file:allow" "A+everyone@:execute:allow" "a-x" "777"
 
 TARFILE=tarfile.$$.tar
 file=$TESTFILE0
