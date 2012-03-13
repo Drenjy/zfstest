@@ -24,7 +24,11 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
+
 #
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/include/libtest.kshlib
 
 ################################################################################
@@ -34,12 +38,13 @@
 # ID: zpool_upgrade_001_pos
 #
 # DESCRIPTION:
-# Executing 'zpool upgrade -v' command succeeds, and also prints a description
-# of at least the current ZFS version.
+# Executing 'zpool upgrade -v' command succeeds, prints a description of legacy
+# versions, and mentions feature flags.
 #
 # STRATEGY:
 # 1. Execute the command
 # 2. Verify a 0 exit status
+# 3. Grep for version descriptions and 'feature flags'
 #
 # TESTABILITY: explicit
 #
@@ -57,13 +62,12 @@ log_assert "Executing 'zpool upgrade -v' command succeeds."
 
 log_must $ZPOOL upgrade -v
 
-# we also check that the usage message contains at least a description 
-# of the current ZFS version.
+# We also check that the usage message contains a description of legacy
+# versions and a note about feature flags.
+
+log_must eval "$ZPOOL upgrade -v | $HEAD -1 | $GREP 'feature flags'"
 
 $ZPOOL upgrade -v > /tmp/zpool-versions.$$
-COUNT=$( $WC -l /tmp/zpool-versions.$$ | $AWK '{print $1}' )
-COUNT=$(( $COUNT - 1 ))
-$TAIL -${COUNT} /tmp/zpool-versions.$$ > /tmp/zpool-versions-desc.$$
 
 #
 # Current output for 'zpool upgrade -v' has different indent space
@@ -71,13 +75,10 @@ $TAIL -${COUNT} /tmp/zpool-versions.$$ > /tmp/zpool-versions-desc.$$
 #  9   refquota and refreservation properties
 #  10  Cache devices
 #
-log_note "Checking to see we have a description for the current ZFS version."
-if (( ZPOOL_VERSION < 10 )); then
-	log_must $GREP "$ZPOOL_VERSION   " /tmp/zpool-versions-desc.$$
-else
-	log_must $GREP "$ZPOOL_VERSION  " /tmp/zpool-versions-desc.$$
-fi
+for version in {1..28}; do
+	log_note "Checking for a description of pool version $version."
+	log_must eval "$AWK '/^ $version / { print $1 }' /tmp/zpool-versions.$$ | $GREP $version"
+done
 $RM /tmp/zpool-versions.$$
-$RM /tmp/zpool-versions-desc.$$
 
 log_pass "Executing 'zpool upgrade -v' command succeeds."

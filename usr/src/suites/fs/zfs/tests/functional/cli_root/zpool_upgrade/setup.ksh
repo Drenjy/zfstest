@@ -24,6 +24,9 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
+
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/include/libtest.kshlib
@@ -34,12 +37,3 @@ verify_disk_count "$DISKS" 2
 
 # give us a pool to play in
 default_mirror_setup $DISKS
-
-# This should have been set by the .cfg script - verify it's set to something
-# (we check that something later on)
-if [ -z "$ZPOOL_VERSION" ]
-then
-   log_unresolved "Unable to determine ZFS Pool version of this machine"
-else
-   log_note "This machine is running ZFS version $ZPOOL_VERSION"
-fi
