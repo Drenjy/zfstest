@@ -27,17 +27,16 @@
 . $STF_SUITE/include/libtest.kshlib
 
 #
-# For zfs create. 
-# When pool version is 9, fs whose version is 4 can be created. 
+# For zfs create.
 #
-set -A zpl_create_versions 3 4
-set -A spa_create_versions 9 9 
+set -A zpl_create_versions 3 4  5
+set -A spa_create_versions 9 15 24
 
 #
-# For zfs upgrade 
+# For zfs upgrade
 #
-set -A zpl_upgrade_versions 3 4
-set -A spa_upgrade_versions 9 15
+set -A zpl_upgrade_versions 3 4  5
+set -A spa_upgrade_versions 9 15 24
 
 function default_setup_datasets #rootfs
 {

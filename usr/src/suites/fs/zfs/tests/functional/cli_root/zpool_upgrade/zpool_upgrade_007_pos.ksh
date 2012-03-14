@@ -59,10 +59,6 @@
 
 verify_runnable "global"
 
-if ! fs_prop_exist "version" ; then
-	log_unsupported "version is not supported by this release."
-fi
-
 function cleanup
 {
 	destroy_upgraded_pool $config
