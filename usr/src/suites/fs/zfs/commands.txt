@@ -165,9 +165,10 @@
 /usr/sbin/zonecfg
 /usr/sbin/zlogin
 /usr/bin/zonename
- 
+
 # ZFS Commands
 /usr/sbin/zdb
+/usr/sbin/zhack
 /usr/sbin/zfs
 /usr/sbin/zpool
 

@@ -54,7 +54,11 @@ STF_ROOT_TESTCASES=zpool_create_001_pos zpool_create_002_pos \
 		zpool_create_020_pos \
 		zpool_create_021_pos \
 		zpool_create_022_pos \
-		zpool_create_023_neg
+		zpool_create_023_neg \
+		zpool_create_features_001_pos \
+		zpool_create_features_002_pos \
+		zpool_create_features_003_pos \
+		zpool_create_features_004_neg
 STF_USER_TESTCASES=
 
 STF_ENVFILES=zpool_create.cfg

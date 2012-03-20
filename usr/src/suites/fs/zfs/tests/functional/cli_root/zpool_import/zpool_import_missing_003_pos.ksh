@@ -131,9 +131,10 @@ function cleanup_all
 	typeset i=0
 	while (( i < $MAX_NUM )); do
 		typeset file=${DEVICE_DIR}/${DEVICE_FILE}$i
-		if  [[ ! -e $file ]]; then
-			log_must $MKFILE $FILE_SIZE $file
+		if  [[ -e $file ]]; then
+			log_must $RM $file
 		fi
+		log_must $MKFILE $FILE_SIZE $file
 		((i += 1))
 	done
 

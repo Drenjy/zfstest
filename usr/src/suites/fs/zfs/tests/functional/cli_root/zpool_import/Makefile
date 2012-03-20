@@ -44,7 +44,10 @@ STF_ROOT_TESTCASES=zpool_import_001_pos zpool_import_002_pos \
     zpool_import_012_pos zpool_import_013_neg \
     zpool_import_rename_001_pos zpool_import_all_001_pos \
     zpool_import_missing_001_pos zpool_import_missing_002_pos \
-    zpool_import_missing_003_pos
+    zpool_import_missing_003_pos \
+    zpool_import_features_001_pos \
+    zpool_import_features_002_neg \
+    zpool_import_features_003_pos
 STF_USER_TESTCASES=
 
 STF_ENVFILES=zpool_import.cfg
