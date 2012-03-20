@@ -20,37 +20,25 @@
 #
 
 #
-# Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
-# Use is subject to license terms.
-#
-
-#
 # Copyright (c) 2012 by Delphix. All rights reserved.
 #
 
 STF_ROOT_CONFIGURE=
 STF_USER_CONFIGURE=
 
-STF_ROOT_SETUP=setup
+STF_ROOT_SETUP=
 STF_USER_SETUP=
 
-STF_ROOT_CLEANUP=cleanup
+STF_ROOT_CLEANUP=
 STF_USER_CLEANUP=
 
-STF_ROOT_TESTCASES=zpool_import_001_pos zpool_import_002_pos \
-    zpool_import_003_pos zpool_import_004_pos zpool_import_005_pos \
-    zpool_import_006_pos zpool_import_007_pos zpool_import_008_pos \
-    zpool_import_009_neg zpool_import_010_pos zpool_import_011_neg \
-    zpool_import_012_pos zpool_import_013_neg \
-    zpool_import_rename_001_pos zpool_import_all_001_pos \
-    zpool_import_missing_001_pos zpool_import_missing_002_pos \
-    zpool_import_missing_003_pos
+STF_ROOT_TESTCASES=
 STF_USER_TESTCASES=
 
-STF_ENVFILES=zpool_import.cfg
+STF_ENVFILES=
 STF_INCLUDES=
 
-STF_BUILD_SUBDIRS=blockfiles
+STF_DATAFILES = unclean_export.dat.Z
 
 STF_DONTBUILDMODES=true
 
