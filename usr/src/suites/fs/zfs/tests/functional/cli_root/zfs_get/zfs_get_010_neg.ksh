@@ -53,10 +53,6 @@
 
 verify_runnable "both"
 
-if ! zfs_get_list_d_supported ; then
-	log_unsupported "'zfs get -d' is not supported."
-fi
-
 log_assert "A negative depth or a non numeric depth should fail in 'zfs get -d <n>'"
 
 set -A  badargs "a" "AB" "aBc" "2A" "a2b" "aB2" "-1" "-32" "-999"

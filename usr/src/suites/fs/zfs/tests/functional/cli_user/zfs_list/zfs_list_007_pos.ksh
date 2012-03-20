@@ -53,10 +53,6 @@
 
 verify_runnable "both"
 
-if ! zfs_get_list_d_supported ; then
-	log_unsupported "'zfs list -d' is not supported."
-fi
-
 set -A fs_type "all" "filesystem" "snapshot"
 if is_global_zone ; then
 	set -A fs_type ${fs_type[*]} "volume"

@@ -63,10 +63,6 @@ function cleanup
 	fi
 }
 
-if ! $(check_opt_support "clone" "-o") ; then
-	log_unsupported "'zfs clone -o' unsupported."
-fi
-
 log_onexit cleanup
 
 log_assert "'zfs clone -o property=value filesystem' can successfully create" \

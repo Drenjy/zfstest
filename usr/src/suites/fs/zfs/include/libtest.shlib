@@ -2171,43 +2171,6 @@ function get_compress_opts
 }
 
 #
-# Check the subcommand/option is supported
-#
-function check_opt_support #command, option
-{
-	typeset command=$1
-	typeset option=$2
-
-	if [[ -z $command ]]; then
-		return 0
-	elif [[ -z $option ]]; then
-		eval "$ZFS 2>&1 | $GREP '$command' > /dev/null 2>&1"
-	else
-		eval "$ZFS $command 2>&1 | $GREP -- '$option' | \
-			$GREP -v -- 'User-defined' > /dev/null 2>&1"
-	fi
-	return $?
-}
-
-#
-# Check the zpool subcommand/option is supported
-#
-function check_zpool_opt_support #command, option
-{
-	typeset command=$1
-	typeset option=$2
-
-	if [[ -z $command ]]; then
-		return 0
-	elif [[ -z $option ]]; then
-		eval "$ZPOOL 2>&1 | $GREP '$command' > /dev/null 2>&1"
-	else
-		eval "$ZPOOL $command 2>&1 | $GREP -- '$option' > /dev/null 2>&1"
-	fi
-	return $?
-}
-
-#
 # Verify zfs operation with -p option work as expected
 # $1 operation, value could be create, clone or rename
 # $2 dataset type, value could be fs or vol

@@ -51,10 +51,6 @@
 #
 ################################################################################
 
-if ! $(check_opt_support "clone" "-p") ; then
-	log_unsupported "'zfs clone -p' is not supported yet."
-fi
-
 verify_runnable "both"
 
 function setup_all

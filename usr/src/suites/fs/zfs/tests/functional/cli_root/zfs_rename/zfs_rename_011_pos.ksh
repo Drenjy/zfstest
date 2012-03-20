@@ -49,11 +49,7 @@
 #
 # __stc_assertion_end
 #
-############################################################################### 
-
-if ! $(check_opt_support "create" "-p") ; then
-	log_unsupported "-p option is not supported yet."
-fi
+###############################################################################
 
 verify_runnable "both"
 

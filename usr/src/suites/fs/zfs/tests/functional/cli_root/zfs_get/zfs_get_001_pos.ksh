@@ -57,16 +57,15 @@
 verify_runnable "both"
 
 set -A options "" "-p" "-r" "-H"
-if zfs_get_list_d_supported ; then
-	typeset -i i=${#options[*]}
-	typeset -i j=0
-	while (( j<${#depth_options[*]} ));
-	do
-		options[$i]=-"${depth_options[$j]}"
-		(( j+=1 ))
-		(( i+=1 ))
-	done
-fi
+
+typeset -i i=${#options[*]}
+typeset -i j=0
+while (( j<${#depth_options[*]} ));
+do
+	options[$i]=-"${depth_options[$j]}"
+	(( j+=1 ))
+	(( i+=1 ))
+done
 
 set -A zfs_props type used available creation volsize referenced \
 	compressratio mounted origin recordsize quota reservation mountpoint \

@@ -53,10 +53,6 @@
 #
 ################################################################################
 
-if ! $(check_zpool_opt_support "create" "-O") ; then
-	log_unsupported "-O option is not supported yet."
-fi
-
 verify_runnable "global"
 
 function cleanup

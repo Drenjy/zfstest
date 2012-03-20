@@ -28,9 +28,7 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_get/zfs_get_list_d.kshlib
 
-if zfs_get_list_d_supported ; then
-	depth_fs_cleanup
-fi
+depth_fs_cleanup
 
 # remove the datasets
 for dataset in $DATASETS

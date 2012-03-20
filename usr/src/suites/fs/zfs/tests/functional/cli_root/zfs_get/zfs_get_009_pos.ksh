@@ -55,10 +55,6 @@
 
 verify_runnable "both"
 
-if ! zfs_get_list_d_supported ; then
-	log_unsupported "'zfs get -d' is not supported."
-fi
-
 log_assert "'zfs get -d <n>' should get expected output."
 log_onexit depth_fs_cleanup
 

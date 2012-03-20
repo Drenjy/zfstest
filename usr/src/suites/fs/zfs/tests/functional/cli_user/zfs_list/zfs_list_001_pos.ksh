@@ -61,53 +61,49 @@ set -A args "list" "list -r" "list -H" \
         "list -H -o name $TESTPOOL/$TESTFS" "list -rH -o name $TESTPOOL/$TESTFS" \
         "list -Hr -o name $TESTPOOL/$TESTFS"
 
-if zfs_get_list_d_supported ; then
-	set -A d_args " " "-r" "-H" \
-        	"$TESTPOOL/$TESTFS" \
-        	"-r $TESTPOOL/$TESTFS" "-H $TESTPOOL/$TESTFS" \
-        	"-rH $TESTPOOL/$TESTFS" "-Hr $TESTPOOL/$TESTFS" \
-        	"-o name $TESTPOOL/$TESTFS" "-r -o name $TESTPOOL/$TESTFS" \
-        	"-H -o name $TESTPOOL/$TESTFS" "-rH -o name $TESTPOOL/$TESTFS" \
-        	"-Hr -o name $TESTPOOL/$TESTFS"
+set -A d_args " " "-r" "-H" \
+        "$TESTPOOL/$TESTFS" \
+        "-r $TESTPOOL/$TESTFS" "-H $TESTPOOL/$TESTFS" \
+        "-rH $TESTPOOL/$TESTFS" "-Hr $TESTPOOL/$TESTFS" \
+        "-o name $TESTPOOL/$TESTFS" "-r -o name $TESTPOOL/$TESTFS" \
+        "-H -o name $TESTPOOL/$TESTFS" "-rH -o name $TESTPOOL/$TESTFS" \
+        "-Hr -o name $TESTPOOL/$TESTFS"
 
-	typeset -i m=${#args[*]}
-	typeset -i n=0
-	typeset -i k=0
-	while (( n<${#depth_options[*]} ));
+typeset -i m=${#args[*]}
+typeset -i n=0
+typeset -i k=0
+while (( n<${#depth_options[*]} ));
+do
+	(( k=0 ))
+	while (( k<${#d_args[*]} ));
 	do
-		(( k=0 ))
-		while (( k<${#d_args[*]} ));
-		do
-			args[$m]="list"" -${depth_options[$n]}"" ${d_args[$k]}"
-			(( k+=1 ))
-			(( m+=1 ))
-		done
-		(( n+=1 ))
+		args[$m]="list"" -${depth_options[$n]}"" ${d_args[$k]}"
+		(( k+=1 ))
+		(( m+=1 ))
 	done
-fi
+	(( n+=1 ))
+done
 
 set -A pathargs "list -r $TESTDIR" "list -H $TESTDIR" \
 	"list -r ./../$TESTDIR" "list -H ./../$TESTDIR"
 
-if zfs_get_list_d_supported ; then
 set -A d_pathargs " $TESTDIR" "-r $TESTDIR" "-H $TESTDIR" \
 	"-r ./../$TESTDIR" "-H ./../$TESTDIR"
 
-	(( m=${#pathargs[*]} ))
-	(( n=0 ))
+(( m=${#pathargs[*]} ))
+(( n=0 ))
+(( k=0 ))
+while (( n<${#depth_options[*]} ));
+do
 	(( k=0 ))
-	while (( n<${#depth_options[*]} ));
+	while (( k<${#d_pathargs[*]} ));
 	do
-		(( k=0 ))
-		while (( k<${#d_pathargs[*]} ));
-		do
-			pathargs[$m]="list"" -${depth_options[$n]}"" ${d_pathargs[$k]}"
-			(( k+=1 ))
-			(( m+=1 ))
-		done
-		(( n+=1 ))
+		pathargs[$m]="list"" -${depth_options[$n]}"" ${d_pathargs[$k]}"
+		(( k+=1 ))
+		(( m+=1 ))
 	done
-fi
+	(( n+=1 ))
+done
 
 log_assert "Verify 'zfs list [-rH] [-o property[,prop]*] [fs|clct|vol]'."
 

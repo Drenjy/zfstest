@@ -49,14 +49,6 @@
 #
 ################################################################################
 
-if ! $(check_opt_support "upgrade") ; then
-	log_unsupported "'zfs upgrade' unsupported."
-fi
-
-if ! $(check_opt_support "clone" "-o") ; then
-	log_unsupported "'zfs clone -o' unsupported."
-fi
-
 ZFS_VERSION=$($ZFS upgrade | $HEAD -1 | $AWK '{print $NF}' \
 	| $SED -e 's/\.//g')
 

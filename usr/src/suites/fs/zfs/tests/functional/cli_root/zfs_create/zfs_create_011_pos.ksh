@@ -53,10 +53,6 @@
 #
 ################################################################################
 
-if ! $(check_opt_support "create" "-p") ; then
-	log_unsupported "'zfs create -p' option is not supported yet."
-fi
-
 verify_runnable "both"
 
 function cleanup

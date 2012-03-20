@@ -57,16 +57,14 @@ when encryption is set to on."
 	$SLEEP 1
 	log_must $ZFS set checksum=${cksumarray[$index]} \
 		$TESTPOOL/$TESTFS/$dataset
-	if datasetexists $TESTPOOL/$TESTFS/${dataset}-vol; then	
-        	log_must $ZFS set checksum=${cksumarray[$index]} \
-	    		$TESTPOOL/$TESTFS/${dataset}-vol
+	if datasetexists $TESTPOOL/$TESTFS/${dataset}-vol; then
+		log_must $ZFS set checksum=${cksumarray[$index]} \
+			$TESTPOOL/$TESTFS/${dataset}-vol
 	fi
-	
+
         index=$((index + 1))
 done
 
-if zfs_get_list_d_supported ; then
-	depth_fs_setup
-fi
+depth_fs_setup
 
 log_pass

@@ -50,14 +50,6 @@
 #
 ################################################################################
 
-if ! $(check_opt_support "create" "-p") ; then
-	log_unsupported "-p option is not supported yet."
-fi
-
-if ! $(check_opt_support "upgrade"); then
-	log_unsupported "zfs upgrade not supported yet."
-fi
-
 ZFS_VERSION=$($ZFS upgrade | $HEAD -1 | $AWK '{print $NF}' \
 	| $SED -e 's/\.//g')
 

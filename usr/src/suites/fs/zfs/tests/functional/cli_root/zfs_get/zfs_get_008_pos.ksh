@@ -55,14 +55,10 @@
 
 verify_runnable "both"
 
-if ! zfs_get_list_d_supported ; then
-	log_unsupported "'zfs get -d' is not supported."
-fi
-
 set -A options " " "-r" "-H" "-p" "-rHp" "-o name" \
 	"-s local,default,temporary,inherited,none" \
 	"-o name -s local,default,temporary,inherited,none" \
-	"-rHp -o name -s local,default,temporary,inherited,none" 
+	"-rHp -o name -s local,default,temporary,inherited,none"
 
 set -A props type used available creation volsize referenced compressratio \
 	mounted origin recordsize quota reservation mountpoint sharenfs \
