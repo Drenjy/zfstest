@@ -87,12 +87,6 @@ function setup_datasets
 }
 
 log_assert "Executing 'zfs upgrade [-V version] -a' command succeeds."
-
-$DF -F zfs / > /dev/null 2>&1
-if (( $? == 0 )) ; then
-	log_unsupported "This case should not run on ZFS root system"
-fi
-
 log_onexit cleanup
 
 rootfs=$TESTPOOL/$TESTFS
@@ -111,7 +105,9 @@ for newv in "" "current" $ZFS_VERSION; do
 		newv=$ZFS_VERSION
 	fi
 
-	log_must eval '$ZFS upgrade $opt -a > /dev/null 2>&1'
+	export __ZFS_POOL_RESTRICT="$TESTPOOL"
+	log_must $ZFS upgrade $opt -a
+	unset __ZFS_POOL_RESTRICT
 
 	for fs in $($ZFS list -rH -t filesystem -o name $rootfs) ; do
 		log_must check_fs_version $fs $newv

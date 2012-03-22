@@ -136,11 +136,23 @@ function cleanup_all
 		$RM -rf ${TEST_BASE_DIR%%/}/testroot$$
 }
 
+#
+# This function takes a single true/false argument. If true it will verify that
+# all file systems are mounted. If false it will verify that they are not
+# mounted.
+#
 function verify_all
 {
 	typeset -i i=0
 	typeset -i j=0
 	typeset path
+	typeset logfunc
+
+	if $1; then
+		logfunc=log_must
+	else
+		logfunc=log_mustnot
+	fi
 
 	while (( i < ${#ctr[*]} )); do
 
@@ -158,11 +170,11 @@ function verify_all
 
 		j=0
 		while (( j < ${#fs[*]} )); do
-			log_must mounted "$path/${fs[j]}"
+			$logfunc mounted "$path/${fs[j]}"
 			((j = j + 1))
 		done
 
-		log_must mounted "$path"
+		$logfunc mounted "$path"
 
 		((i = i + 1))
 	done
@@ -178,11 +190,17 @@ log_onexit cleanup_all
 
 log_must setup_all
 
+export __ZFS_POOL_RESTRICT="$TESTPOOL"
 log_must $ZFS $unmountall
+unset __ZFS_POOL_RESTRICT
 
+verify_all false
+
+export __ZFS_POOL_RESTRICT="$TESTPOOL"
 log_must $ZFS $mountall
+unset __ZFS_POOL_RESTRICT
 
-verify_all
+verify_all true
 
 log_note "Verify that 'zfs $mountcmd' will display " \
 	"all ZFS filesystems currently mounted."

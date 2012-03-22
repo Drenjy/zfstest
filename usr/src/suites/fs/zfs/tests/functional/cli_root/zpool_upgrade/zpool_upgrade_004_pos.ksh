@@ -62,20 +62,16 @@ function cleanup
 }
 
 log_assert "zpool upgrade -a works"
-
-$DF -F zfs / > /dev/null 2>&1
-if (( $? == 0 )); then
-	log_unsupported "This case should not run on ZFS root system"
-fi
-
 log_onexit cleanup
 
+TEST_POOLS=
 # Now build all of our pools
 for config in $CONFIGS
 do
 	POOL_NAME=$($ENV | $GREP "ZPOOL_VERSION_${config}_NAME"\
 		| $AWK -F= '{print $2}')
 
+	TEST_POOLS="$TEST_POOLS $POOL_NAME"
 	create_old_pool $config
 	# a side effect of the check_pool here, is that we get a checksum written
 	# called /$TESTPOOL/pool-checksums.$POOL.pre
@@ -83,7 +79,9 @@ do
 done
 
 # upgrade them all at once
-log_must $ZPOOL upgrade -a > /dev/null
+export __ZFS_POOL_RESTRICT="$TEST_POOLS"
+log_must $ZPOOL upgrade -a
+unset __ZFS_POOL_RESTRICT
 
 # verify their contents then destroy them
 for config in $CONFIGS

@@ -180,20 +180,24 @@ log_must setup_all
 
 typeset opt
 for opt in "-a" "-fa"; do
+	export __ZFS_POOL_RESTRICT="$TESTPOOL"
 	log_must $ZFS $mountall
+	unset __ZFS_POOL_RESTRICT
 
 	if [[ $opt == "-fa" ]]; then
 		mntpnt=$(get_prop mountpoint ${TESTPOOL}/${TESTCTR}/${TESTFS})
 		cd $mntpnt
 		log_mustnot $ZFS unmount -a
 	fi
-	
+
+	export __ZFS_POOL_RESTRICT="$TESTPOOL"
 	log_must $ZFS unmount $opt
+	unset __ZFS_POOL_RESTRICT
 
 	if [[ $opt == "-fa" ]]; then
 		cd  /tmp
 	fi
-	
+
 	log_must verify_all
 	log_note "Verify that 'zfs $mountcmd' will display " \
 	"all ZFS filesystems currently mounted."
