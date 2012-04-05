@@ -26,9 +26,9 @@
 #
 
 . $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/zvol/zvol_common.kshlib
+. $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
-#################################################################################
+################################################################################
 #
 # __stc_assertion_start
 #
@@ -54,50 +54,26 @@
 
 verify_runnable "global"
 
-log_assert "swaplow + swaplen must be less than or equal to the volume size."
+assertion="Verify the sum of swaplow and swaplen is less or equal to volsize"
+log_assert $assertion
 
 typeset vol=$TESTPOOL/$TESTVOL
-typeset -i pageblocks volblocks
+typeset swapname="/dev/zvol/dsk/$vol"
+typeset -i pageblocks volblocks max_swaplow
 #
 # Both swaplow and swaplen are the desired length of
 # the swap area in 512-byte blocks.
 #
 ((pageblocks = $($PAGESIZE) / 512))
 ((volblocks = $(get_prop volsize $vol) / 512))
+((max_swaplow = (volblocks - (pageblocks * 2))))
 
-typeset -i i=0
-while ((i < 10)) ; do
-	while true; do
-		((swaplow = RANDOM % volblocks))
-		# Upwards increment
-		((swaplow += pageblocks))
-		((swaplow -= (swaplow % pageblocks)))
-
-		# At lease one page size was left for swap area
-		((swaplow != volblocks)) && break
-	done
-
-	while true; do
-		((swaplen = RANDOM % (volblocks - swaplow)))
-		# Downward increment
-		((swaplen -= (swaplen % pageblocks)))
-
-		# At lease one page size was left for swap area
-		((swaplen != 0)) && break
-	done
-
-	# The minimum swap size should be 2 pagesize.
-	((swaplow + swaplen < pageblocks * 2)) && continue
-
-	swapname="/dev/zvol/dsk/$vol"
-	if is_swap_inuse $swapname ; then
-		log_must $SWAP -d $swapname
-	fi
-
+for i in {0..10}; do
+	swaplow=$($SHUF -n 1 -i ${pageblocks}-${max_swaplow})
+	((maxlen = max_swaplow - swaplow))
+	swaplen=$($SHUF -n 1 -i ${pageblocks}-${maxlen})
 	log_must $SWAP -a $swapname $swaplow $swaplen
 	log_must $SWAP -d $swapname $swaplow
-
-	((i += 1))
 done
 
-log_pass "Verify swaplow + swaplen must be less than or equal to volsize passed."
+log_pass $assertion

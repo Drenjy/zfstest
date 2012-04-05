@@ -26,7 +26,7 @@
 #
 
 . $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/zvol/zvol_common.kshlib
+. $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
 ###############################################################################
 #
@@ -68,9 +68,6 @@ function cleanup
 }
 
 log_assert "Verify a device cannot be dump and swap at the same time."
-if ! is_dumpswap_supported $TESTPOOL ; then
-	log_unsupported "dumpswap not currently supported."
-fi
 log_onexit cleanup
 
 voldev=/dev/zvol/dsk/$TESTPOOL/$TESTVOL

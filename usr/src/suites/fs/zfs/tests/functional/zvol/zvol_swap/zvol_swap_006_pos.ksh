@@ -25,18 +25,22 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/zvol/zvol_common.kshlib
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
 
-#################################################################################
+. $STF_SUITE/include/libtest.kshlib
+. $STF_SUITE/tests/functional/zvol/zvol_common.shlib
+
+################################################################################
 #
 # __stc_assertion_start
 #
 # ID: zvol_swap_006_pos
 #
 # DESCRIPTION:
-#	 A volume can be add as several segments, but overlapping are not
-#	 allowed.
+#	A volume can be added as several segments, but overlapping segments
+#	are not allowed.
 #
 # STRATEGY:
 #	1. Figure out three groups swaplow and swaplen.
@@ -71,6 +75,10 @@ log_assert "Verify volume can be add as several segments, but overlapping " \
 	"are not allowed."
 log_onexit cleanup
 
+# swap -a won't allow the use of multiple segments of the same volume unless
+# libdiskmgmt is disabled with the environment variable below.
+typeset -x NOINUSE_CHECK=1
+
 typeset vol=$TESTPOOL/$TESTVOL
 typeset -i pageblocks volblocks
 ((pageblocks = $($PAGESIZE) / 512))
@@ -87,7 +95,7 @@ set -A swap_opt	$((pageblocks))	    \
 		$((volblocks / 2))  \
 		$((pageblocks * ((RANDOM % 50) + 1) + (RANDOM % pageblocks) )) \
 		$(((volblocks*2) / 3))  \
-		$((pageblocks * ((RANDOM % 50) + 1) + (RANDOM % pageblocks) )) 
+		$((pageblocks * ((RANDOM % 50) + 1) + (RANDOM % pageblocks) ))
 
 swapname=/dev/zvol/dsk/$vol
 typeset -i i=0 count=0
@@ -96,7 +104,7 @@ if is_swap_inuse $swapname ; then
 	log_must $SWAP -d $swapname
 fi
 
-while ((i < ${#swap_opt[@]})); do 
+while ((i < ${#swap_opt[@]})); do
 	log_must $SWAP -a $swapname ${swap_opt[$i]} ${swap_opt[((i+1))]}
 
 	((i += 2))

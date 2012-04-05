@@ -1,4 +1,4 @@
-#!/bin/ksh -p
+#!/bin/bash
 #
 # CDDL HEADER START
 #
@@ -25,22 +25,26 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
 
-#################################################################################
+. $STF_SUITE/include/libtest.shlib
+
+################################################################################
 #
 # __stc_assertion_start
 #
 # ID: zvol_swap_004_pos
 #
 # DESCRIPTION:
-#	The minimum volume size for swap should be a multiple of 2 pagesize
-#	bytes.
+#	When a swap zvol is added it is resized to be equal to 1/4 c_max,
+#	capped between 2G and 16G.
 #
 # STRATEGY:
-#	1. Get test system page size.
-#	2. Create different size volumes.
-#	3. Verify 'swap -a' has correct behaviour.
+#	1. Determine what 1/4 arc_c_max is.
+#	2. Create a zvols in a variety of sizes.
+#	3. Add them as swap, and verify the volsize is resized correctly.
 #
 # TESTABILITY: explicit
 #
@@ -54,49 +58,40 @@
 
 verify_runnable "global"
 
-function cleanup
-{
-	typeset tmp
-	for tmp in $swaplist ; do
-		log_must $SWAP -d $tmp
-	done
-	for tmp in $vollist ; do
-		log_must $ZFS destroy $tmp
-	done
-}
+log_assert "For an added swap zvol, (2G <= volsize <= 16G)"
 
-log_assert "The minimum volume size should be a multiple of 2 pagesize bytes."
-log_onexit cleanup
+typeset -i min max mem
+((mem = $($KSTAT -p ::arcstats:c_max | $AWK '{print $2}') / 4))
+((min = 2 * 1024 * 1024 * 1024))
+((max = 16 * 1024 * 1024 * 1024))
 
-typeset -i volblksize pagesize=$($PAGESIZE)
-((volblksize = pagesize / 2))
-#
-#	volume size for swap		Expected results
-#
-set -A array	\
-	$((volblksize))			"fail"	\
-	$((2 * volblksize))		"fail"	\
-	$((3 * volblksize))		"fail"	\
-	$((4 * volblksize))		"pass"	\
-	$((5 * volblksize))		"pass"	\
-	$((6 * volblksize))		"pass"
+for vbs in 512 1024 2048 4096 8192 16384 32768 65536 131072; do
+	for multiplier in 1 32 16384 131072; do
+		((volsize = vbs * multiplier))
+		vol="$TESTPOOL/vol_$volsize"
+		swapname="/dev/zvol/dsk/$vol"
 
-typeset -i i=0
-while ((i < ${#array[@]})); do
-	vol="$TESTPOOL/vol_${array[$i]}"
-	vollist="$vollist $vol"
-	
-	log_must $ZFS create -b $volblksize -V ${array[$i]} $vol
-
-	swapname="/dev/zvol/dsk/$vol"
-	if [[ ${array[((i+1))]} == "fail" ]]; then
-		log_mustnot $SWAP -a $swapname
-	else
+		# Create a sparse volume to test larger sizes
+		log_must $ZFS create -s -b $vbs -V $volsize $vol
 		log_must $SWAP -a $swapname
-		swaplist="$swaplist $swapname"
-	fi
 
-	((i += 2))
+		if ((mem <= min)); then		# volsize should be 2G
+			new_volsize=$(get_prop volsize $vol)
+			((new_volsize == min)) || log_fail \
+			    "Unexpected volsize: $new_volsize"
+		elif ((mem >= max)); then	# volsize should be 16G
+			new_volsize=$(get_prop volsize $vol)
+			((new_volsize == max)) || log_fail \
+			    "Unexpected volsize: $new_volsize"
+		else				# volsize should be 'mem'
+			new_volsize=$(get_prop volsize $vol)
+			((new_volsize == mem)) || log_fail \
+			    "Unexpected volsize: $new_volsize"
+		fi
+
+		log_must $SWAP -d $swapname
+		log_must $ZFS destroy $vol
+	done
 done
 
-log_pass "Verify the minimum volume size pass."
+log_pass "For an added swap zvol, (2G <= volsize <= 16G)"

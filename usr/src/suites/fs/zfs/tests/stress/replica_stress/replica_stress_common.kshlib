@@ -63,6 +63,8 @@ function cleanup
 
 	typeset fs
 	for fs in $($ZFS list -H -o name -t filesystem); do
+		$ECHO $fs | $CUT -d/ -f1 | $EGREP $KEEP \
+		    >/dev/null 2>&1 && continue
 		[[ $fs == $pool ]] && continue
 
 		if datasetexists $fs; then

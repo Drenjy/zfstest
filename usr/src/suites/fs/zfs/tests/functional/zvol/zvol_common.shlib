@@ -24,7 +24,11 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
+. $STF_SUITE/include/libtest.shlib
 
 #
 # Create a simple zvol volume
@@ -43,9 +47,7 @@ function default_zvol_setup # disk_device volume_size
 
         log_must $ZFS create -V $size $TESTPOOL/$TESTVOL
 
-	if is_dumpswap_supported $TESTPOOL ; then
-		set_dumpsize $TESTPOOL/$TESTVOL
-	fi
+	set_dumpsize $TESTPOOL/$TESTVOL
 }
 
 #
@@ -59,27 +61,6 @@ function default_zvol_cleanup
 	fi
 
         destroy_pool $TESTPOOL
-}
-
-#
-# Check if the given pool support "Swap and crash dumps"
-#
-function is_dumpswap_supported #pool
-{
-	typeset pool=$1
-
-	if [[ -z $pool ]] ; then
-		log_fail "No pool given."
-	fi
-
-	typeset -i SPA_VER_DUMPSWAP=10
-        typeset -i vp=$(get_pool_prop version $pool)
-
-	if (( vp >= SPA_VER_DUMPSWAP )) ; then
-		return 0
-	fi
-
-	return 1
 }
 
 function get_dumpdevice

@@ -22,7 +22,9 @@
 #
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-# Copyright (c) 2011 by Delphix. All rights reserved.
+
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
 
 # All the commands in this file are converted into environment variables
@@ -90,6 +92,7 @@
 /usr/bin/hostname
 /usr/bin/kill
 /usr/bin/ksh
+/usr/bin/kstat
 /usr/sbin/labelit
 /usr/sbin/lockfs
 /usr/sbin/lofiadm
@@ -132,6 +135,7 @@
 /usr/bin/runat
 /usr/bin/sed
 /usr/sbin/share
+/usr/bin/shuf
 /usr/bin/sleep
 /usr/bin/su
 /usr/bin/sum

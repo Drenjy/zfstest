@@ -25,8 +25,12 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/zvol/zvol_common.kshlib
+. $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
 ###############################################################################
 #
@@ -35,8 +39,7 @@
 # ID: zvol_misc_001_neg
 #
 # DESCRIPTION:
-# Verify that using ZFS volume as a dump device fails until 
-# dumpswap supported.
+#	Verify that using a zvol as a dump device works.
 #
 # STRATEGY:
 # 1. Create a ZFS volume
@@ -64,16 +67,12 @@ function cleanup
 	fi
 }
 
-log_assert "Verify that ZFS volume cannot act as dump device until dumpswap supported."
+log_assert "Verify that a ZFS volume can act as dump device."
 log_onexit cleanup
 
 voldev=/dev/zvol/dsk/$TESTPOOL/$TESTVOL
 savedumpdev=$(get_dumpdevice)
 
-if ! is_dumpswap_supported $TESTPOOL ; then
-	log_mustnot $DUMPADM -d $voldev
-else
-	safe_dumpadm $voldev
-fi
+safe_dumpadm $voldev
 
-log_pass "ZFS volume cannot act as dump device until dumpswap supported as expected."
+log_pass "Verify that a ZFS volume can act as dump device."

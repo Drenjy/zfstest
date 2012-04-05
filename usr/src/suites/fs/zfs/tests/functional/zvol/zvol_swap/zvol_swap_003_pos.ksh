@@ -25,8 +25,12 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/zvol/zvol_common.kshlib
+. $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
 ##################################################################
 #
@@ -39,13 +43,9 @@
 # through /etc/vfstab configuration.
 #
 # STRATEGY:
-# 1. Create a pool
-# 2. Create a zvol volume
-# 3. Save current swaps info and delete current swaps
-# 4. Modify /etc/vfstab to add entry for zvol as swap device
-# 5. Use /sbin/swapadd to zvol as swap device throuth /etc/vfstab
-# 6. Create a file under /tmp
-# 7. Verify the file
+# 1. Modify /etc/vfstab to add the test zvol as swap device.
+# 2. Use /sbin/swapadd to add zvol as swap device throuth /etc/vfstab
+# 3. Create a file under /tmp and verify the file
 #
 # TESTABILITY: explicit
 #
@@ -61,33 +61,22 @@ verify_runnable "global"
 
 function cleanup
 {
-	if [[ -f /tmp/$TESTFILE ]]; then
-		log_must $RM -rf /tmp/$TESTFILE
-	fi
-
-	if [[ -f $TMP_VFSTAB_FILE ]]; then
-		log_must $RM -rf $TMP_VFSTAB_FILE
-	fi
-
-	if [[ -f $NEW_VFSTAB_FILE ]]; then
-		log_must $RM -f $NEW_VFSTAB_FILE
-	fi
-
-	if [[ -f $PREV_VFSTAB_FILE ]]; then
-		log_must $MV $PREV_VFSTAB_FILE $VFSTAB_FILE
-	fi
+	[[ -f /tmp/$TESTFILE ]] && log_must $RM -f /tmp/$TESTFILE
+	[[ -f $NEW_VFSTAB_FILE ]] && log_must $RM -f $NEW_VFSTAB_FILE
+	[[ -f $PREV_VFSTAB_FILE ]] && \
+	    log_must $MV $PREV_VFSTAB_FILE $VFSTAB_FILE
+	[[ -f $PREV_VFSTAB_FILE ]] && $RM -f $PREV_VFSTAB_FILE
 
 	log_must $SWAPADD $VFSTAB_FILE
 
         if is_swap_inuse $voldev ; then
-        	log_must $SWAP -d $voldev
+		log_must $SWAP -d $voldev
 	fi
-	
+
 }
 
-
-log_assert "Verify that a zvol device can be used as a swap device"\
-	  "through /etc/vfstab configuration."
+log_assert "Verify that a zvol device can be used as a swap device" \
+    "through /etc/vfstab configuration."
 
 log_onexit cleanup
 
@@ -95,54 +84,17 @@ voldev=/dev/zvol/dsk/$TESTPOOL/$TESTVOL
 VFSTAB_FILE=/etc/vfstab
 NEW_VFSTAB_FILE=/var/tmp/zvol_vfstab.$$
 PREV_VFSTAB_FILE=/var/tmp/zvol_vfstab.PREV.$$
-TMP_VFSTAB_FILE=/var/tmp/zvol_vfstab.tmp.$$
 
-if [[ -f $NEW_VFSTAB_FILE ]]; then
-	$RM -f $NEW_VFSTAB_FILE
-fi
-$TOUCH $NEW_VFSTAB_FILE
-$CHMOD 777 $NEW_VFSTAB_FILE
+[[ -f $NEW_VFSTAB_FILE ]] && $CP /dev/null $NEW_VFSTAB_FILE
 
-#
-# Go through each line of /etc/vfstab and
-# exclude the comment line and formulate
-# a new file with an entry of zvol device
-# swap device.
-# 
+$AWK '{if ($4 != "swap") print $1}' /etc/vfstab > $NEW_VFSTAB_FILE
+$ECHO "$voldev\t-\t-\tswap\t-\tno\t-"  >> $NEW_VFSTAB_FILE
 
-$GREP -v "^#" $VFSTAB_FILE > $TMP_VFSTAB_FILE
-
-typeset -i fndswapline=0
-while read -r i
-do
-	line=`$ECHO "$i" | $AWK '{print $4}'`
-        if [[  $line == "swap" ]]; then
-                if [[ $fndswapline -eq 0 ]]; then
-                        $ECHO "$voldev"\
-                              "\t-\t-\tswap\t-"\
-                              "\tno\t-" \
-                                >> $NEW_VFSTAB_FILE
-                        fndswapline=1
-                        $ECHO  "Add an entry of zvol device as"\
-                                 "swap device in $VFSTAB_FILE."
-                fi
-        else
-                $ECHO "$i" >> $NEW_VFSTAB_FILE
-        fi
-
-done < $TMP_VFSTAB_FILE
-
-if [[ $fndswapline -eq 1 ]]; then
-	log_must $CP $VFSTAB_FILE $PREV_VFSTAB_FILE 
-	log_must $CP $NEW_VFSTAB_FILE $VFSTAB_FILE 
-else
-	log_fail  "The system has no swap device configuration in /etc/vfstab"
-fi
-
-log_note "Add zvol volume as swap space"
+# Copy off the original vfstab, and run swapadd on the newly constructed one.
+log_must $CP $VFSTAB_FILE $PREV_VFSTAB_FILE
+log_must $CP $NEW_VFSTAB_FILE $VFSTAB_FILE
 log_must $SWAPADD $VFSTAB_FILE
 
-log_note "Create a file under /tmp"
 log_must $FILE_WRITE -o create -f /tmp/$TESTFILE \
     -b $BLOCKSZ -c $NUM_WRITES -d $DATA
 
@@ -150,8 +102,8 @@ log_must $FILE_WRITE -o create -f /tmp/$TESTFILE \
     log_fail "Unable to create file under /tmp"
 
 filesize=`$LS -l /tmp/$TESTFILE | $AWK '{print $5}'`
-tf_size=$(( BLOCKSZ * NUM_WRITES ))
-(( $tf_size != $filesize )) && \
+tf_size=$((BLOCKSZ * NUM_WRITES))
+(($tf_size != $filesize)) && \
     log_fail "testfile is ($filesize bytes), expected ($tf_size bytes)"
 
 log_pass "Successfully added a zvol to swap area through /etc/vfstab."

@@ -25,8 +25,12 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/zvol/zvol_common.kshlib
+. $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
 ###############################################################################
 #
@@ -35,12 +39,12 @@
 # ID: zvol_misc_004_pos
 #
 # DESCRIPTION:
-# Verify permit to create snapshot over active dumpswap zvol.
+# Verify the ability to take snapshots of zvols used as dump or swap.
 #
 # STRATEGY:
 # 1. Create a ZFS volume
 # 2. Set the volume as dump or swap
-# 3. Verify create snapshot over the zvol succeed.
+# 3. Verify creating a snapshot of the zvol succeeds.
 #
 # TESTABILITY: explicit
 #
@@ -87,15 +91,11 @@ function verify_snapshot
 
 	log_mustnot $ZFS rollback -r $volume@snap0
 	log_must datasetexists $volume@snap0
-	log_must datasetexists $volume@snap1
 
 	log_must $ZFS destroy -r $volume@snap0
 }
 
-log_assert "Verify permit to create snapshot over dumpswap."
-if ! is_dumpswap_supported $TESTPOOL ; then
-	log_unsupported "dumpswap not currently supported."
-fi
+log_assert "Verify the ability to take snapshots of zvols used as dump or swap."
 log_onexit cleanup
 
 voldev=/dev/zvol/dsk/$TESTPOOL/$TESTVOL
@@ -120,4 +120,4 @@ verify_snapshot $TESTPOOL/$TESTVOL
 log_must $SWAP -d $voldev
 log_mustnot is_zvol_dumpified $TESTPOOL/$TESTVOL
 
-log_pass "Create snapshot over dumpswap zvol succeed."
+log_pass "Creating snapshots from dump/swap zvols succeeds."

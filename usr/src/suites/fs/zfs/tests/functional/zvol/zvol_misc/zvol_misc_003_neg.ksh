@@ -25,8 +25,12 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/zvol/zvol_common.kshlib
+. $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
 ###############################################################################
 #
@@ -35,12 +39,13 @@
 # ID: zvol_misc_003_neg
 #
 # DESCRIPTION:
-# Verify create storage pool or newfs over volume as dump device is denied.
+#	Verify creating a storage pool or running newfs on a zvol used as a
+#	dump device is denied.
 #
 # STRATEGY:
 # 1. Create a ZFS volume
-# 2. Use dumpadm set the volume as dump device
-# 3. Verify create pool & newfs over the volume return an error.
+# 2. Use dumpadm to set the volume as dump device
+# 3. Verify creating a pool & running newfs on the zvol returns an error.
 #
 # TESTABILITY: explicit
 #
@@ -66,10 +71,7 @@ function cleanup
 	fi
 }
 
-log_assert "Verify create storage pool or newfs over dump volume is denied."
-if ! is_dumpswap_supported $TESTPOOL ; then
-	log_unsupported "dumpswap not currently supported."
-fi
+log_assert "Verify zpool creation and newfs on dump zvol is denied."
 log_onexit cleanup
 
 voldev=/dev/zvol/dsk/$TESTPOOL/$TESTVOL
@@ -79,9 +81,9 @@ safe_dumpadm $voldev
 
 $ECHO "y" | $NEWFS -v $voldev > /dev/null 2>&1
 if (( $? == 0 )) ; then
-	log_fail "newfs over dump volume succeed unexpected"
+	log_fail "newfs on dump zvol succeeded unexpectedly"
 fi
 
 log_mustnot $ZPOOL create $TESTPOOL1 $voldev
 
-log_pass "Verify create storage pool or newfs over dump volume is denied."
+log_pass "Verify zpool creation and newfs on dump zvol is denied."

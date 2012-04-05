@@ -26,11 +26,11 @@
 #
 
 . $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/zvol/zvol_common.kshlib
+. $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
 verify_runnable "global"
 
-log_must $SWAPADD 
+log_must $SWAPADD
 for swapdev in $SAVESWAPDEVS
 do
 	if ! is_swap_inuse $swapdev ; then

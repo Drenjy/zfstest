@@ -26,7 +26,7 @@
 #
 
 . $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/zvol/zvol_common.kshlib
+. $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
 ###############################################################################
 #
@@ -58,7 +58,7 @@ verify_runnable "global"
 function cleanup
 {
 	$RM -rf /tmp/$TESTFILE
-	
+
 	if is_swap_inuse $voldev ; then
 		log_must $SWAP -d $voldev
 	fi

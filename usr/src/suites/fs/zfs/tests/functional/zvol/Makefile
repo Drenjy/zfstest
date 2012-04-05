@@ -37,7 +37,7 @@ STF_ROOT_TESTCASES=
 STF_USER_TESTCASES=
 
 STF_ENVFILES=zvol.cfg
-STF_INCLUDES=zvol_common.kshlib
+STF_INCLUDES=zvol_common.shlib
 
 SUBDIRS :sh = /usr/bin/ls -p | /usr/bin/grep "/$" | /usr/bin/grep -v "SCCS"
 

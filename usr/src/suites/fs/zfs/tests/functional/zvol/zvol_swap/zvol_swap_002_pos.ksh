@@ -1,4 +1,4 @@
-#! /usr/bin/ksh -p
+#!/bin/bash
 #
 # CDDL HEADER START
 #
@@ -25,8 +25,8 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/zvol/zvol_common.kshlib
+. $STF_SUITE/include/libtest.shlib
+. $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
 ###############################################################################
 #
@@ -35,13 +35,13 @@
 # ID: zvol_swap_002_pos
 #
 # DESCRIPTION:
-# Using a zvol as swap space, fill with files until ENOSPC returned.
+#	Add a swap zvol, and consume most (not all) of the space. This test
+#	used to fill up swap, which can hang the system.
 #
 # STRATEGY:
-# 1. Create a pool
-# 2. Create a zvol volume
-# 3. Add zvol to swap space
-# 4. Fill swap space until ENOSPC is returned
+#	1. Create a new zvol and add it as swap
+#	2. Fill /tmp with 80% the size of the zvol
+#	5. Remove the new zvol, and restore original swap devices
 #
 # TESTABILITY: explicit
 #
@@ -53,44 +53,22 @@
 #
 ################################################################################
 
-log_unsupported "Fill swap will cause system hang, hide this case temporarily."
-
 verify_runnable "global"
+log_assert "Using a zvol as swap space, fill /tmp to 80%."
 
-function cleanup
-{
-	$RM -rf /tmp/$TESTDIR
-	
-	if is_swap_inuse $voldev ; then
-		log_must $SWAP -d $voldev
-	fi
-}
+vol=$TESTPOOL/$TESTVOL
+swapdev=/dev/zvol/dsk/$vol
+log_must $SWAP -a $swapdev
 
-log_assert "Using a zvol as swap space, fill with files until ENOSPC returned."
+# Get 80% of the number of 512 blocks in the zvol
+typeset -i count blks volsize=$(get_prop volsize $vol)
+((blks = (volsize / 512) * 80 / 100))
+# Use 'blks' to determine a count for dd based on a 1M block size.
+((count = blks / 2048))
 
-if ! is_dumpswap_supported $TESTPOOL ; then
-	log_unsupported "ZVOLs as swap devices are not currently supported."
-fi
+log_note "Fill 80% of swap"
+log_must $DD if=/dev/urandom of=/tmp/$TESTFILE bs=1048576 count=$count
+log_must $RM -f /tmp/$TESTFILE
+log_must $SWAP -d $swapdev
 
-log_onexit cleanup
-
-voldev=/dev/zvol/dsk/$TESTPOOL/$TESTVOL
-
-$SWAP -l | $GREP zvol
-if (( $? != 0 )) ; then
-	log_note "Add zvol volume as swap space"
-	log_must $SWAP -a $voldev
-fi
-
-typeset -i filenum=0
-typeset -i retval=0
-typeset testdir=/tmp/$TESTDIR
-
-log_note "Attempt to file /tmp until ENOSPC is hit"
-fill_fs $testdir -1 100 $BLOCKSZ $NUM_WRITES
-retval=$?
-
-(( $retval != $ENOSPC )) && \
-    log_fail "ENOSPC was not returned, $retval was returned instead"
-    
-log_pass "ENOSPC was returned as expected"
+log_pass "Using a zvol as swap space, fill /tmp to 80%."
