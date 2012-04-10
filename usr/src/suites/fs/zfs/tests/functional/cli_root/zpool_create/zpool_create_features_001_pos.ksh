@@ -46,7 +46,7 @@ function cleanup
 	datasetexists $TESTPOOL && log_must $ZPOOL destroy $TESTPOOL
 }
 
-function check-features
+function check_features
 {
 	for state in $($ZPOOL get all $TESTPOOL | \
 	    $AWK '$2 ~ /feature@/ { print $3 }'); do
@@ -61,10 +61,10 @@ log_onexit cleanup
 log_assert "'zpool create' creates pools with all features enabled"
 
 log_must $ZPOOL create -f $TESTPOOL $DISKS
-check-features
+check_features
 log_must $ZPOOL destroy -f $TESTPOOL
 
 log_must $ZPOOL create -f -o feature@async_destroy=enabled $TESTPOOL $DISKS
-check-features
+check_features
 
 log_pass "'zpool create' creates pools with all features enabled"

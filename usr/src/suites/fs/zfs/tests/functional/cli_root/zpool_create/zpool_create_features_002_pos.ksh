@@ -45,7 +45,7 @@ function cleanup
 	datasetexists $TESTPOOL && log_must $ZPOOL destroy $TESTPOOL
 }
 
-function check-features
+function check_features
 {
 	for prop in $($ZPOOL get all $TESTPOOL | $AWK '$2 ~ /feature@/ { print $2 }'); do
 		state=$($ZPOOL list -Ho "$prop" $TESTPOOL)
@@ -60,10 +60,10 @@ log_onexit cleanup
 log_assert "'zpool create -d' creates pools with all features disabled"
 
 log_must $ZPOOL create -f -d $TESTPOOL $DISKS
-check-features
+check_features
 log_must $ZPOOL destroy -f $TESTPOOL
 
 log_must $ZPOOL create -f -o version=28 $TESTPOOL $DISKS
-check-features
+check_features
 
 log_pass
