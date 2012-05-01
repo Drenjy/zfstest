@@ -25,9 +25,13 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
+################################################################################
 #
 # __stc_assertion_start
 #
@@ -57,12 +61,12 @@ verify_runnable "both"
 log_assert "'zfs rename' should fail with bad option, null target dataset and" \
 		"too long target dataset name."
 
-set -A badopts "r" "R" "-R" "-rR" "-Rr" "-P" "-pP" "-Pp" "-r*" "-p*" "-?" "-*" \
-		"-" "-f" "-o"
-set -A datasets "$TESTPOOL" "$TESTPOOL/$TESTFS" "$TESTPOOL/$TESTFS@$TESTSNAP" \
-		"$TESTPOOL/$TESTCTR" "$TESTPOOL/$TESTCTR/$TESTFS1" "$TESTPOOL/$TESTVOL"
+badopts=( "r" "R" "-R" "-rR" "-Rr" "-P" "-pP" "-Pp" "-r*" "-p*" "-?" "-*" "-"
+    "-o")
+datasets=("$TESTPOOL" "$TESTPOOL/$TESTFS" "$TESTPOOL/$TESTFS@$TESTSNAP"
+    "$TESTPOOL/$TESTCTR" "$TESTPOOL/$TESTCTR/$TESTFS1" "$TESTPOOL/$TESTVOL")
 
-longname="$(gen_dataset_name 260 abcdefg)"	
+longname="$(gen_dataset_name 260 abcdefg)"
 
 log_must $ZFS snapshot $TESTPOOL/$TESTFS@$TESTSNAP
 for ds in ${datasets[@]}; do

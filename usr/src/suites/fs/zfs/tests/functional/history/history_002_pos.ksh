@@ -23,13 +23,14 @@
 #
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-# Copyright (c) 2011 by Delphix. All rights reserved.
+
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/tests/functional/history/history_common.kshlib
-. $STF_SUITE/tests/functional/cli_root/zfs_rollback/zfs_rollback_common.kshlib
 
-#################################################################################
+################################################################################
 #
 # __stc_assertion_start
 #
@@ -37,13 +38,12 @@
 #
 # DESCRIPTION:
 #	Create a  scenario to verify the following zfs subcommands are logged.
-# 	    create, destroy, clone, rename, snapshot, rollback, 
-#	    set, inherit, receive, promote.
+#	create, destroy, clone, rename, snapshot, rollback, set, inherit,
+#	receive, promote, hold and release.
 #
 # STRATEGY:
-#	1. Format zpool history to file $EXPECT_HISTORY.
-#	2. Invoke every sub-commands to this mirror.
-#	3. Compare 'zpool history' log with expected log.
+#	1. Verify that all the zfs commands listed (barring send) produce an
+#	   entry in the pool history.
 #
 # TESTABILITY: explicit
 #
@@ -59,109 +59,98 @@ verify_runnable "global"
 
 function cleanup
 {
-	for FileToRm in $EXPECT_HISTORY $REAL_HISTORY $tmpfile $tmpfile2; do
-		[[ -f $FileToRm ]] && log_must $RM -f $FileToRm
-	done
+
+	[[ -f $tmpfile ]] && $RM -f $tmpfile
+	[[ -f $tmpfile2 ]] && $RM -f $tmpfile2
 	for dataset in $fs $newfs $fsclone $vol $newvol $volclone; do
 		datasetexists $dataset && $ZFS destroy -Rf $dataset
 	done
-	log_must $RM -rf /history.$$
+	$RM -rf /history.$$
 }
 
 log_assert "Verify zfs sub-commands which modify state are logged."
 log_onexit cleanup
 
-format_history $TESTPOOL $EXPECT_HISTORY
-
 fs=$TESTPOOL/$TESTFS1; newfs=$TESTPOOL/newfs; fsclone=$TESTPOOL/clone
 vol=$TESTPOOL/$TESTVOL ; newvol=$TESTPOOL/newvol; volclone=$TESTPOOL/volclone
 fssnap=$fs@fssnap; fssnap2=$fs@fssnap2
 volsnap=$vol@volsnap; volsnap2=$vol@volsnap2
+tmpfile=/tmp/tmpfile.$$ ; tmpfile2=/tmp/tmpfile2.$$
 
 #	property	value		property	value
 #
-set -A props \
-	quota		64M		recordsize	512		\
-	reservation	32M		reservation	none		\
-	mountpoint	/history.$$	mountpoint	legacy		\
-	mountpoint	none		sharenfs	on		\
-	sharenfs	off	\
-	compression	on		compression	off		\
-	compression	lzjb 		aclmode		discard		\
-	aclmode		groupmask	aclmode		passthrough	\
-	atime		on		atime		off		\
-	devices		on		devices		off		\
-	exec		on		exec		off		\
-	setuid		on		setuid		off		\
-	readonly	on		readonly	off		\
-	zoned		on		zoned		off		\
-	snapdir		hidden		snapdir		visible		\
-	aclinherit	discard		aclinherit	noallow		\
-	aclinherit	secure		aclinherit	passthrough	\
-	canmount	off		canmount	on		\
-	xattr		on		xattr		off		\
-	compression	gzip		compression	gzip-$((RANDOM%9 + 1)) \
-	copies		$((RANDOM%3 +1))
+props=(
+	quota		64M		recordsize	512
+	reservation	32M		reservation	none
+	mountpoint	/history.$$	mountpoint	legacy
+	mountpoint	none		sharenfs	on
+	sharenfs	off
+	compression	on		compression	off
+	compression	lzjb		aclmode		discard
+	aclmode		groupmask	aclmode		passthrough
+	atime		on		atime		off
+	devices		on		devices		off
+	exec		on		exec		off
+	setuid		on		setuid		off
+	readonly	on		readonly	off
+	zoned		on		zoned		off
+	snapdir		hidden		snapdir		visible
+	aclinherit	discard		aclinherit	noallow
+	aclinherit	secure		aclinherit	passthrough
+	canmount	off		canmount	on
+	xattr		on		xattr		off
+	compression	gzip		compression	gzip-$((RANDOM%9 + 1))
+	copies		$((RANDOM%3 + 1))
+)
 
-tmpfile=/tmp/tmpfile.$$ ; tmpfile2=/tmp/tmpfile2.$$
-
-exec_record $ZFS create $fs
-
-typeset enc=""
-enc=$(get_prop encryption $fs)
-if [[ $? -ne 0 ]] || [[ -z "$enc" ]] || [[ "$enc" == "off" ]]; then
-	typeset -i n=${#props[@]}
-
-	props[$n]=checksum ;		props[((n+1))]="on"
-	props[((n+2))]=checksum ;	props[((n+3))]="off"
-	props[((n+4))]=checksum ;	props[((n+5))]="fletcher2"
-	props[((n+6))]=checksum ;	props[((n+7))]="fletcher4"
-	props[((n+8))]=checksum ;	props[((n+9))]="sha256"
-fi
-
+run_and_verify "$ZFS create $fs"
 # Set all the property for filesystem
 typeset -i i=0
 while ((i < ${#props[@]})) ; do
-	exec_record $ZFS set ${props[$i]}=${props[((i+1))]} $fs
+	run_and_verify "$ZFS set ${props[$i]}=${props[((i+1))]} $fs"
 
 	# quota, reservation, canmount can not be inherited.
 	#
-	if [[ ${props[$i]} != "quota" && \
-	      ${props[$i]} != "reservation" && \
-	      ${props[$i]} != "canmount" ]]; 
+	if [[ ${props[$i]} != "quota" && ${props[$i]} != "reservation" && \
+	    ${props[$i]} != "canmount" ]];
 	then
-		exec_record $ZFS inherit ${props[$i]} $fs
+		run_and_verify "$ZFS inherit ${props[$i]} $fs"
 	fi
 
 	((i += 2))
 done
-exec_record $ZFS create -V 64M $vol
-exec_record $ZFS set volsize=32M $vol
-exec_record $ZFS snapshot $fssnap
-exec_record $ZFS snapshot $volsnap
-exec_record $ZFS snapshot $fssnap2
-exec_record $ZFS snapshot $volsnap2
-log_must eval "$ZFS send -i $fssnap $fssnap2 > $tmpfile"
-log_must eval "$ZFS send -i $volsnap $volsnap2 > $tmpfile2"
-exec_record $ZFS destroy $fssnap2
-exec_record $ZFS destroy $volsnap2
-exec_record eval "$ZFS receive $fs < $tmpfile"
-exec_record eval "$ZFS receive $vol < $tmpfile2"
-exec_record $ZFS rollback -r $fssnap
-exec_record $ZFS rollback -r $volsnap
-exec_record $ZFS clone $fssnap $fsclone
-exec_record $ZFS clone $volsnap $volclone
-exec_record $ZFS rename $fs $newfs
-exec_record $ZFS rename $vol $newvol
-exec_record $ZFS promote $fsclone
-exec_record $ZFS promote $volclone
-exec_record $ZFS destroy $newfs
-exec_record $ZFS destroy $newvol
-exec_record $ZFS destroy -rf $fsclone
-exec_record $ZFS destroy -rf $volclone
 
-format_history $TESTPOOL $REAL_HISTORY
+run_and_verify "$ZFS create -V 64M $vol"
+run_and_verify "$ZFS set volsize=32M $vol"
+run_and_verify "$ZFS snapshot $fssnap"
+run_and_verify "$ZFS hold tag $fssnap"
+run_and_verify "$ZFS release tag $fssnap"
+run_and_verify "$ZFS snapshot $volsnap"
+run_and_verify "$ZFS snapshot $fssnap2"
+run_and_verify "$ZFS snapshot $volsnap2"
 
-log_must $DIFF $REAL_HISTORY $EXPECT_HISTORY
+# Send isn't logged...
+log_must $ZFS send -i $fssnap $fssnap2 > $tmpfile
+log_must $ZFS send -i $volsnap $volsnap2 > $tmpfile2
+# Verify that's true
+$ZPOOL history $TESTPOOL | $GREP 'zfs send' >/dev/null 2>&1 && \
+    log_fail "'zfs send' found in history of \"$TESTPOOL\""
+
+run_and_verify "$ZFS destroy $fssnap2"
+run_and_verify "$ZFS destroy $volsnap2"
+run_and_verify "$ZFS receive $fs < $tmpfile"
+run_and_verify "$ZFS receive $vol < $tmpfile2"
+run_and_verify "$ZFS rollback -r $fssnap"
+run_and_verify "$ZFS rollback -r $volsnap"
+run_and_verify "$ZFS clone $fssnap $fsclone"
+run_and_verify "$ZFS clone $volsnap $volclone"
+run_and_verify "$ZFS rename $fs $newfs"
+run_and_verify "$ZFS rename $vol $newvol"
+run_and_verify "$ZFS promote $fsclone"
+run_and_verify "$ZFS promote $volclone"
+run_and_verify "$ZFS destroy $newfs"
+run_and_verify "$ZFS destroy $newvol"
+run_and_verify "$ZFS destroy -rf $fsclone"
+run_and_verify "$ZFS destroy -rf $volclone"
 
 log_pass "zfs sub-commands which modify state are logged passed."

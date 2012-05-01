@@ -27,8 +27,5 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-$ZPOOL history > /dev/null 2>&1
-(($? != 0)) && log_unsupported
-
 DISK=${DISKS%% *}
 default_setup $DISK

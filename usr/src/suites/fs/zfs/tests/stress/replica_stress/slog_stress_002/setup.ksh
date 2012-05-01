@@ -26,16 +26,15 @@
 #
 
 . ${STF_SUITE}/include/libtest.kshlib
-. ${STF_SUITE}/tests/stress/replica_stress/mirror_stress_common.kshlib
 
 setup_raidzs $NUMBER_OF_MIRRORS $DISKS
 
 ln=0
 for pool in $(get_mirrors); do
-        $MKFILE 64m /var/tmp/slog.002.${ln}
+	$MKFILE 64m /var/tmp/slog.002.${ln}
 
-        $ZPOOL add $pool /var/tmp/slog.002.${ln}
-        (( ln = ln + 1 ))
+	$ZPOOL add $pool /var/tmp/slog.002.${ln}
+	(( ln = ln + 1 ))
 done
 
 log_pass

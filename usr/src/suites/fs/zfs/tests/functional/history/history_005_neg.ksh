@@ -25,19 +25,25 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/tests/functional/history/history_common.kshlib
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
 
-#################################################################################
+. $STF_SUITE/include/libtest.kshlib
+
+################################################################################
 #
 # __stc_assertion_start
 #
 # ID: history_005_neg
 #
 # DESCRIPTION:
-# 	Verify the following zpool subcommands are not logged.
-#       	zpool list
+#	Verify the following zpool subcommands are not logged.
+#		zpool get
+#		zpool history
+#		zpool list
 #		zpool status
-#		zpool iostat 
+#		zpool iostat
 #
 # STRATEGY:
 #	1. Create a test pool.
@@ -56,23 +62,17 @@
 
 verify_runnable "global"
 
-function cleanup
-{
-	[[ -f $EXPECT_HISTORY ]] && $RM -f $EXPECT_HISTORY
-	[[ -f $REAL_HISTORY ]] && $RM -f $REAL_HISTORY
-}
-
-log_assert "Verify 'zpool list|status|iostat' will not be logged."
-log_onexit cleanup
+log_assert "Verify 'zpool get|history|list|status|iostat' will not be logged."
 
 # Save initial TESTPOOL history
-log_must eval "$ZPOOL history $TESTPOOL > $EXPECT_HISTORY"
+log_must eval "$ZPOOL history $TESTPOOL >$OLD_HISTORY"
 
-log_must $ZPOOL list $TESTPOOL > /dev/null
-log_must $ZPOOL status $TESTPOOL > /dev/null
-log_must $ZPOOL iostat $TESTPOOL > /dev/null
+log_must $ZPOOL get all $TESTPOOL >/dev/null
+log_must $ZPOOL list $TESTPOOL >/dev/null
+log_must $ZPOOL status $TESTPOOL >/dev/null
+log_must $ZPOOL iostat $TESTPOOL >/dev/null
 
-log_must eval "$ZPOOL history $TESTPOOL > $REAL_HISTORY"
-log_must $DIFF $EXPECT_HISTORY $REAL_HISTORY
+log_must eval "$ZPOOL history $TESTPOOL >$NEW_HISTORY"
+log_must $DIFF $OLD_HISTORY $NEW_HISTORY
 
-log_pass "Verify 'zpool list|status|iostat' passed."
+log_pass "Verify 'zpool get|history|list|status|iostat' will not be logged."

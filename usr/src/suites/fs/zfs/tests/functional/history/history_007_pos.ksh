@@ -25,16 +25,16 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/tests/functional/history/history_common.kshlib
+. $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
+################################################################################
 #
 # __stc_assertion_start
 #
 # ID: history_007_pos
 #
 # DESCRIPTION:
-#	Verify command history moves with pool while pool being migrated 
+#	Verify command history moves with pool while pool being migrated
 #
 # STRATEGY:
 #	1. Import uniform platform and cross platform pools
@@ -61,7 +61,7 @@ function cleanup
 	[[ -d $import_dir ]] && $RM -rf $import_dir
 }
 
-log_assert "Verify command history moves with pool while migrating."
+log_assert "Verify command history moves with migrated pool."
 log_onexit cleanup
 
 tst_dir=$STF_SUITE/tests/functional/history
@@ -77,34 +77,34 @@ typeset -i linenum=0
 for arch in "i386" "sparc"; do
 	log_must $CP $tst_dir/${arch}.orig_history.txt $import_dir
 	orig_cmds_f=$import_dir/${arch}.orig_history.txt
-	#remove blank line
+	# remove blank line
 	orig_cmds_f1=$import_dir/${arch}.orig_history_1.txt
 	$CAT $orig_cmds_f | $GREP -v "^$" > $orig_cmds_f1
-	
+
 	log_must $CP $tst_dir/${arch}.migratedpool.DAT.Z $import_dir
 	log_must $UNCOMPRESS $import_dir/${arch}.migratedpool.DAT.Z
 
-	#destroy the pool with same name, so that import operation could succeed.
-	poolexists $migratedpoolname &&  \
-		log_must $ZPOOL destroy -f $migratedpoolname
+	# destroy the pool with same name, so that import operation succeeds.
+	poolexists $migratedpoolname && \
+	    log_must $ZPOOL destroy -f $migratedpoolname
 
 	log_must $ZPOOL import -d $import_dir $migratedpoolname
 	$ENV TZ=$TIMEZONE $ZPOOL history $migratedpoolname | \
-		$GREP -v "^$" >$migrated_cmds_f
+	    $GREP -v "^$" >$migrated_cmds_f
 	RET=$?
 	(( $RET != 0 )) && log_fail "$ZPOOL histroy $migratedpoolname fails."
 
 	# The migrated history file should differ with original history file on
 	# two commands -- 'export' and 'import', which are included in migrated
-	# history file but not in original history file. so, check the two commands
-	# firstly in migrated history file and then delete them, and then compare 
-	# this filtered file with the original history file. They should be identical
-	# at this time. 
+	# history file but not in original history file. so, check the two
+	# commands firstly in migrated history file and then delete them, and
+	# then compare this filtered file with the original history file. They
+	# should be identical at this time.
 	for subcmd in "export" "import"; do
 		$GREP "$subcmd" $migrated_cmds_f >/dev/null 2>&1
 		RET=$?
 		(( $RET != 0 )) && log_fail "zpool $subcmd is not logged for" \
-				"the imported pool $migratedpoolname."
+		    "the imported pool $migratedpoolname."
 	done
 
 	tmpfile=$import_dir/cmds_tmp.$$
@@ -112,10 +112,10 @@ for arch in "i386" "sparc"; do
 	(( linenum = linenum - 2 ))
 	$HEAD -n $linenum $migrated_cmds_f > $tmpfile
 	log_must $DIFF $tmpfile $orig_cmds_f1
-	
-	#cleanup for next loop testing
+
+	# cleanup for next loop testing
 	log_must $ZPOOL destroy -f $migratedpoolname
 	log_must $RM -f `$LS $import_dir`
 done
 
-log_pass "Command history moves with pool as expected while pool being migrated. "
+log_pass "Verify command history moves with migrated pool."

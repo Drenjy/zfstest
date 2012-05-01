@@ -23,6 +23,8 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
+
+#
 # Copyright (c) 2012 by Delphix. All rights reserved.
 #
 
@@ -1830,29 +1832,19 @@ EOF
 #
 # $1 group name
 # $2 user name
+# $3 base of the homedir (optional)
 #
-function add_user #<group_name> <user_name>
+function add_user #<group_name> <user_name> <basedir>
 {
 	typeset gname=$1
 	typeset uname=$2
+	typeset basedir=${3:-"/var/tmp"}
 
 	if (( ${#gname} == 0 || ${#uname} == 0 )); then
 		log_fail "group name or user name are not defined."
 	fi
 
-	# Assign 1000 as the base uid
-	typeset -i uid=1000
-	while true; do
-		typeset -i ret
-		$USERADD -u $uid -g $gname -d /var/tmp/$uname -m $uname
-		ret=$?
-		case $ret in
-			0) return 0 ;;
-			# The uid is not unique
-			4) ((uid += 1)) ;;
-			*) return 1 ;;
-		esac
-	done
+	log_must $USERADD -g $gname -d $basedir/$uname -m $uname
 
 	return 0
 }
@@ -1861,18 +1853,20 @@ function add_user #<group_name> <user_name>
 # Delete the specified user.
 #
 # $1 login name
+# $2 base of the homedir (optional)
 #
-function del_user #<logname>
+function del_user #<logname> <basedir>
 {
 	typeset user=$1
+	typeset basedir=${2:-"/var/tmp"}
 
 	if (( ${#user} == 0 )); then
 		log_fail "login name is necessary."
 	fi
 
-	if $ID $user > /dev/null 2>&1; then
-		log_must $USERDEL $user
-	fi
+	log_must $USERDEL $user
+
+	[[ -d $basedir/$user ]] && $RM -fr $basedir/$user
 
 	return 0
 }

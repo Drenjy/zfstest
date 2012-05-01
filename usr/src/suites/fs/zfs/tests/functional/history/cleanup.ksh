@@ -25,9 +25,14 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/include/libtest.kshlib
 
-$ZPOOL history > /dev/null 2>&1
-(($? != 0)) && log_unsupported
+[[ -f $OLD_HISTORY ]] && $RM -f $OLD_HISTORY
+[[ -f $TMP_HISTORY ]] && $RM -f $TMP_HISTORY
+[[ -f $NEW_HISTORY ]] && $RM -f $NEW_HISTORY
 
 default_cleanup

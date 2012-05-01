@@ -25,9 +25,13 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/tests/functional/history/history_common.kshlib
 
-#################################################################################
+################################################################################
 #
 # __stc_assertion_start
 #
@@ -38,8 +42,8 @@
 #
 # STRATEGY:
 #	1. Create non-root test user and group.
-#	2. Do some zfs operation test by root and non-root user.
-#	3. Verify the long history information are correct.
+#	2. Do some zfs operations as a root and non-root user.
+#	3. Verify the long history information is correct.
 #
 # TESTABILITY: explicit
 #
@@ -53,17 +57,10 @@
 
 verify_runnable "global"
 
-$ZFS 2>&1 | $GREP "allow" > /dev/null
-(($? != 0)) && log_unsupported
-
 function cleanup
 {
-	[[ -f $REAL_HISTORY ]] && $RM -f $REAL_HISTORY	
-	[[ -f $EXPECT_HISTORY ]] && $RM -f $EXPECT_HISTORY
-
 	del_user $HIST_USER
 	del_group $HIST_GROUP
-
 	datasetexists $root_testfs && log_must $ZFS destroy -rf $root_testfs
 }
 
@@ -75,30 +72,19 @@ root_testfs=$TESTPOOL/$TESTFS1
 # Create history test group and user and get user id and group id
 add_group $HIST_GROUP
 add_user $HIST_GROUP $HIST_USER
-uid=$($ID $HIST_USER | $AWK -F= '{print $2}'| $AWK -F"(" '{print $1}' )
-gid=$($ID $HIST_USER | $AWK -F= '{print $3}'| $AWK -F"(" '{print $1}' )
 
-# Get original long history
-format_history $TESTPOOL $EXPECT_HISTORY "-l"
-
-exec_record -l $ZFS create $root_testfs
-exec_record -l $ZFS allow $HIST_GROUP snapshot,mount $root_testfs
-exec_record -l $ZFS allow $HIST_USER destroy,mount $root_testfs
-exec_record -l $ZFS allow $HIST_USER reservation $root_testfs
-exec_record -l $ZFS allow $HIST_USER allow $root_testfs
-
-exec_record -l -u $HIST_USER "$ZFS snapshot $root_testfs@snap"
-exec_record -l -u $HIST_USER "$ZFS destroy $root_testfs@snap"
-exec_record -l -u $HIST_USER "$ZFS reservation=64M $root_testfs"
-exec_record -l -u $HIST_USER "$ZFS allow $HIST_USER reservation $root_testfs"
-exec_record -l $ZFS unallow $HIST_USER create $root_testfs
-exec_record -l $ZFS unallow $HIST_GROUP snapshot $root_testfs
-exec_record -l $ZFS destroy -r $root_testfs
-
-format_history $TESTPOOL $REAL_HISTORY "-l"
-log_must $DIFF $REAL_HISTORY $EXPECT_HISTORY
-
-del_user $HIST_USER
-del_group $HIST_GROUP
+run_and_verify "$ZFS create $root_testfs" "-l"
+run_and_verify "$ZFS allow $HIST_GROUP snapshot,mount $root_testfs" "-l"
+run_and_verify "$ZFS allow $HIST_USER destroy,mount $root_testfs" "-l"
+run_and_verify "$ZFS allow $HIST_USER reservation $root_testfs" "-l"
+run_and_verify "$ZFS allow $HIST_USER allow $root_testfs" "-l"
+run_and_verify -u "$HIST_USER" "$ZFS snapshot $root_testfs@snap" "-l"
+run_and_verify -u "$HIST_USER" "$ZFS destroy $root_testfs@snap" "-l"
+run_and_verify -u "$HIST_USER" "$ZFS set reservation=64M $root_testfs" "-l"
+run_and_verify -u "$HIST_USER" \
+    "$ZFS allow $HIST_USER reservation $root_testfs" "-l"
+run_and_verify "$ZFS unallow $HIST_USER create $root_testfs" "-l"
+run_and_verify "$ZFS unallow $HIST_GROUP snapshot $root_testfs" "-l"
+run_and_verify "$ZFS destroy -r $root_testfs" "-l"
 
 log_pass "Verify internal long history information pass."

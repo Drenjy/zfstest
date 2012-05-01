@@ -25,9 +25,13 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/tests/functional/history/history_common.kshlib
 
-#################################################################################
+################################################################################
 #
 # __stc_assertion_start
 #
@@ -35,37 +39,6 @@
 #
 # DESCRIPTION:
 #	Verify the delegation internal history are correctly.
-#
-# 	ul$<id>    identifies permssions granted locally for this userid.
-# 	ud$<id>    identifies permissions granted on descendent datasets for
-#		   this userid.
-#	
-#	Ul$<id>    identifies permission sets granted locally for this userid.
-#	Ud$<id>    identifies permission sets granted on descendent datasets for
-#		   this	userid.
-#	
-#	gl$<id>    identifies permissions granted locally for this groupid.
-#	gd$<id>    identifies permissions granted on descendent datasets for
-#		   this groupid.
-#	
-#	Gl$<id>    identifies permission sets granted locally for this groupid.
-#	Gd$<id>    identifies permission sets granted on descendent datasets for
-#	           this groupid.
-#
-#	el$        identifies permissions granted locally for everyone.
-#	ed$        identifies permissions granted on descendent datasets for
-#		   everyone.
-#	
-#	El$        identifies permission sets granted locally for everyone.
-#	Ed$        identifies permission sets granted to descendent datasets
-#		   for everyone.
-#	
-#	c-$        identifies permission to create at dataset creation time.
-#	C-$        identifies permission sets to grant locally at dataset
-#		   creation time.
-#	
-#	s-$@<name> permissions defined in specified set @<name>
-#	S-$@<name> Sets defined in named set @<name>
 #
 # STRATEGY:
 #	1. Create test group and user.
@@ -84,22 +57,13 @@
 
 verify_runnable "global"
 
-$ZFS 2>&1 | $GREP "allow" > /dev/null
-(($? != 0)) && log_unsupported
-
 function cleanup
 {
-	if [[ -f $REAL_HISTORY ]]; then
-		log_must $RM -f $REAL_HISTORY
-	fi
-	if [[ -f $ADD_HISTORY ]]; then
-		log_must $RM -f $ADD_HISTORY
-	fi
 	del_user $HIST_USER
 	del_group $HIST_GROUP
 }
 
-log_assert "Verify the delegation internal history are correctly."
+log_assert "Verify delegated commands are logged in the pool history."
 log_onexit cleanup
 
 testfs=$TESTPOOL/$TESTFS
@@ -107,70 +71,58 @@ testfs=$TESTPOOL/$TESTFS
 add_group $HIST_GROUP
 add_user $HIST_GROUP $HIST_USER
 
-uid=$($ID $HIST_USER | $AWK -F= '{print $2}'| $AWK -F"(" '{print $1}' )
-gid=$($ID $HIST_USER | $AWK -F= '{print $3}'| $AWK -F"(" '{print $1}' )
-
-# Initial original $REAL_HISTORY 
-format_history $TESTPOOL $REAL_HISTORY -i
-
-#
-#	Keyword		subcmd		operating	allow_options
-#
-set -A array \
-	"s-\$@basic"	"allow"		"-s @basic snapshot"    	\
-	"S-\$@set"	"allow"		"-s @set @basic"		\
-	"c-\\$"		"allow"		"-c create"			\
-	"c-\\$"		"unallow"	"-c create"			\
-	"C-\\$ @set"	"allow"		"-c @set"			\
-	"C-\\$ @set"	"unallow"	"-c @set"			\
-	"ul\$$uid"	"allow"		"-l -u $HIST_USER snapshot"	\
-	"ul\$$uid"	"allow"		"-u $HIST_USER snapshot"	\
-	"ul\$$uid"	"unallow"	"-u $HIST_USER snapshot"	\
-	"Ul\$$uid"	"allow"		"-l -u $HIST_USER @set"		\
-	"Ul\$$uid"	"allow"		"-u $HIST_USER @set"		\
-	"Ul\$$uid"	"unallow"	"-u $HIST_USER @set"		\
-	"ud\$$uid"	"allow"		"-d -u $HIST_USER snapshot"	\
-	"ud\$$uid"	"allow"		"-u $HIST_USER snapshot"	\
-	"ud\$$uid"	"unallow"	"-u $HIST_USER snapshot"	\
-	"Ud\$$uid"	"allow"		"-d -u $HIST_USER @set"		\
-	"Ud\$$uid"	"allow"		"-u $HIST_USER @set"		\
-	"Ud\$$uid"	"unallow"	"-u $HIST_USER @set"		\
-	"gl\$$gid"	"allow"		"-l -g $HIST_GROUP snapshot"	\
-	"gl\$$gid"	"allow"		"-g $HIST_GROUP snapshot"	\
-	"gl\$$gid"	"unallow"	"-g $HIST_GROUP snapshot"	\
-	"Gl\$$gid"	"allow"		"-l -g $HIST_GROUP @set"	\
-	"Gl\$$gid"	"allow"		"-g $HIST_GROUP @set"		\
-	"Gl\$$gid"	"unallow"	"-g $HIST_GROUP @set"		\
-	"gd\$$gid"	"allow"		"-d -g $HIST_GROUP snapshot"	\
-	"gd\$$gid"	"allow"		"-g $HIST_GROUP snapshot"	\
-	"gd\$$gid"	"unallow"	"-g $HIST_GROUP snapshot"	\
-	"Gd\$$gid"	"allow"		"-d -g $HIST_GROUP @set"	\
-	"Gd\$$gid"	"allow"		"-g $HIST_GROUP @set"		\
-	"Gd\$$gid"	"unallow"	"-g $HIST_GROUP @set"		\
-	"el\\$"		"allow"		"-l -e snapshot"		\
-	"el\\$"		"allow"		"-e snapshot"			\
-	"el\\$"		"unallow"	"-e snapshot"			\
-	"El\\$"		"allow"		"-l -e @set"			\
-	"El\\$"		"allow"		"-e @set"			\
-	"El\\$"		"unallow"	"-e @set"			\
-	"ed\\$"		"allow"		"-d -e snapshot"		\
-	"ed\\$"		"allow"		"-e snapshot"			\
-	"ed\\$"		"unallow"	"-e snapshot"			\
-	"Ed\\$"		"allow"		"-d -e @set"			\
-	"Ed\\$"		"allow"		"-e @set"			\
-	"Ed\\$"		"unallow"	"-e @set"
+#	subcmd		allow_options
+array=(	"allow"		"-s @basic snapshot"
+	"allow"		"-s @set @basic"
+	"allow"		"-c create"
+	"unallow"	"-c create"
+	"allow"		"-c @set"
+	"unallow"	"-c @set"
+	"allow"		"-l -u $HIST_USER snapshot"
+	"allow"		"-u $HIST_USER snapshot"
+	"unallow"	"-u $HIST_USER snapshot"
+	"allow"		"-l -u $HIST_USER @set"
+	"allow"		"-u $HIST_USER @set"
+	"unallow"	"-u $HIST_USER @set"
+	"allow"		"-d -u $HIST_USER snapshot"
+	"allow"		"-u $HIST_USER snapshot"
+	"unallow"	"-u $HIST_USER snapshot"
+	"allow"		"-d -u $HIST_USER @set"
+	"allow"		"-u $HIST_USER @set"
+	"unallow"	"-u $HIST_USER @set"
+	"allow"		"-l -g $HIST_GROUP snapshot"
+	"allow"		"-g $HIST_GROUP snapshot"
+	"unallow"	"-g $HIST_GROUP snapshot"
+	"allow"		"-l -g $HIST_GROUP @set"
+	"allow"		"-g $HIST_GROUP @set"
+	"unallow"	"-g $HIST_GROUP @set"
+	"allow"		"-d -g $HIST_GROUP snapshot"
+	"allow"		"-g $HIST_GROUP snapshot"
+	"unallow"	"-g $HIST_GROUP snapshot"
+	"allow"		"-d -g $HIST_GROUP @set"
+	"allow"		"-g $HIST_GROUP @set"
+	"unallow"	"-g $HIST_GROUP @set"
+	"allow"		"-l -e snapshot"
+	"allow"		"-e snapshot"
+	"unallow"	"-e snapshot"
+	"allow"		"-l -e @set"
+	"allow"		"-e @set"
+	"unallow"	"-e @set"
+	"allow"		"-d -e snapshot"
+	"allow"		"-e snapshot"
+	"unallow"	"-e snapshot"
+	"allow"		"-d -e @set"
+	"allow"		"-e @set"
+	"unallow"	"-e @set"
+)
 
 typeset -i i=0
 while ((i < ${#array[@]})); do
-	keyword=${array[$i]}
-	subcmd=${array[((i+1))]}
-	options=${array[((i+2))]}
+	subcmd=${array[$i]}
+	options=${array[((i + 1))]}
 
-	log_must $ZFS $subcmd $options $testfs
-	additional_history $TESTPOOL $ADD_HISTORY -i
-	log_must verify_history $ADD_HISTORY $subcmd $testfs $keyword
-
-	((i += 3))
+	run_and_verify "$ZFS $subcmd $options $testfs" "-i"
+	((i += 2))
 done
 
-log_pass "Verify the delegation internal history are correctly."
+log_pass "Verify delegated commands are logged in the pool history."

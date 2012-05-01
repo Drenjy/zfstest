@@ -26,7 +26,6 @@
 #
 
 . ${STF_SUITE}/include/libtest.kshlib
-. ${STF_SUITE}/tests/stress/replica_stress/mirror_stress_common.kshlib
 
 setup_mirrors $NUMBER_OF_MIRRORS $DISKS
 

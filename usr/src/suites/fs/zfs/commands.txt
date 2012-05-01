@@ -98,6 +98,7 @@
 /usr/sbin/lofiadm
 /usr/bin/ls
 /usr/bin/logname
+/usr/bin/md5sum
 /usr/bin/mdb
 /usr/sbin/metaclear
 /usr/sbin/metadb

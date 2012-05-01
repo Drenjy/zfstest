@@ -25,23 +25,27 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/tests/functional/history/history_common.kshlib
-. $STF_SUITE/tests/functional/cli_root/zfs_rollback/zfs_rollback_common.kshlib
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
 
-#################################################################################
+. $STF_SUITE/tests/functional/history/history_common.kshlib
+
+################################################################################
 #
 # __stc_assertion_start
 #
 # ID: history_008_pos
 #
 # DESCRIPTION:
-#	Internal journal records all the recursively operations.
+#	Pool history records all recursive operations.
 #
 # STRATEGY:
 #	1. Create a filesystem and several sub-filesystems in it.
-#	2. Make recursively snapshot.
-#	3. Verify internal journal records all the recursively operations.
-#	4. Do the same verification to inherit, rollback and destroy.
+#	2. Make a recursive snapshot.
+#	3. Verify pool history records all the recursive operations.
+#	4. Do the same verification for hold, release, inherit, rollback and
+#	   destroy.
 #
 # TESTABILITY: explicit
 #
@@ -55,20 +59,15 @@
 
 verify_runnable "global"
 
-$ZFS 2>&1 | $GREP "allow" > /dev/null
-(($? != 0)) && log_unsupported
-
 function cleanup
 {
-	[[ -f $REAL_HISTORY ]] && $RM -f $REAL_HISTORY	
-	[[ -f $ADD_HISTORY ]] && $RM -f $ADD_HISTORY
 	if datasetexists $root_testfs; then
 		log_must $ZFS destroy -rf $root_testfs
 	fi
 	log_must $ZFS create $root_testfs
 }
 
-log_assert "Internal journal records all the recursively operations."
+log_assert "Pool history records all recursive operations."
 log_onexit cleanup
 
 root_testfs=$TESTPOOL/$TESTFS
@@ -77,53 +76,13 @@ for fs in $fs1 $fs2 $fs3; do
 	log_must $ZFS create $fs
 done
 
-#
-# Verify 'zfs snapshot -r'
-#
-format_history $TESTPOOL $REAL_HISTORY -i
-log_must $ZFS snapshot -r ${root_testfs}@snap
-additional_history $TESTPOOL $ADD_HISTORY -i
-for ds in $fs1 $fs2 $fs3 ; do
-	log_must verify_history $ADD_HISTORY "snapshot" ${ds}@snap
-done
+run_and_verify "$ZFS snapshot -r $root_testfs@snap" "-i"
+run_and_verify "$ZFS hold -r tag $root_testfs@snap" "-i"
+run_and_verify "$ZFS release -r tag $root_testfs@snap" "-i"
+log_must $ZFS snapshot $root_testfs@snap2
+log_must $ZFS snapshot $root_testfs@snap3
+run_and_verify "$ZFS rollback -r $root_testfs@snap" "-i"
+run_and_verify "$ZFS inherit -r mountpoint $root_testfs" "-i"
+run_and_verify "$ZFS destroy -r $root_testfs" "-i"
 
-log_must $ZFS snapshot ${root_testfs}@snap2
-log_must $ZFS snapshot ${root_testfs}@snap3
-
-#
-# Verify 'zfs rollback -r'
-#
-format_history $TESTPOOL $REAL_HISTORY -i
-log_must $ZFS rollback -r ${root_testfs}@snap
-additional_history $TESTPOOL $ADD_HISTORY -i
-
-for ds in ${root_testfs}@snap2 ${root_testfs}@snap3; do
-	log_must verify_history $ADD_HISTORY "destroy" $ds
-done
-log_must verify_history $ADD_HISTORY "rollback" $root_testfs
-
-#
-# Verify 'zfs inherit -r'
-#
-format_history $TESTPOOL $REAL_HISTORY -i
-log_must $ZFS inherit -r mountpoint $root_testfs
-additional_history $TESTPOOL $ADD_HISTORY -i
-for ds in $fs1 $fs2 $fs3 $root_testfs; do
-	 log_must verify_history $ADD_HISTORY "inherit" $ds
-done
-
-# Initial original $REAL_HISTORY 
-format_history $TESTPOOL $REAL_HISTORY -i
-
-#
-# Verify 'zfs destroy -r'
-#
-log_must $ZFS destroy -r $root_testfs
-additional_history $TESTPOOL $ADD_HISTORY -i
-for ds in $fs1 $fs2 $fs3 $root_testfs \
-	${fs1}@snap ${fs2}@snap ${fs3}@snap ${root_testfs}@snap;
-do
-	log_must verify_history $ADD_HISTORY "destroy" $ds
-done
-
-log_pass "Internal journal records all the recursively operations passed."
+log_pass "Pool history records all recursive operations."

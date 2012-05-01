@@ -25,22 +25,26 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/tests/functional/history/history_common.kshlib
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
 
-#################################################################################
+. $STF_SUITE/include/libtest.kshlib
+
+################################################################################
 #
 # __stc_assertion_start
 #
 # ID: history_006_neg
 #
 # DESCRIPTION:
-# 	Verify the following zfs subcommands are not logged.
-#      	    list, get, mount, unmount, share, unshare, send
+#	Verify the following zfs subcommands are not logged.
+#	list, get, holds, mount, unmount, share, unshare, send
 #
 # STRATEGY:
 #	1. Create a test pool.
-#	2. Separately invoke zfs list|get|mount|unmount|share|unshare|send
-#	3. Verify they was not recored in pool history.
+#	2. Separately invoke zfs list|get|holds|mount|unmount|share|unshare|send
+#	3. Verify they were not recored in pool history.
 #
 # TESTABILITY: explicit
 #
@@ -56,26 +60,25 @@ verify_runnable "global"
 
 function cleanup
 {
-	[[ -f $EXPECT_HISTORY ]] && $RM -f $EXPECT_HISTORY
-	[[ -f $REAL_HISTORY ]] && $RM -f $REAL_HISTORY
 	if datasetexists $fs ; then
 		log_must $ZFS destroy -rf $fs
 	fi
 	log_must $ZFS create $fs
 }
 
-log_assert "Verify 'zfs list|get|mount|unmount|share|unshare|send' will not " \
-	"be logged."
+log_assert "Verify 'zfs list|get|holds|mount|unmount|share|unshare|send' " \
+    "will not be logged."
 log_onexit cleanup
 
 # Create initial test environment
 fs=$TESTPOOL/$TESTFS; snap1=$fs@snap1; snap2=$fs@snap2
 log_must $ZFS set sharenfs=on $fs
 log_must $ZFS snapshot $snap1
+log_must $ZFS hold tag $snap1
 log_must $ZFS snapshot $snap2
 
 # Save initial TESTPOOL history
-log_must eval "$ZPOOL history $TESTPOOL > $EXPECT_HISTORY"
+log_must eval "$ZPOOL history $TESTPOOL > $OLD_HISTORY"
 
 log_must $ZFS list $fs > /dev/null
 log_must $ZFS get mountpoint $fs > /dev/null
@@ -84,8 +87,11 @@ log_must $ZFS mount $fs
 log_must $ZFS share $fs
 log_must $ZFS unshare $fs
 log_must $ZFS send -i $snap1 $snap2 > /dev/null
+log_must $ZFS holds $snap1
 
-log_must eval "$ZPOOL history $TESTPOOL > $REAL_HISTORY"
-log_must $DIFF $EXPECT_HISTORY $REAL_HISTORY
+log_must eval "$ZPOOL history $TESTPOOL > $NEW_HISTORY"
+log_must $DIFF $OLD_HISTORY $NEW_HISTORY
+
+log_must $ZFS release tag $snap1
 
 log_pass "Verify 'zfs list|get|mount|unmount|share|unshare|send' passed."

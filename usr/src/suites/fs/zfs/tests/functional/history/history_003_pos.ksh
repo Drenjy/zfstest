@@ -25,22 +25,27 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/tests/functional/history/history_common.kshlib
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
 
-#################################################################################
+. $STF_SUITE/include/libtest.kshlib
+
+################################################################################
 #
 # __stc_assertion_start
 #
 # ID: history_003_pos
 #
 # DESCRIPTION:
-#	zpool history can record and output huge log.
+#	zpool history will truncate on small pools, leaving pool creation intact
 #
 # STRATEGY:
 #	1. Create two 100M virtual disk files.
 #	2. Create test pool using the two virtual files.
-#	3. Loop 2000 times to set compression to test pool.
-#	4. Make sure 'zpool history' output correctly.
+#	3. Loop 100 times to set and remove compression to test dataset.
+#	4. Make sure 'zpool history' output is truncated
+#	5. Verify that the initial pool creation is preserved.
 #
 # TESTABILITY: explicit
 #
@@ -74,10 +79,12 @@ spool=smallpool.$$; sfs=smallfs.$$
 log_must $ZPOOL create $spool $VDEV0 $VDEV1
 log_must $ZFS create $spool/$sfs
 
-typeset -i orig_count=$($ZPOOL history $spool | $WC -l | $AWK '{print $1}')
+typeset -i orig_count=$($ZPOOL history $spool | $WC -l)
+typeset orig_md5=$($ZPOOL history $spool | $HEAD -2 | $MD5SUM | \
+    $AWK '{print $1}')
 
 typeset -i i=0
-while ((i < 400)); do
+while ((i < 100)); do
 	$ZFS set compression=off $spool/$sfs
 	$ZFS set compression=on $spool/$sfs
 	$ZFS set compression=off $spool/$sfs
@@ -87,11 +94,20 @@ while ((i < 400)); do
 	((i += 1))
 done
 
-typeset -i entry_count=$($ZPOOL history $spool | $WC -l | $AWK '{print $1}')
+typeset -i entry_count=$($ZPOOL history $spool | $WC -l)
+typeset final_md5=$($ZPOOL history $spool | $HEAD -2 | $MD5SUM | \
+    $AWK '{print $1}')
 
-if ((entry_count - orig_count != 2000)); then
+# With a pool this size, the history will get truncated to a total of
+# 350 entries.
+if ((entry_count - orig_count != 346)); then
 	log_fail "The entries count error: entry_count=$entry_count " \
 		 "orig_count = $orig_count"
+fi
+
+# Verify that the creation of the pool was preserved in the history.
+if [[ $orig_md5 != $final_md5 ]]; then
+	log_fail "zpool creation history was not preserved."
 fi
 
 log_pass "zpool history limitation test passed."

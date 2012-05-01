@@ -25,16 +25,16 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/tests/functional/history/history_common.kshlib
+. $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
+################################################################################
 #
 # __stc_assertion_start
 #
 # ID: history_004_pos
 #
 # DESCRIPTION:
-#	'zpool history' can copes with many simultaneous command.
+#	'zpool history' can cope with simultaneous commands.
 #
 # STRATEGY:
 #	1. Create test pool and test fs.
@@ -54,7 +54,7 @@
 
 verify_runnable "global"
 
-log_assert "'zpool history' can copes with many simultaneous command."
+log_assert "'zpool history' can cope with simultaneous commands."
 
 typeset -i orig_count=$($ZPOOL history $spool | $WC -l | $AWK '{print $1}')
 
@@ -107,4 +107,4 @@ if ((entry_count - orig_count != 200)); then
 		 "orig_count = $orig_count"
 fi
 
-log_pass "zpool history copes with simultaneous commands passed."
+log_pass "'zpool history' can cope with simultaneous commands."

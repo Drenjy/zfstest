@@ -23,12 +23,14 @@
 #
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-# Copyright (c) 2011 by Delphix. All rights reserved.
+
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/tests/functional/history/history_common.kshlib
 
-#################################################################################
+################################################################################
 #
 # __stc_assertion_start
 #
@@ -36,15 +38,13 @@
 #
 # DESCRIPTION:
 #	Create a scenario to verify the following zpool subcommands are logged.
-#	    create, destroy, add, remove, offline, online, attach, detach, replace,
-#	    scrub, export, import, clear, upgrade.
+#	create, destroy, add, remove, offline, online, attach, detach, replace,
+#	scrub, export, import, clear, upgrade.
 #
 # STRATEGY:
-#	1. Create three virtual disk files.
-#	2. Create a three-way mirror.
-#	3. Invoke every sub-commands to this mirror, except upgrade.
-#	4. Compare 'zpool history' log with expected log.
-#	5. Imported specified pool and upgrade it, verify 'upgrade' was logged.
+#	1. Create three virtual disk files and create a mirror.
+#	2. Run and verify pool commands, with special casing for destroy/export.
+#	3. Import a pool and upgrade it, verifying 'upgrade' was logged.
 #
 # TESTABILITY: explicit
 #
@@ -64,9 +64,7 @@ function cleanup
 	destroy_pool $upgrade_pool
 
 	[[ -d $import_dir ]] && $RM -rf $import_dir
-	for file in $REAL_HISTORY $EXPECT_HISTORY \
-	    $VDEV1 $VDEV2 $VDEV3 $VDEV4
-	do
+	for file in $VDEV1 $VDEV2 $VDEV3 $VDEV4; do
 		[[ -f $file ]] && $RM -f $file
 	done
 }
@@ -81,55 +79,47 @@ VDEV3=$mntpnt/vdev3; VDEV4=$mntpnt/vdev4;
 
 log_must $MKFILE 64m $VDEV1 $VDEV2 $VDEV3
 log_must $MKFILE 100m $VDEV4
-$CAT /dev/null > $EXPECT_HISTORY
 
-exec_record $ZPOOL create $MPOOL mirror $VDEV1 $VDEV2
-exec_record $ZPOOL add -f $MPOOL spare $VDEV3
-exec_record $ZPOOL remove $MPOOL $VDEV3
-exec_record $ZPOOL offline $MPOOL $VDEV1
-exec_record $ZPOOL online $MPOOL $VDEV1
-exec_record $ZPOOL attach $MPOOL $VDEV1 $VDEV4
-exec_record $ZPOOL detach $MPOOL $VDEV4
-exec_record $ZPOOL replace -f $MPOOL $VDEV1 $VDEV4
-exec_record $ZPOOL scrub $MPOOL
-exec_record $ZPOOL export $MPOOL
-exec_record $ZPOOL import -d $mntpnt $MPOOL
-exec_record $ZPOOL destroy $MPOOL
-exec_record $ZPOOL import -D -f -d $mntpnt $MPOOL
-exec_record $ZPOOL clear $MPOOL
+run_and_verify -p "$MPOOL" "$ZPOOL create $MPOOL mirror $VDEV1 $VDEV2"
+run_and_verify -p "$MPOOL" "$ZPOOL add -f $MPOOL spare $VDEV3"
+run_and_verify -p "$MPOOL" "$ZPOOL remove $MPOOL $VDEV3"
+run_and_verify -p "$MPOOL" "$ZPOOL offline $MPOOL $VDEV1"
+run_and_verify -p "$MPOOL" "$ZPOOL online $MPOOL $VDEV1"
+run_and_verify -p "$MPOOL" "$ZPOOL attach $MPOOL $VDEV1 $VDEV4"
+run_and_verify -p "$MPOOL" "$ZPOOL detach $MPOOL $VDEV4"
+run_and_verify -p "$MPOOL" "$ZPOOL replace -f $MPOOL $VDEV1 $VDEV4"
+run_and_verify -p "$MPOOL" "$ZPOOL scrub $MPOOL"
+run_and_verify -p "$MPOOL" "$ZPOOL clear $MPOOL"
 
-format_history $MPOOL $REAL_HISTORY
-log_must $DIFF $REAL_HISTORY $EXPECT_HISTORY
+# For export and destroy, mimic the behavior of run_and_verify using two
+# commands since the history will be unavailable until the pool is imported
+# again.
+commands=("$ZPOOL export $MPOOL" "$ZPOOL import -d $mntpnt $MPOOL"
+    "$ZPOOL destroy $MPOOL" "$ZPOOL import -D -f -d $mntpnt $MPOOL")
+for i in 0 2; do
+	cmd1="${commands[$i]}"
+	cmd2="${commands[(($i + 1 ))]}"
 
-#
-# Check current system ZFS version.
-# If ZFS version > 4, do upgrade test. Otherwise, ignore it.
-#
-# Format:
-#
-#	This system is currently running ZFS version 6.
-#
-typeset str=$($ZPOOL upgrade | $NAWK '{if(NR == 1) print $0}')
-typeset -i version=${str##* }
-if ((version <= 4)); then
-	log_pass "zpool sub-commands which modify state are logged passed. "
-fi
+	$ZPOOL history $MPOOL > $OLD_HISTORY 2>/dev/null
+	log_must $cmd1
+	log_must $cmd2
+	$ZPOOL history $MPOOL > $TMP_HISTORY 2>/dev/null
+	$DIFF $OLD_HISTORY $TMP_HISTORY | $GREP "^> " | $SED 's/^> //g' > \
+	    $NEW_HISTORY
+	$GREP "$($ECHO "$cmd1" | $SED 's/\/usr\/sbin\///g')" $NEW_HISTORY \
+	    >/dev/null 2>&1 || log_fail "Didn't find \"$cmd1\" in pool history"
+	$GREP "$($ECHO "$cmd2" | $SED 's/\/usr\/sbin\///g')" $NEW_HISTORY \
+	    >/dev/null 2>&1 || log_fail "Didn't find \"$cmd2\" in pool history"
+done
+
+run_and_verify -p "$MPOOL" "$ZPOOL split $MPOOL ${MPOOL}_split"
 
 import_dir=/var/tmp/import_dir.$$
 log_must $MKDIR $import_dir
 log_must $CP $STF_SUITE/tests/functional/history/zfs-pool-v4.dat.Z $import_dir
 log_must $UNCOMPRESS $import_dir/zfs-pool-v4.dat.Z
-
-# Truncate $EXPECT_HISTORY file
-log_must eval "$CAT /dev/null > $EXPECT_HISTORY"
-
 upgrade_pool=$($ZPOOL import -d $import_dir | $GREP "pool:" | $AWK '{print $2}')
-exec_record $ZPOOL import -d $import_dir $upgrade_pool
-# Get existing history
-format_history $upgrade_pool $EXPECT_HISTORY
-exec_record $ZPOOL upgrade $upgrade_pool
-
-format_history $upgrade_pool $REAL_HISTORY
-log_must $DIFF $REAL_HISTORY $EXPECT_HISTORY
+log_must $ZPOOL import -d $import_dir $upgrade_pool
+run_and_verify -p "$upgrade_pool" "$ZPOOL upgrade $upgrade_pool"
 
 log_pass "zpool sub-commands which modify state are logged passed. "

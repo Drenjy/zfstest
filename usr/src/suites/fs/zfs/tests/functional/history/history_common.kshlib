@@ -22,230 +22,407 @@
 #
 # Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
-# Copyright (c) 2011 by Delphix. All rights reserved.
+#
+
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
 #
 
 . $STF_SUITE/include/libtest.kshlib
 
-#
-# Execute arguments and record them to the log file.
-# Notice: EXPECT_HISTORY need be defined.
-#
-# $1-n arguments for execution.
-#
-function exec_record
+function run_and_verify
 {
-	[[ -z $EXPECT_HISTORY ]] && log_fail "EXPECT_HISTORY is undefined."
-
-	typeset long_hist
-	typeset user='root'
-	typeset opt
-	while getopts ":lu:" opt; do
+	typeset user pool
+	while getopts "p:u:" opt; do
 		case $opt in
-			l)	long_hist=1;;
-			u)	user=$OPTARG ;;
-		esac	
-	done
-	shift $(($OPTIND -1))
-
-	if [[ $user == 'root' ]]; then
-		log_must "$@"
-	else
-		log_must $SU $user -c "$@"
-	fi
-
-	typeset cmdline="$@"
-	# Remove "eval" ">*" & "<*" for 'zfs send' and 'zfs receive'.
-	cmdline=${cmdline#eval}
-	cmdline=${cmdline%%\>*}
-	cmdline=${cmdline%%\<*}
-
-	# Remove additional blank
-	cmdline=${cmdline## }
-	cmdline=${cmdline%% }
-
-	# Get the basename of command. i.e: /usr/sbin/zpool -> zpool
-	typeset cmd=$($ECHO $cmdline | $AWK '{print $1}')
-	eval cmdline=\${cmdline#$cmd}
-	cmd=${cmd##*/}
-
-	# Write basic history to file
-	print -n $cmd $cmdline >> $EXPECT_HISTORY
-	if [[ -n $long_hist ]]; then
-		# Write long history to file
-		hn=$($HOSTNAME)
-		zn=$($ZONENAME)
-		print -n " [user $user on $hn:$zn]" >> $EXPECT_HISTORY
-	fi
-	# Plus enter in the end of line
-	print >> $EXPECT_HISTORY
-}
-
-#
-# Format 'zpool history' output to specified file.
-#
-# $1 pool name
-# $2 output file.
-# $3 option
-#
-function format_history
-{
-	typeset pool=$1
-	typeset outfile=$2
-	typeset option=$3
-
-	[[ -z $pool || -z $outfile ]] && \
-		log_fail "Usage: format_history <pool> <outfile> [option]"
-
-	typeset temp_history=/tmp/temp_history.format_history.$$
-	$ZPOOL history $option $pool > $temp_history
-
-	# Truncate output file
-	$CAT /dev/null > $outfile
-
-	typeset line
-	typeset -i n=0
-	while read line; do
-		# Ignore the first line and empty line
-		if [[ $n -eq 0 || -z $line ]]; then
-			n=1; continue
-		fi
-		$ECHO ${line#* } >> $outfile
-	done < $temp_history
-
-	$RM -f $temp_history
-}
-
-#
-# Get the additional pool history.
-#
-# $1 pool name
-# $2 additional history file
-# $3 option
-#
-function additional_history
-{
-	typeset pool=$1
-	typeset add_his_file=$2
-	typeset option=$3
-
-	if [[ -z $pool || -z $add_his_file ]]; then
-		log_fail "Usage: additional_history <pool> " \
-			"<additional_history_file> [option]"
-	fi
-
-	typeset temp_history=/tmp/temp_history.additional_history.$$
-	# Current current history
-	format_history $pool $temp_history $option
-	# Figure out new history
-	$DIFF $temp_history $REAL_HISTORY | $GREP "^<" | $SED 's/^<[ ]*//' > \
-		$add_his_file
-	
-	$CP $temp_history $REAL_HISTORY
-	$RM -f $temp_history
-}
-
-#
-# Get given dataset id
-#
-# $1 dataset name
-#
-function get_dataset_id
-{
-	typeset ds=$1
-
-	#
-	# The zdb information looks like:
-	#
-	# Dataset pool/fs [ZPL], ID 21, cr_txg 6, 18.0K, 4 objects
-	#
-	typeset dst_id=$($ZDB $ds | $GREP "^Dataset $ds " | \
-			$AWK -F\, '{print $2}' | $AWK '{print $2}')
-
-	$ECHO $dst_id
-}
-
-#
-# Scan history file and check if it include expected internal history
-# information
-#
-# $1 history file
-# $2 subcmd
-# $3 dataset
-# $4 keyword
-#
-function verify_history #<his_file> <subcmd> <ds> [keyword]
-{
-	typeset his_file=$1
-	typeset subcmd=$2
-	typeset ds=$3
-	typeset keyword=$4
-
-	typeset dst_id=$(get_dataset_id $ds)
-	typeset line found=0
-	while read line; do
-		case $subcmd in
-		rollback)
-			# rollback is simply recorded as issued on the command
-			# line, without "[internal $subcmd txg:#]" notation.
-			$ECHO $line | $EGREP "zfs ${subcmd} [-]?[ rRf]+$ds" \
-			    >/dev/null 2>&1
-			if (($? == 0)); then
-				found=1
-				break 2
-			fi
+		p)
+			pool=$OPTARG
 			;;
-		snapshot|destroy|inherit)
-			#
-			# i.e:
-			# [internal snapshot txg:10] dataset = 21
-			# [internal create txg:25] dataset = 29
-			#
-			$ECHO $line | $GREP "internal $subcmd txg:" | \
-				$GREP "dataset = $dst_id" > /dev/null 2>&1
-			if (($? == 0)); then
-				found=1
-				break 2
-			fi
-			;;
-		allow)
-			#
-			# [internal permission update txg:136] ud$160293
-			# snapshot dataset = 21
-			#
-			$ECHO $line | \
-				$GREP "internal permission update txg:"| \
-				$GREP "$keyword" | \
-				$GREP "dataset = $dst_id" > \
-				/dev/null 2>&1
-			if (($? == 0)); then
-				found=1
-				break 2
-			fi
-			;;
-		unallow)
-			#
-			# [internal permission update txg:444] ud$160293 mount
-			# dataset = 21
-			#
-			$ECHO $line | \
-				$GREP "internal permission remove txg:"| \
-				$GREP "$keyword" | \
-				$GREP "dataset = $dst_id" > \
-				/dev/null 2>&1
-			if (($? == 0)); then
-				found=1
-				break 2
-			fi
-			;;
-		*)
+		u)
+			user=$OPTARG
 			;;
 		esac
-	done < $his_file
+	done
+	shift $(($OPTIND - 1))
 
-	if [[ $found == 1 ]]; then
-		return 0
+	pool=${pool:-$TESTPOOL}
+	user=${user:-"root"}
+	fullcmd="$1"
+	flags="$2"
+
+	histcmd=$($ECHO $fullcmd | $SED 's/\/usr\/sbin\///g')
+	cmd=$($ECHO $histcmd | $AWK '{print $1}')
+	subcmd=$($ECHO $histcmd | $AWK '{print $2}')
+
+	# If we aren't running zpool or zfs, something is wrong
+	[[ $cmd == "zpool" || $cmd == "zfs" ]] || \
+	    log_fail "run_and_verify called with \"$cmd ($fullcmd)\""
+
+	# If this is a 'zfs receive' truncate the stdin redirect
+	[[ $subcmd == "receive" || $subcmd == "recv" ]] && \
+	    histcmd=${histcmd%% <*}
+
+	# Run the command as the specified user, and find the new history.
+	$ZPOOL history $flags $pool > $OLD_HISTORY 2>/dev/null
+	if [[ $user == "root" ]]; then
+		log_must eval "$fullcmd"
 	else
+		log_must $SU $user -c "eval $fullcmd"
+	fi
+	$ZPOOL history $flags $pool > $TMP_HISTORY 2>/dev/null
+	$DIFF $OLD_HISTORY $TMP_HISTORY | $GREP "^> " | $SED 's/^> //g' \
+	    > $NEW_HISTORY
+
+	# Verify what's common to every case, regardless of zpool history flags.
+	$GREP "$histcmd" $NEW_HISTORY >/dev/null 2>&1 || \
+	    log_fail "Didn't find \"$histcmd\" in pool history"
+
+	# If 'zpool history' was called without any flags, then we're done.
+	[[ -z $flags ]] && return
+
+	# Verify the new history in cases that are more interesting because
+	# additional information is logged with -i or -l.
+
+	[[ $flags =~ "i" ]] && log_must verify_$subcmd "$histcmd" "$subcmd" \
+	    "$flags"
+	[[ $flags =~ "l" ]] && log_must verify_long "$histcmd" "$user" "$flags"
+}
+
+function verify_long
+{
+	typeset cmd=$1
+	typeset user=$2
+	typeset flags=$3
+
+	[[ $flags =~ "l" ]] || return 1
+
+	typeset uid=$($ID -u $user)
+	typeset hname=$($HOSTNAME)
+	if ! is_global_zone; then
+		hname=$hname:$($ZONENAME)
+	fi
+
+	$GREP "$cmd \[user $uid ($user) on $hname\]" $NEW_HISTORY >/dev/null \
+	    2>&1
+	if [[ $? != 0 ]]; then
+		log_note "Couldn't find long information for \"$cmd\""
 		return 1
 	fi
+
+	return 0
+}
+
+function verify_hold
+{
+	typeset cmd=$1
+	typeset subcmd=$2
+	typeset flags=$3
+
+	[[ $flags =~ "i" ]] || return 1
+
+	typeset tag=$($ECHO $cmd | $AWK '{print $4}')
+	typeset fullname=${cmd##* }
+	typeset dsname=${fullname%%@*}
+	typeset snapname=${fullname##*@}
+
+	# This works whether or not the hold was recursive
+	for ds in $($ZFS list -r -Ho name -t snapshot $dsname | \
+	    $GREP "@$snapname"); do
+		$GREP "$subcmd $ds ([0-9]*) tag = $tag" $NEW_HISTORY \
+		    >/dev/null 2>&1
+		if [[ $? != 0 ]]; then
+			log_note "Didn't find hold on $ds with $tag"
+			return 1
+		fi
+	done
+
+	return 0
+}
+
+function verify_release
+{
+	# hold and release formats only differ by the subcommand name, so
+	# simply reuse the hold function.
+	verify_hold "$1" "release" "$3"
+}
+
+function verify_rollback
+{
+	typeset cmd=$1
+	typeset flags=$3
+
+	[[ $flags =~ "i" ]] || return 1
+
+	typeset fullname=${cmd##* }
+	typeset dsname=${fullname%%@*}
+	typeset parent_fs=${dsname##*/}
+	typeset rb_fs=${dsname}/%rollback
+	typeset snapname=${fullname##*@}
+
+	$GREP "clone $rb_fs ([0-9]*) origin=$fullname" $NEW_HISTORY \
+	    >/dev/null 2>&1
+	if [[ $? != 0 ]]; then
+		log_note "Didn't find rollback clone in pool history"
+		return 1
+	fi
+
+	$GREP "clone swap $rb_fs ([0-9]*) parent=$parent_fs" $NEW_HISTORY \
+	    >/dev/null 2>&1
+	if [[ $? != 0 ]]; then
+		log_note "Didn't find rollback clone swap in pool history"
+		return 1
+	fi
+
+	$GREP "destroy begin $rb_fs" $NEW_HISTORY >/dev/null 2>&1
+	if [[ $? != 0 ]]; then
+		log_note "Didn't find rollback destroy begin in pool history"
+		return 1
+	fi
+
+	$GREP "destroy $rb_fs" $NEW_HISTORY >/dev/null 2>&1
+	if [[ $? != 0 ]]; then
+		log_note "Didn't find rollback destroy in pool history"
+		return 1
+	fi
+
+	return 0
+}
+
+function verify_inherit
+{
+	typeset cmd=$1
+	typeset flags=$3
+
+	[[ $flags =~ "i" ]] || return 1
+
+	typeset dsname=${cmd##* }
+	typeset prop=${cmd% *}
+	prop=${prop##* }
+
+	# This works whether or not the inherit was recursive
+	for ds in $($ZFS list -r -Ho name -t filesystem $dsname); do
+		$GREP "$subcmd $ds ([0-9]*) ${prop}=" $NEW_HISTORY >/dev/null \
+		    2>&1
+		if [[ $? != 0 ]]; then
+			log_note "Didn't find inherit history for $ds"
+			return 1
+		fi
+	done
+
+	return 0
+}
+
+function verify_allow
+{
+	typeset cmd=$1
+	typeset subcmd=$2
+	typeset flags=$3
+
+	[[ $flags =~ "i" ]] || return 1
+	[[ $subcmd == "allow" ]] && subcmd="update"
+	[[ $subcmd == "unallow" ]] && subcmd="remove"
+	typeset is_set lflag dflag dsname gname gid uname uid opt str code tmp
+
+	#
+	# Here, we determine three things:
+	# - Whether we're operating on a set or an indivdual permission (which
+	#   dictates the case of the first character in the code)
+	# - The name of the dataset we're operating on.
+	# - Whether the operation applies locally or to descendent datasets (or
+	#   both)
+	#
+	$ECHO $cmd  | $AWK '{i = NF - 1; print $i}' | $GREP '@' >/dev/null \
+	    2>&1 && is_set=1
+	dsname=${cmd##* }
+	[[ $cmd =~ "-l " ]] && lflag=1
+	[[ $cmd =~ "-d " ]] && dflag=1
+	if [[ -z $lflag && -z $dflag ]]; then
+		lflag=1
+		dflag=1
+	fi
+
+	#
+	# For each of the five cases below, the operation is essentially the
+	# same. First, use the command passed in to determine what the code at
+	# the end of the pool history will be. The specifics of the code are
+	# described in a block comment at the top of dsl_deleg.c. Once that's
+	# been assembled, check for its presence in the history, and return
+	# success or failure accordingly.
+	#
+	if [[ $cmd =~ "-s " ]]; then
+		str="s-\$@"
+		[[ -n $is_set ]] && str="S-\$@"
+		tmp=${cmd#*@}
+		code="$str${tmp% *}"
+		$GREP "permission $subcmd $dsname ([0-9]*) $code" \
+		    $NEW_HISTORY >/dev/null 2>&1
+		if [[ $? != 0 ]]; then
+			 log_note "Couldn't find $code in $NEW_HISTORY"
+			 return 1
+		 fi
+	elif [[ $cmd =~ "-c " ]]; then
+		str="c-\$"
+		[[ -n $is_set ]] && str="C-\$"
+		tmp=${cmd#*-c}
+		code="$str${tmp% *}"
+		$GREP "permission $subcmd $dsname ([0-9]*) $code" \
+		    $NEW_HISTORY >/dev/null 2>&1
+		if [ $? != 0 ]]; then
+			 log_note "Couldn't find $code in $NEW_HISTORY"
+			 return 1
+		fi
+	elif [[ $cmd =~ "-u " ]]; then
+		str="u"
+		[[ -n $is_set ]] && str="U"
+		tmp=${cmd##*-u }
+		opt=$($ECHO $tmp | $AWK '{print $2}')
+		uid=$($ID -u ${tmp%% *})
+		if [[ -n $lflag ]]; then
+			code="${str}l\$$uid $opt"
+			$GREP "permission $subcmd $dsname ([0-9]*) $code" \
+			    $NEW_HISTORY >/dev/null 2>&1
+			if [ $? != 0 ]]; then
+				 log_note "Couldn't find $code in $NEW_HISTORY"
+				 return 1
+			fi
+		fi
+		if [[ -n $dflag ]]; then
+			code="${str}d\$$uid $opt"
+			$GREP "permission $subcmd $dsname ([0-9]*) $code" \
+			    $NEW_HISTORY >/dev/null 2>&1
+			if [ $? != 0 ]]; then
+				 log_note "Couldn't find $code in $NEW_HISTORY"
+				 return 1
+			fi
+		fi
+	elif [[ $cmd =~ "-g " ]]; then
+		str="g"
+		[[ -n $is_set ]] && str="G"
+		tmp=${cmd##*-g }
+		opt=$($ECHO $tmp | $AWK '{print $2}')
+		gid=$($AWK -F: "/^${tmp%% *}:/ {print \$3}" /etc/group)
+		if [[ -n $lflag ]]; then
+			code="${str}l\$$gid $opt"
+			$GREP "permission $subcmd $dsname ([0-9]*) $code" \
+			    $NEW_HISTORY >/dev/null 2>&1
+			if [ $? != 0 ]]; then
+				 log_note "Couldn't find $code in $NEW_HISTORY"
+				 return 1
+			fi
+		fi
+		if [[ -n $dflag ]]; then
+			code="${str}d\$$gid $opt"
+			$GREP "permission $subcmd $dsname ([0-9]*) $code" \
+			    $NEW_HISTORY >/dev/null 2>&1
+			if [ $? != 0 ]]; then
+				 log_note "Couldn't find $code in $NEW_HISTORY"
+				 return 1
+			fi
+		fi
+	elif [[ $cmd =~ "-e " ]]; then
+		str="e"
+		[[ -n $is_set ]] && str="E"
+		opt=${cmd##*-e }
+		opt=${opt%% *}
+		if [[ -n $lflag ]]; then
+			code="${str}l\$ $opt"
+			$GREP "permission $subcmd $dsname ([0-9]*) $code" \
+			    $NEW_HISTORY >/dev/null 2>&1
+			if [ $? != 0 ]]; then
+				 log_note "Couldn't find $code in $NEW_HISTORY"
+				 return 1
+			fi
+		fi
+		if [[ -n $dflag ]]; then
+			code="${str}d\$ $opt"
+			$GREP "permission $subcmd $dsname ([0-9]*) $code" \
+			    $NEW_HISTORY >/dev/null 2>&1
+			if [ $? != 0 ]]; then
+				 log_note "Couldn't find $code in $NEW_HISTORY"
+				 return 1
+			fi
+		fi
+	else
+		log_note "Can't parse command \"$cmd\""
+		return 1
+	fi
+
+	return 0
+}
+
+function verify_unallow
+{
+	#
+	# The unallow and allow history have the same format, except the former
+	# logs "permission removed" and the latter "permission updated" so
+	# simply reuse the allow function.
+	#
+	verify_allow "$1" "unallow" "$3"
+}
+
+function verify_destroy
+{
+	typeset cmd=$1
+	typeset flags=$3
+
+	# This function doesn't currently verifiy the zpool command.
+	[[ ${cmd%% *} == "zfs" ]] || return 1
+	[[ $flags =~ "i" ]] || return 1
+
+	typeset dsname=${cmd##* }
+	[[ $dsname =~ "@" ]] && typeset is_snap=1
+
+	if [[ -n $is_snap ]]; then
+		$GREP "ioctl destroy_snaps" $NEW_HISTORY >/dev/null 2>&1
+		if [[ $? != 0 ]]; then
+			log_note "Didn't find ioctl while destroying $dsname"
+			return 1
+		fi
+	else
+		$GREP "destroy begin $dsname" $NEW_HISTORY >/dev/null 2>&1
+		if [[ $? != 0 ]]; then
+			log_note "Didn't find \"destroy begin\" for $dsname"
+			return 1
+		fi
+	fi
+
+	# This should be present for datasets and snapshots alike
+	$GREP "destroy $dsname" $NEW_HISTORY >/dev/null 2>&1
+	if [[ $? != 0 ]]; then
+		log_note "Didn't find \"destroy\" for $dsname"
+		return 1
+	fi
+
+	return 0
+}
+
+function verify_snapshot
+{
+	typeset cmd=$1
+	typeset flags=$3
+
+	[[ $flags =~ "i" ]] || return 1
+
+	typeset fullname=${cmd##* }
+	typeset dsname=${fullname%%@*}
+	typeset snapname=${fullname##*@}
+
+	$GREP "\[txg:[0-9]*\] $subcmd $fullname ([0-9]*)" $NEW_HISTORY \
+	    >/dev/null 2>&1
+	if [[ $? != 0 ]]; then
+		log_note "Didn't find snapshot command for $fullname"
+		return 1
+	fi
+
+	# This works whether or not the snapshot was recursive
+	for ds in $($ZFS list -r -Ho name -t snapshot $dsname | \
+	    $GREP "@$snapname"); do
+		$GREP "^[ ]* $ds$" $NEW_HISTORY >/dev/null 2>&1
+		if [[ $? != 0 ]]; then
+			log_note "Didn't find \"ioctl snapshot\" for $ds"
+			return 1
+		fi
+	done
+
+	return 0
 }
