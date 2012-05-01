@@ -25,7 +25,14 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/include/libtest.kshlib
+
+log_unsupported "Temporarily disable these tests. They time out, adding " \
+    "2.5 hours to the tests."
 
 verify_runnable "global"
 verify_runtime $RT_MEDIUM
@@ -36,18 +43,16 @@ fi
 
 if [[ -n $DISK ]]; then
 	#
-        # Use 'zpool create' to clean up the infomation in 
+        # Use 'zpool create' to clean up the infomation in
         # in the given disk to avoid slice overlapping.
         #
 	cleanup_devices $DISK
-
-        partition_disk $SIZE $DISK 7
-else 
+	partition_disk $SIZE $DISK 7
+else
 	for disk in `$ECHO $DISKSARRAY`; do
 		cleanup_devices $disk
-
-        	partition_disk $SIZE $disk 7
+		partition_disk $SIZE $disk 7
 	done
-fi	
+fi
 
 log_pass

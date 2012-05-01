@@ -25,7 +25,14 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/tests/functional/zinject/zinject.kshlib
+
+log_unsupported "Temporarily disable these tests. They time out, adding " \
+    "2.5 hours to the tests."
 
 verify_runnable "global"
 verify_runtime $RT_MEDIUM

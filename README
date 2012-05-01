@@ -50,14 +50,18 @@ The source can be cloned from this repository:
 	$ git clone git://github.com/delphix/zfstest.git $WS
 
 and includes the source for all four packages described in the previous section.
+($WS is used throughout to refer to the clone being built)
 
 2.2. Build the STF package and its dependents
 
 The first step is to create a proto area that STF will use to build its own
 package, which in turn is used to build the various tests (like the ZFS suite)
-written for the framework. The sources here all require the Sun Studio
-compilers, and can't be compiled with gcc.
+written for the framework. The sources here all require the Sun Studio compiler
+and can't be compiled with gcc so $PATH must be set accordingly. If GNU make or
+gcc are accidentally used, discard the repo, and make a new clone using the
+modified $PATH shown below.
 
+	$ export PATH=/opt/SUNWspro/bin:/opt/SUNWstc-stf/bin/$(uname -p):$PATH
 	$ cd $WS/usr/src/tools/stf
 	$ make
 
@@ -69,7 +73,7 @@ framework binaries.
 	$ export SAVED_PATH=$PATH
 	$ export PATH=$WS/usr/src/tools/stf/bin/$(uname -p):$PATH
 	$ stf_build package
-	$ sudo sudo pkgadd -d $WS/packages/$(uname -p) SUNWstc-stf
+	$ yes | sudo pkgadd -d $WS/packages/$(uname -p) SUNWstc-stf
 	$ export PATH=/opt/SUNWstc-stf/bin/$(uname -p):$SAVED_PATH
 
 Now you can use stf_build to build the dependent runwattr package and the ZFS
@@ -78,7 +82,7 @@ the framework, but rather with Makefiles.
 
 	$ cd $WS/usr/src/tools/checkenv
 	$ make package
-	$ sudo sudo pkgadd -d $WS/packages/$(uname -p) SUNWstc-checkenv
+	$ yes | sudo pkgadd -d $WS/packages/$(uname -p) SUNWstc-checkenv
 
 And finally, build the runwattr and ZFS packages (note that the ZFS suite must
 be built on a system that has the STF package already installed. Use the
@@ -89,8 +93,8 @@ that the ZFS package requires but aren't found in the proto area):
 	$ stf_build package
 	$ cd $WS/usr/src/suites/fs/zfs
 	$ stf_build package
-	$ sudo sudo pkgadd -d $WS/packages/$(uname -p) SUNWstc-runwattr
-	$ sudo sudo pkgadd -d $WS/packages/$(uname -p) SUNWstc-fs-zfs
+	$ yes | sudo pkgadd -d $WS/packages/$(uname -p) SUNWstc-runwattr
+	$ yes | sudo pkgadd -d $WS/packages/$(uname -p) SUNWstc-fs-zfs
 
 3. Configuring And Running The Tests
 
