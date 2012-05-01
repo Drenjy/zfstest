@@ -33,9 +33,15 @@ STF_USER_SETUP=
 STF_ROOT_CLEANUP=cleanup
 STF_USER_CLEANUP=
 
-STF_ROOT_TESTCASES=zfs_destroy_001_pos zfs_destroy_002_pos \
-	zfs_destroy_003_pos zfs_destroy_004_pos \
-	zfs_destroy_005_neg zfs_destroy_006_neg zfs_destroy_007_neg
+STF_ROOT_TESTCASES=zfs_destroy_001_pos \
+	zfs_destroy_002_pos \
+	zfs_destroy_003_pos \
+	zfs_destroy_004_pos \
+	zfs_destroy_005_neg \
+	zfs_destroy_006_neg \
+	zfs_destroy_007_neg \
+	zfs_destroy_008_pos \
+	zfs_destroy_009_pos
 STF_USER_TESTCASES=
 
 STF_ENVFILES=zfs_destroy.cfg
