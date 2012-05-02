@@ -173,12 +173,6 @@ function verify_rollback
 		return 1
 	fi
 
-	$GREP "destroy begin $rb_fs" $NEW_HISTORY >/dev/null 2>&1
-	if [[ $? != 0 ]]; then
-		log_note "Didn't find rollback destroy begin in pool history"
-		return 1
-	fi
-
 	$GREP "destroy $rb_fs" $NEW_HISTORY >/dev/null 2>&1
 	if [[ $? != 0 ]]; then
 		log_note "Didn't find rollback destroy in pool history"
@@ -376,12 +370,6 @@ function verify_destroy
 		$GREP "ioctl destroy_snaps" $NEW_HISTORY >/dev/null 2>&1
 		if [[ $? != 0 ]]; then
 			log_note "Didn't find ioctl while destroying $dsname"
-			return 1
-		fi
-	else
-		$GREP "destroy begin $dsname" $NEW_HISTORY >/dev/null 2>&1
-		if [[ $? != 0 ]]; then
-			log_note "Didn't find \"destroy begin\" for $dsname"
 			return 1
 		fi
 	fi

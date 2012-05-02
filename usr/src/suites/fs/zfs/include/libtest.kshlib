@@ -1864,7 +1864,9 @@ function del_user #<logname> <basedir>
 		log_fail "login name is necessary."
 	fi
 
-	log_must $USERDEL $user
+	if $ID $user > /dev/null 2>&1; then
+		log_must $USERDEL $user
+	fi
 
 	[[ -d $basedir/$user ]] && $RM -fr $basedir/$user
 
