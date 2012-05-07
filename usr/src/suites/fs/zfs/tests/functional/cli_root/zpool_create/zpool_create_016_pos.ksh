@@ -24,6 +24,11 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
+
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/include/libtest.kshlib
 
 ################################################################################
@@ -78,19 +83,24 @@ function cleanup
 }
 
 if [[ -n $DISK ]]; then
-        disk=$DISK
+	disk=$DISK
 else
-        disk=$DISK0
+	disk=$DISK0
 fi
 typeset pool_dev=${disk}s${SLICE0}
-typeset swap_disks=`$SWAP -l | $GREP -v "swapfile" | $AWK '{print $1}'`
-typeset dump_device=`$DUMPADM | $GREP "Dump device" | $AWK '{print $3}'`
-	    
+typeset swap_disks=$($SWAP -l | $GREP -v "swapfile" | $AWK '{print $1}')
+typeset dump_device=$($DUMPADM | $GREP "Dump device" | $AWK '{print $3}')
+
 log_assert "'zpool create' should success with no device in swap."
 log_onexit cleanup
 
 for sdisk in $swap_disks; do
-	log_must $SWAP -d $sdisk
+	log_note "Executing: swap -d $sdisk"
+	$SWAP -d $sdisk >/dev/null 2>&1;
+	if [[ $? != 0 ]]; then
+		log_untested "Unable to delete swap device $sdisk because of" \
+				"insufficient RAM"
+	fi
 done
 
 log_must $ZPOOL create $TESTPOOL $pool_dev

@@ -25,13 +25,22 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
 verify_runnable "global"
 
 for i in $SAVESWAPDEVS ; do
-	log_must eval "$SWAP -d $i >/dev/null 2>&1"
+	log_note "Executing: swap -d $i"
+	$SWAP -d $i >/dev/null 2>&1
+	if [[ $? != 0 ]]; then
+		log_untested "Unable to delete swap device $i because of" \
+				"insufficient RAM"
+	fi
 done
 
 default_zvol_setup $DISK $VOLSIZE
