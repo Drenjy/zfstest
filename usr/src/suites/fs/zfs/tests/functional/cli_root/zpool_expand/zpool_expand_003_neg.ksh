@@ -25,6 +25,10 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/include/libtest.kshlib
 
 ###############################################################################
@@ -34,9 +38,9 @@
 # ID: zpool_expand_003_neg
 #
 # Description:
-# Once set zpool autoexpand=off, zpool can *NOT* autoexpand by 
+# Once set zpool autoexpand=off, zpool can *NOT* autoexpand by
 # Dynamic LUN Expansion
-# 
+#
 #
 # STRATEGY:
 # 1) Create a pool
@@ -78,15 +82,14 @@ for i  in 1 2 3; do
 	log_must $ZFS create -V $org_size $VFS/vol$i
 done
 
-for type in "" mirror raidz raidz2; do
-	log_must $ZPOOL create $TESTPOOL1 $type \
-		/dev/zvol/dsk/$VFS/vol1 \
-		/dev/zvol/dsk/$VFS/vol2 \
-		/dev/zvol/dsk/$VFS/vol3
+for type in " " mirror raidz raidz2; do
+	log_must $ZPOOL create $TESTPOOL1 $type /dev/zvol/dsk/$VFS/vol1 \
+	    /dev/zvol/dsk/$VFS/vol2 /dev/zvol/dsk/$VFS/vol3
 
 	typeset autoexp=$(get_pool_prop autoexpand $TESTPOOL1)
 	if [[ $autoexp != "off" ]]; then
-		log_fail "zpool $TESTPOOL1 autoexpand should off but is $autoexp"
+		log_fail "zpool $TESTPOOL1 autoexpand should off but is " \
+		    "$autoexp"
 	fi
 
 	typeset prev_size=$(get_pool_prop size $TESTPOOL1)
@@ -98,23 +101,22 @@ for type in "" mirror raidz raidz2; do
 	$SYNC
 	$SLEEP 10
 	$SYNC
-	
+
 	# check for zpool history for the pool size expansion
-	$ZPOOL history -il $TESTPOOL1 |  \
-		$GREP "pool '$TESTPOOL1' size:" | \
-		$GREP "internal vdev online" >/dev/null 2>&1
+	$ZPOOL history -il $TESTPOOL1 | $GREP "pool '$TESTPOOL1' size:" | \
+	    $GREP "vdev online" >/dev/null 2>&1
 
 	if [[ $? -eq 0 ]]; then
-		log_fail "pool $TESTPOOL1" \
-			" is not autoexpand after LUN expansion"
+		log_fail "pool $TESTPOOL1 is not autoexpand after LUN " \
+		    "expansion"
 	fi
-		
+
 	typeset expand_size=$(get_pool_prop size $TESTPOOL1)
-	
+
 	if [[ "$prev_size" != "$expand_size" ]]; then
 		log_fail "pool $TESTPOOL1 size changed after LUN expansion"
 	fi
-	
+
 	log_must $ZPOOL destroy $TESTPOOL1
 
 	for i in 1 2 3; do
