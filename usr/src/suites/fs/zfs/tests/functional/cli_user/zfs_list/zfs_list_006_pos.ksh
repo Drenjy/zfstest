@@ -55,10 +55,6 @@
 
 verify_runnable "both"
 
-if ! pool_prop_exist "listsnapshots" ; then
-	log_unsupported "Pool property of 'listsnapshots' not supported."
-fi
-
 function cleanup
 {
 	if [[ -n $oldvalue ]] && is_global_zone ; then
@@ -69,8 +65,8 @@ function cleanup
 log_onexit cleanup
 log_assert "Verify 'zfs list' exclude list of snapshot."
 
-set -A hide_options "--" "-t filesystem" "-t volume"
-set -A show_options "--" "-t snapshot" "-t all"
+typeset hide_options=("-t filesystem" "-t volume")
+typeset show_options=("-t snapshot" "-t all")
 
 typeset pool=${TESTPOOL%%/*}
 typeset oldvalue=$(get_pool_prop listsnapshots $pool)
@@ -94,31 +90,32 @@ for newvalue in "" "on" "off" ; do
 	elif [[ $newvalue == "off" ]] ; then
 		expect="log_mustnot"
 	fi
-	
-	$expect eval "$ZFS list -r -H -o name $pool | $GREP '@' > /dev/null 2>&1"
-		
-	typeset -i i=0
-	while (( i < ${#hide_options[*]} )) ; do
-		log_mustnot eval "$ZFS list -r -H -o name ${hide_options[i]} $pool | \
-$GREP '@' > /dev/null 2>&1"
 
-		(( i = i + 1 ))
+	$expect eval "$ZFS list -r -H -o name $pool | " \
+	    "$GREP '@' > /dev/null 2>&1"
+
+	typeset -i i=0
+	while ((i < ${#hide_options[*]})) ; do
+		log_mustnot eval "$ZFS list -r -H -o name ${hide_options[i]} \
+		    $pool | $GREP '@' > /dev/null 2>&1"
+
+		((i = i + 1))
 	done
 
-	(( i = 0 ))
+	((i = 0))
 
-	while (( i < ${#show_options[*]} )) ; do
-		log_must eval "$ZFS list -r -H -o name ${show_options[i]} $pool | \
-$GREP '@' > /dev/null 2>&1"
-	
-		(( i = i + 1 ))
+	while ((i < ${#show_options[*]})) ; do
+		log_must eval "$ZFS list -r -H -o name ${show_options[i]} \
+		    $pool | $GREP '@' > /dev/null 2>&1"
+
+		((i = i + 1))
 	done
 
 	output=$($ZFS list -H -o name $BASEFS/${dataset}@snap)
 	if [[ $output != $BASEFS/${dataset}@snap ]] ; then
 		log_fail "zfs list not show $BASEFS/${dataset}@snap"
 	fi
-	
+
 	if is_global_zone ; then
 		output=$($ZFS list -H -o name $BASEFS/${dataset}-vol@snap)
 		if [[ $output != $BASEFS/${dataset}-vol@snap ]] ; then
@@ -126,5 +123,5 @@ $GREP '@' > /dev/null 2>&1"
 		fi
 	fi
 done
-	
+
 log_pass "'zfs list' exclude list of snapshot."

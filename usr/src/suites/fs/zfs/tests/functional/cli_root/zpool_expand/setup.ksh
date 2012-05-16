@@ -29,10 +29,6 @@
 
 verify_runnable "global"
 
-if ! pool_prop_exist "autoexpand"; then
-	log_unsupported "zpool autoexpand is not support on testing machine"
-fi
-
 DISK=${DISKS%% *}
 
 default_setup $DISK

@@ -1,4 +1,4 @@
-#! /bin/ksh -p
+#!/usr/bin/bash -p
 #
 # CDDL HEADER START
 #
@@ -25,8 +25,8 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/reservation/reservation.kshlib
+. $STF_SUITE/include/libtest.shlib
+. $STF_SUITE/tests/functional/reservation/reservation.shlib
 
 ###############################################################################
 #
@@ -64,17 +64,13 @@ verify_runnable "both"
 log_assert "Verify it is possible to set reservations multiple times " \
 	"on a filesystem regular and sparse volume"
 
-function cleanup 
+function cleanup
 {
 	log_must zero_reservation $TESTPOOL/$TESTFS
 
 	for obj in $OBJ_LIST; do
-                datasetexists $obj && \
-                        log_must $ZFS destroy -f $obj
-        done
-
-	$ZFS unmount -a > /dev/null 2>&1
-	log_must $ZFS mount -a
+	datasetexists $obj && log_must $ZFS destroy -f $obj
+	done
 }
 
 log_onexit cleanup
@@ -92,30 +88,30 @@ function multiple_resv { #dataset
 	log_must zero_reservation $dataset
 	space_avail=`get_prop available $TESTPOOL`
 
-	(( resv_size = ( space_avail - RESV_DELTA ) / RESV_ITER ))
+	((resv_size = (space_avail - RESV_DELTA) / RESV_ITER))
 
 	#
-        # For regular (non-sparse) volumes the upper limit is determined
-        # not by the space available in the pool but rather by the size
-        # of the volume itself.
-        #
-        [[ $obj == $TESTPOOL/$TESTVOL ]] && \
-                (( resv_size = ( vol_set_size - RESV_DELTA ) / RESV_ITER ))
+	# For regular (non-sparse) volumes the upper limit is determined
+	# not by the space available in the pool but rather by the size
+	# of the volume itself.
+	#
+	[[ $obj == $TESTPOOL/$TESTVOL ]] && \
+	    ((resv_size = (vol_set_size - RESV_DELTA) / RESV_ITER))
 
 	resv_size_set=$resv_size
 
-	while (( $i < $RESV_ITER )); do
+	while (($i < $RESV_ITER)); do
 
-		(( i = i + 1 ))
+		((i = i + 1))
 
-		(( resv_size_set = resv_size * i ))
+		((resv_size_set = resv_size * i))
 
 		log_must $ZFS set reservation=$resv_size_set $dataset
 
 		resv_size_get=`get_prop reservation $dataset`
 		if [[ $resv_size_set != $resv_size_get ]]; then
 			log_fail "Reservation not the expected value " \
-				"($resv_size_set != $resv_size_get)"
+			    "($resv_size_set != $resv_size_get)"
 		fi
 	done
 
@@ -129,9 +125,9 @@ if ! is_global_zone ; then
 else
 	OBJ_LIST="$TESTPOOL/$TESTVOL $TESTPOOL/$TESTVOL2"
 
-        (( vol_set_size = space_avail / 4 ))
+	((vol_set_size = space_avail / 4))
 	vol_set_size=$(floor_volsize $vol_set_size)
-	(( sparse_vol_set_size = space_avail * 4 ))
+	((sparse_vol_set_size = space_avail * 4))
 	sparse_vol_set_size=$(floor_volsize $sparse_vol_set_size)
 
 
@@ -145,4 +141,4 @@ for obj in $TESTPOOL/$TESTFS $OBJ_LIST ; do
 done
 
 log_pass "Multiple reservations successfully set on filesystem" \
-	" and both volume types"
+    " and both volume types"

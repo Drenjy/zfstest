@@ -1,4 +1,4 @@
-#! /bin/ksh -p
+#!/usr/bin/bash -p
 #
 # CDDL HEADER START
 #
@@ -25,8 +25,12 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/reservation/reservation.kshlib
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
+. $STF_SUITE/include/libtest.shlib
+. $STF_SUITE/tests/functional/reservation/reservation.shlib
 
 ###############################################################################
 #
@@ -68,33 +72,30 @@ log_assert "Reservation properties preserved across exports and imports"
 function cleanup
 {
 	for obj in $OBJ_LIST; do
-                datasetexists $obj && \
-                        log_must $ZFS destroy -f $obj
+                datasetexists $obj && log_must $ZFS destroy -f $obj
         done
 
 	log_must zero_reservation $TESTPOOL/$TESTFS
 }
-
 log_onexit cleanup
 
-OBJ_LIST="$TESTPOOL/$TESTFS1/$TESTFS2 $TESTPOOL/$TESTFS1 \
-	$TESTPOOL/$TESTVOL $TESTPOOL/$TESTVOL2"
+OBJ_LIST="$TESTPOOL/$TESTFS1/$TESTFS2 $TESTPOOL/$TESTFS1 $TESTPOOL/$TESTVOL \
+    $TESTPOOL/$TESTVOL2"
 
 log_must $ZFS create $TESTPOOL/$TESTFS1
 log_must $ZFS create $TESTPOOL/$TESTFS1/$TESTFS2
 
-space_avail=`get_prop available $TESTPOOL`
+space_avail=$(get_prop available $TESTPOOL)
 [[ $? -ne 0 ]] && \
-	log_fail "Unable to get space available property for $TESTPOOL"
+    log_fail "Unable to get space available property for $TESTPOOL"
 
-(( resv_set = space_avail / 5 ))
+((resv_set = space_avail / 5))
 resv_set=$(floor_volsize $resv_set)
-(( sparse_vol_set_size = space_avail * 5 ))
+((sparse_vol_set_size = space_avail * 5))
 sparse_vol_set_size=$(floor_volsize $sparse_vol_set_size)
 
-
-# When initially created, a regular volume's reservation property is set 
-# equal to its size (unlike a sparse volume), so we don't need to set it 
+# When initially created, a regular volume's reservation property is set
+# equal to its size (unlike a sparse volume), so we don't need to set it
 # explictly later on
 log_must $ZFS create -V $resv_set $TESTPOOL/$TESTVOL
 log_must $ZFS create -s -V $sparse_vol_set_size $TESTPOOL/$TESTVOL2
@@ -105,23 +106,21 @@ log_must $ZFS set reservation=$resv_set $TESTPOOL/$TESTFS1/$TESTFS2
 log_must $ZFS set reservation=$resv_set $TESTPOOL/$TESTVOL2
 
 log_must $ZPOOL export $TESTPOOL
+log_must $ZPOOL import $TESTPOOL
 
-typeset dir=$(get_device_dir $DISKS)
-log_must $ZPOOL import -d $dir $TESTPOOL
+for obj in $TESTPOOL/$TESTFS $OBJ_LIST; do
 
-for obj in $TESTPOOL/$TESTFS $TESTPOOL/$TESTFS1 \
-		$TESTPOOL/$TESTVOL $TESTPOOL/$TESTVOL2 \
-		$TESTPOOL/$TESTFS1/$TESTFS2
-do
-	if [[ $obj == $TESTPOOL/$TESTVOL ]] && fs_prop_exist refreserv; then
-		resv_get=`get_prop refreservation $obj`
+	if [[ $obj == $TESTPOOL/$TESTVOL ]]; then
+		expected=$(volsize_to_reservation $obj $resv_set)
+		found=$(get_prop refreservation $obj)
 	else
-		resv_get=`get_prop reservation $obj`
+		expected=$resv_set
+		found=$(get_prop reservation $obj)
 	fi
 
-	[[ $resv_get != $resv_set ]] && \
-		log_fail "Reservation property for $obj incorrect " \
-			" expected $resv_set but got $resv_get" 
+	[[ $found != $expected ]] && \
+	    log_fail "Reservation property for $obj incorrect. Expected " \
+	    "$expected but got $found."
 done
 
 log_pass "Reservation properties preserved across exports and imports"

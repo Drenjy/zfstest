@@ -27,7 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/zfs_get/zfs_get_common.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_get/zfs_get_list_d.kshlib
-. $STF_SUITE/tests/functional/userquota/userquota_common.kshlib
 
 ###############################################################################
 #
@@ -56,38 +55,29 @@
 
 verify_runnable "both"
 
-set -A options "" "-p" "-r" "-H"
+typeset options=("" "-p" "-r" "-H")
 
 typeset -i i=${#options[*]}
 typeset -i j=0
-while (( j<${#depth_options[*]} ));
+while ((j<${#depth_options[*]}));
 do
 	options[$i]=-"${depth_options[$j]}"
-	(( j+=1 ))
-	(( i+=1 ))
+	((j+=1))
+	((i+=1))
 done
 
-set -A zfs_props type used available creation volsize referenced \
-	compressratio mounted origin recordsize quota reservation mountpoint \
-	sharenfs checksum compression atime devices exec readonly setuid \
-	zoned snapdir aclmode aclinherit canmount primarycache secondarycache \
-	usedbychildren usedbydataset usedbyrefreservation usedbysnapshots
+typeset zfs_props=("type" used available creation volsize referenced \
+    compressratio mounted origin recordsize quota reservation mountpoint \
+    sharenfs checksum compression atime devices exec readonly setuid zoned \
+    snapdir aclmode aclinherit canmount primarycache secondarycache \
+    usedbychildren usedbydataset usedbyrefreservation usedbysnapshots \
+    version)
 
-
-$ZFS upgrade -v > /dev/null 2>&1
-if [[ $? -eq 0 ]]; then
-	set -A zfs_props ${zfs_props[*]} version
-fi
-
-if is_userquota_supported; then
-	set -A  userquota_props userquota@root groupquota@root \
-		userused@root groupused@root	
-fi
-
-set -A all_props --  "${zfs_props[@]}" "${userquota_props[@]}"
-
-set -A dataset $TESTPOOL/$TESTCTR $TESTPOOL/$TESTFS $TESTPOOL/$TESTVOL \
-	$TESTPOOL/$TESTFS@$TESTSNAP $TESTPOOL/$TESTVOL@$TESTSNAP
+typeset userquota_props=(userquota@root groupquota@root userused@root \
+    groupused@root)
+typeset all_props=("${zfs_props[@]}" "${userquota_props[@]}")
+typeset dataset=($TESTPOOL/$TESTCTR $TESTPOOL/$TESTFS $TESTPOOL/$TESTVOL \
+	$TESTPOOL/$TESTFS@$TESTSNAP $TESTPOOL/$TESTVOL@$TESTSNAP)
 
 #
 # According to dataset and option, checking if 'zfs get' return correct
@@ -104,7 +94,7 @@ function check_return_value
 	typeset opt=$3
 	typeset -i found=0
 	typeset p
-	
+
 	for p in $props; do
 		found=0
 
@@ -113,14 +103,14 @@ function check_return_value
 			item=$($ECHO $line | $AWK '{print $2}' 2>&1)
 
 			if [[ $item == $p ]]; then
-				(( found += 1 ))
+				((found += 1))
 				break
 			fi
 		done < $TESTDIR/$TESTFILE0
 
-		if (( found == 0 )); then
+		if ((found == 0)); then
 			log_fail "'zfs get $opt $props $dst' return " \
-				"error message.'$p' haven't been found."
+			    "error message.'$p' haven't been found."
 		fi
 	done
 
@@ -128,7 +118,7 @@ function check_return_value
 }
 
 log_assert "Setting the valid options and properties 'zfs get' should return " \
-	"the correct property value."
+    "the correct property value."
 log_onexit cleanup
 
 # Create filesystem and volume's snapshot
@@ -136,11 +126,11 @@ create_snapshot $TESTPOOL/$TESTFS $TESTSNAP
 create_snapshot $TESTPOOL/$TESTVOL $TESTSNAP
 
 typeset -i i=0
-while (( i < ${#dataset[@]} )); do
+while ((i < ${#dataset[@]})); do
 	for opt in "${options[@]}"; do
 		for prop in ${all_props[@]}; do
 			eval "$ZFS get $opt $prop ${dataset[i]} > \
-				$TESTDIR/$TESTFILE0"
+			    $TESTDIR/$TESTFILE0"
 			ret=$?
 			if [[ $ret != 0 ]]; then
 				log_fail "$ZFS get returned: $ret"
@@ -148,8 +138,8 @@ while (( i < ${#dataset[@]} )); do
 			check_return_value ${dataset[i]} "$prop" "$opt"
 		done
 	done
-	(( i += 1 ))
+	((i += 1))
 done
 
 log_pass "Setting the valid options to dataset, it should succeed and return " \
-	"valid value. 'zfs get' pass."
+    "valid value. 'zfs get' pass."

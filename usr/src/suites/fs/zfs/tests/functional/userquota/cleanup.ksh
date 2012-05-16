@@ -28,10 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/userquota/userquota_common.kshlib
 
-if ! is_userquota_supported; then
-	log_unsupported "userquota is not supported in this system."
-fi
-
 log_must cleanup_quota
 log_must clean_user_group
 

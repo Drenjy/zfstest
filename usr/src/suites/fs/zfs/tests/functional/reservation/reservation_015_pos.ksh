@@ -1,4 +1,4 @@
-#! /bin/ksh -p
+#!/usr/bin/bash -p
 #
 # CDDL HEADER START
 #
@@ -25,8 +25,12 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/reservation/reservation.kshlib
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
+. $STF_SUITE/include/libtest.shlib
+. $STF_SUITE/tests/functional/reservation/reservation.shlib
 
 ###############################################################################
 #
@@ -36,13 +40,13 @@
 #
 # DESCRIPTION:
 #
-# In pool with a full filesystem and a regular volume with an implicit 
-# reservation, setting the reservation on the volume to 'none' should allow 
+# In pool with a full filesystem and a regular volume with an implicit
+# reservation, setting the reservation on the volume to 'none' should allow
 # more data to be written to the filesystem.
 #
 #
 # STRATEGY:
-# 1) Create a regular non-sparse volume (which implicitly sets the reservation 
+# 1) Create a regular non-sparse volume (which implicitly sets the reservation
 #    property to a value equal to the volume size)
 # 2) Create a filesystem at the same level
 # 3) Fill up the filesystem
@@ -61,62 +65,49 @@
 
 verify_runnable "global"
 
-log_assert "Setting volume reservation to 'none' allows more data to" \
-	" be written to top level filesystem"
+log_assert "Setting volume reservation to 'none' allows more data to be " \
+    "written to top level filesystem"
 
-function cleanup 
+function cleanup
 {
 	datasetexists $TESTPOOL/$TESTVOL && \
-            log_must $ZFS destroy $TESTPOOL/$TESTVOL
+	log_must $ZFS destroy $TESTPOOL/$TESTVOL
 
-        [[ -e $TESTDIR/$TESTFILE1 ]] && \
-                log_must $RM -rf $TESTDIR/$TESTFILE1
-
-        [[ -e $TESTDIR/$TESTFILE2 ]] && \
-                log_must $RM -rf $TESTDIR/$TESTFILE2
-
-	$ZFS unmount -a > /dev/null 2>&1
-	log_must $ZFS mount -a
+	[[ -e $TESTDIR/$TESTFILE1 ]] && log_must $RM -rf $TESTDIR/$TESTFILE1
+	[[ -e $TESTDIR/$TESTFILE2 ]] && log_must $RM -rf $TESTDIR/$TESTFILE2
 }
-
 log_onexit cleanup
 
-space_avail=`get_prop available $TESTPOOL`
+space_avail=$(largest_volsize_from_pool $TESTPOOL)
 
 #
 # To make sure this test doesn't take too long to execute on
-# large pools, we calculate a volume size which when applied 
-# to the volume will ensure we have RESV_FREE_SPACE 
+# large pools, we calculate a volume size which when applied
+# to the volume will ensure we have RESV_FREE_SPACE
 # left free in the pool which we can quickly fill.
 #
-(( resv_size_set = space_avail - RESV_FREE_SPACE ))
+((resv_size_set = space_avail - RESV_FREE_SPACE))
 resv_size_set=$(floor_volsize $resv_size_set)
 
 log_must $ZFS create -V $resv_size_set $TESTPOOL/$TESTVOL
 
 space_avail_still=`get_prop available $TESTPOOL`
 
-fill_size=`expr $space_avail_still + $RESV_TOLERANCE`
-write_count=`expr $fill_size / $BLOCK_SIZE`
+fill_size=$((space_avail_still + $RESV_TOLERANCE))
+write_count=$((fill_size / BLOCK_SIZE))
 
 # Now fill up the filesystem (which doesn't have a reservation set
 # and thus will use up whatever free space is left in the pool).
-$FILE_WRITE -o create -f $TESTDIR/$TESTFILE1 -b $BLOCK_SIZE \
-        -c $write_count -d 0
+$FILE_WRITE -o create -f $TESTDIR/$TESTFILE1 -b $BLOCK_SIZE -c $write_count -d 0
 ret=$?
-if (( $ret != $ENOSPC )); then
+if (($ret != $ENOSPC)); then
 	log_fail "Did not get ENOSPC as expected (got $ret)."
 fi
 
-if fs_prop_exist refreserv; then
-        log_must $ZFS set refreservation=none $TESTPOOL/$TESTVOL
-else
-	log_must $ZFS set reservation=none $TESTPOOL/$TESTVOL
-fi
+log_must $ZFS set refreservation=none $TESTPOOL/$TESTVOL
 
-
-log_must $FILE_WRITE -o create -f $TESTDIR/$TESTFILE2 -b $BLOCK_SIZE \
-        -c 1000 -d 0
+log_must $FILE_WRITE -o create -f $TESTDIR/$TESTFILE2 -b $PAGESIZE \
+    -c 1000 -d 0
 
 log_pass "Setting top level volume reservation to 'none' allows more " \
-	"data to be written to the top level filesystem"
+    "data to be written to the top level filesystem"

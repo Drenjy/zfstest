@@ -1,4 +1,4 @@
-#! /bin/ksh -p
+#!/bin/bash -p
 #
 # CDDL HEADER START
 #
@@ -25,8 +25,8 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/reservation/reservation.kshlib
+. $STF_SUITE/include/libtest.shlib
+. $STF_SUITE/tests/functional/reservation/reservation.shlib
 
 ###############################################################################
 #
@@ -66,9 +66,8 @@ verify_runnable "both"
 function cleanup {
 
 	for obj in $OBJ_LIST; do
-		datasetexists $obj && \
-                        log_must $ZFS destroy -f $obj
-        done
+		datasetexists $obj && log_must $ZFS destroy -f $obj
+	done
 }
 
 log_assert "Verify space released when a dataset with reservation is destroyed"
@@ -85,15 +84,13 @@ else
 	OBJ_LIST="$TESTPOOL/$TESTFS2 \
 		$TESTPOOL/$TESTVOL $TESTPOOL/$TESTVOL2"
 
-        (( vol_set_size = space_avail / 4 ))
+	((vol_set_size = space_avail / 4))
 	vol_set_size=$(floor_volsize $vol_set_size)
-	(( sparse_vol_set_size = space_avail * 4 ))
+	((sparse_vol_set_size = space_avail * 4))
 	sparse_vol_set_size=$(floor_volsize $sparse_vol_set_size)
 
 	log_must $ZFS create -V $vol_set_size $TESTPOOL/$TESTVOL
-	if fs_prop_exist refreserv; then
-                log_must $ZFS set refreservation=none $TESTPOOL/$TESTVOL
-        fi
+	log_must $ZFS set refreservation=none $TESTPOOL/$TESTVOL
 	log_must $ZFS set reservation=none $TESTPOOL/$TESTVOL
 	log_must $ZFS create -s -V $sparse_vol_set_size $TESTPOOL/$TESTVOL2
 fi
@@ -110,13 +107,13 @@ for obj in $OBJ_LIST ; do
 	space_used=`get_prop used $TESTPOOL`
 
 	#
-        # For regular (non-sparse) volumes the upper limit is determined
-        # not by the space available in the pool but rather by the size
-        # of the volume itself.
-        #
-        [[ $obj == $TESTPOOL/$TESTVOL ]] && \
-                (( resv_size_set = vol_set_size - RESV_DELTA ))
-	
+	# For regular (non-sparse) volumes the upper limit is determined
+	# not by the space available in the pool but rather by the size
+	# of the volume itself.
+	#
+	[[ $obj == $TESTPOOL/$TESTVOL ]] && \
+	    ((resv_size_set = vol_set_size - RESV_DELTA))
+
 	log_must $ZFS set reservation=$resv_size_set $obj
 
 	resv_size_get=`get_prop reservation $obj`

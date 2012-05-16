@@ -1,4 +1,4 @@
-#! /bin/ksh -p
+#!/usr/bin/bash -p
 #
 # CDDL HEADER START
 #
@@ -25,8 +25,8 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/reservation/reservation.kshlib
+. $STF_SUITE/include/libtest.shlib
+. $STF_SUITE/tests/functional/reservation/reservation.shlib
 
 ###############################################################################
 #
@@ -39,7 +39,7 @@
 # Verify that reservation doesn't inherit its value from parent.
 #
 # STRATEGY:
-# 1) Create a filesystem tree 
+# 1) Create a filesystem tree
 # 2) Set reservation for parents
 # 3) Verify that the 'reservation' for descendent doesnot inherit the value.
 #
@@ -51,22 +51,19 @@
 #
 # __stc_assertion_end
 #
-###############################################################################  
+###############################################################################
 
 verify_runnable "both"
 
 function cleanup
 {
-	datasetexists $fs_child && \
-		log_must $ZFS destroy $fs_child
-
+	datasetexists $fs_child && log_must $ZFS destroy $fs_child
 	log_must $ZFS set reservation=$reserv_val $fs
 }
 
 log_onexit cleanup
 
 log_assert "Verify that reservation doesnot inherit its value from parent."
-log_onexit cleanup
 
 fs=$TESTPOOL/$TESTFS
 fs_child=$TESTPOOL/$TESTFS/$TESTFS
@@ -74,12 +71,12 @@ fs_child=$TESTPOOL/$TESTFS/$TESTFS
 space_avail=$(get_prop available $fs)
 reserv_val=$(get_prop reservation $fs)
 typeset -l reservsize=$space_avail
-((reservsize = reservsize / 2 ))
-log_must $ZFS set reservation=$reservsize $fs 
+((reservsize = reservsize / 2))
+log_must $ZFS set reservation=$reservsize $fs
 
 log_must $ZFS create $fs_child
 rsv_space=$(get_prop reservation $fs_child)
 [[ $rsv_space == $reservsize ]] && \
-	log_fail "The reservation of child dataset inherits its value from parent."
+    log_fail "The reservation of child dataset inherits its value from parent."
 
 log_pass "reservation doesnot inherit its value from parent as expected."

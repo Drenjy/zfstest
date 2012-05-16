@@ -1,4 +1,4 @@
-#! /bin/ksh -p
+#!/usr/bin/bash -p
 #
 # CDDL HEADER START
 #
@@ -25,8 +25,8 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/reservation/reservation.kshlib
+. $STF_SUITE/include/libtest.shlib
+. $STF_SUITE/tests/functional/reservation/reservation.shlib
 
 ###############################################################################
 #
@@ -42,8 +42,8 @@
 #
 # STRATEGY:
 # 1) Create one filesystem
-# 2) Get the current quota setting 
-# 3) Set a reservation 
+# 2) Get the current quota setting
+# 3) Set a reservation
 # 4) Verify that the quota value remains unchanged
 #
 # TESTABILITY: explicit
@@ -69,7 +69,7 @@ log_onexit cleanup
 
 space_avail=`get_prop available $TESTPOOL`
 
-(( resv_size_set = (space_avail - RESV_DELTA) / 2 ))
+((resv_size_set = (space_avail - RESV_DELTA) / 2))
 
 fs_quota=`$ZFS get quota $TESTPOOL/$TESTFS`
 
@@ -78,7 +78,8 @@ log_must $ZFS set reservation=$resv_size_set $TESTPOOL/$TESTFS
 new_fs_quota=`$ZFS get quota $TESTPOOL/$TESTFS`
 
 if [[ $fs_quota != $new_fs_quota ]]; then
-	log_fail "Quota value on $TESTFS has changed ($fs_quota != $new_fs_quota)"
+	log_fail "Quota value on $TESTFS has changed " \
+	    "($fs_quota != $new_fs_quota)"
 fi
 
 log_pass "Quota settings unaffected by reservation settings"

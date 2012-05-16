@@ -56,13 +56,8 @@
 
 function cleanup
 {
-	if poolexists $TESTPOOL ; then
-                destroy_pool $TESTPOOL
-        fi
-
-	if [[ -f $CPATH ]] ; then
-		log_must $RM $CPATH
-	fi
+	poolexists $TESTPOOL && destroy_pool $TESTPOOL
+	[[ -f $CPATH ]] && log_must $RM $CPATH
 }
 
 log_onexit cleanup
@@ -74,16 +69,13 @@ else
 	disk=$DISK0
 fi
 
+#
 # we don't include "root" property in this list, as it requires both "cachefile"
 # and "root" to be set at the same time. A test for this is included in
-# ../../root. 
-set -A props "autoreplace" "delegation" "cachefile" "version"
-set -A vals  "off"         "off"        "$CPATH"   	    "3"
-
-if pool_prop_exist autoexpand ; then
-        set -A props ${props[*]} "autoexpand"
-        set -A vals ${vals[*]} "on"
-fi
+# ../../root.
+#
+typeset props=("autoreplace" "delegation" "cachefile" "version" "autoexpand")
+typeset vals=("off" "off" "$CPATH" "3" "on")
 
 typeset -i i=0;
 while [ $i -lt "${#props[@]}" ]
@@ -93,31 +85,30 @@ do
 	if [[ $RESULT != ${vals[$i]} ]]
 	then
 		$ZPOOL get all $TESTPOOL
-		log_fail "Pool was created without setting the ${props[$i]} property"
+		log_fail "Pool was created without setting the ${props[$i]} " \
+		    "property"
 	fi
 	log_must $ZPOOL destroy $TESTPOOL
-        (( i = i + 1 ))
+	((i = i + 1))
 done
 
 # Destroy our pool
-if poolexists $TESTPOOL ; then
-                destroy_pool $TESTPOOL
-fi
+poolexists $TESTPOOL && destroy_pool $TESTPOOL
 
 # pick two properties, and verify we can create with those as well
 log_must $ZPOOL create -o delegation=off -o cachefile=$CPATH $TESTPOOL $disk
 RESULT=$(get_pool_prop delegation $TESTPOOL)
 if [[ $RESULT != off ]]
 then
-		$ZPOOL get all $TESTPOOL
-		log_fail "Pool created without the delegation prop."
+	$ZPOOL get all $TESTPOOL
+	log_fail "Pool created without the delegation prop."
 fi
 
 RESULT=$(get_pool_prop cachefile $TESTPOOL)
 if [[ $RESULT != $CPATH ]]
 then
-		$ZPOOL get all $TESTPOOL
-		log_fail "Pool created without the cachefile prop."
+	$ZPOOL get all $TESTPOOL
+	log_fail "Pool created without the cachefile prop."
 fi
 
 log_pass "zpool create can create pools with specified properties"

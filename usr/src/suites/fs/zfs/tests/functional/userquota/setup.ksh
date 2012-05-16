@@ -30,10 +30,6 @@
 
 verify_runnable "both"
 
-if ! is_userquota_supported; then
-	log_unsupported "userquota is not supported in this system."
-fi
-
 log_must clean_user_group
 
 log_must add_group $QGROUP

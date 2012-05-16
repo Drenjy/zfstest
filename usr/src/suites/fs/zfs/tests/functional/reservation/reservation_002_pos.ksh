@@ -1,4 +1,4 @@
-#! /bin/ksh -p
+#!/usr/bin/bash -p
 #
 # CDDL HEADER START
 #
@@ -25,8 +25,8 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/reservation/reservation.kshlib
+. $STF_SUITE/include/libtest.shlib
+. $STF_SUITE/tests/functional/reservation/reservation.shlib
 
 ###############################################################################
 #
@@ -60,13 +60,12 @@
 ################################################################################
 
 verify_runnable "both"
- 
+
 function cleanup
 {
 	for obj in $OBJ_LIST; do
-		datasetexists $obj && \
-                        log_must $ZFS destroy -f $obj
-        done
+		datasetexists $obj && log_must $ZFS destroy -f $obj
+	done
 
 	log_must zero_reservation $TESTPOOL/$TESTFS
 }
@@ -83,9 +82,9 @@ if ! is_global_zone ; then
 else
 	OBJ_LIST="$TESTPOOL/$TESTVOL $TESTPOOL/$TESTVOL2"
 
-        (( vol_set_size = space_avail / 4 ))
+	((vol_set_size = space_avail / 4))
 	vol_set_size=$(floor_volsize $vol_set_size)
-	(( sparse_vol_set_size = space_avail * 4 ))
+	((sparse_vol_set_size = space_avail * 4))
 	sparse_vol_set_size=$(floor_volsize $sparse_vol_set_size)
 
 	log_must $ZFS create -V $vol_set_size $TESTPOOL/$TESTVOL
@@ -96,7 +95,7 @@ fi
 for obj in $TESTPOOL/$TESTFS $OBJ_LIST ; do
 
 	space_avail=`get_prop available $TESTPOOL`
-        resv_size_set=`expr $space_avail + $RESV_DELTA`
+	resv_size_set=`expr $space_avail + $RESV_DELTA`
 
 	#
 	# For regular (non-sparse) volumes the upper limit is determined
@@ -104,16 +103,16 @@ for obj in $TESTPOOL/$TESTFS $OBJ_LIST ; do
 	# of the volume itself.
 	#
 	[[ $obj == $TESTPOOL/$TESTVOL ]] && \
-		(( resv_size_set = vol_set_size + RESV_DELTA ))
+	    ((resv_size_set = vol_set_size + RESV_DELTA))
 
 	log_must zero_reservation $obj
 	log_mustnot $ZFS set reservation=$resv_size_set $obj
 
 	resv_size_get=`get_prop reservation $obj`
 
-	if (( $resv_size_get != 0 )); then
-                log_fail "Reservation value non-zero ($resv_size_get)"
-        fi
+	if (($resv_size_get != 0)); then
+		log_fail "Reservation value non-zero ($resv_size_get)"
+	fi
 done
 
 log_pass "Attempting to set too large reservation failed as expected"

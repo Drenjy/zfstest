@@ -24,6 +24,10 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 STF_ROOT_CONFIGURE=
 STF_USER_CONFIGURE=
 
@@ -34,11 +38,11 @@ STF_ROOT_CLEANUP=cleanup
 STF_USER_CLEANUP=
 
 STF_ROOT_TESTCASES=reservation_001_pos reservation_002_pos \
-        reservation_003_pos reservation_004_pos \
+	reservation_003_pos reservation_004_pos \
 	reservation_005_pos reservation_006_pos \
 	reservation_007_pos reservation_008_pos \
 	reservation_009_pos reservation_010_pos \
-        reservation_011_pos reservation_012_pos \
+	reservation_011_pos reservation_012_pos \
 	reservation_013_pos reservation_014_pos \
 	reservation_015_pos reservation_016_pos \
 	reservation_017_pos reservation_018_pos
@@ -46,7 +50,7 @@ STF_ROOT_TESTCASES=reservation_001_pos reservation_002_pos \
 STF_USER_TESTCASES=
 
 STF_ENVFILES=reservation.cfg
-STF_INCLUDES=reservation.kshlib
+STF_INCLUDES=reservation.shlib
 STF_DONTBUILDMODES=true
 
 include ${STF_TOOLS}/Makefiles/Makefile.master

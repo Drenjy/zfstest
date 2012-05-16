@@ -28,7 +28,7 @@
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 . $STF_SUITE/tests/functional/acl/cifs/cifs.kshlib
 
-#################################################################################
+################################################################################
 #
 # __stc_assertion_start
 #
@@ -38,14 +38,14 @@
 #	Verify the user with write_attributes permission or
 #	PRIV_FILE_OWNER privilege could set/clear DOS attributes.
 #	(Readonly, Hidden, Archive, System)
-#	
+#
 # STRATEGY:
 #	1. Loop super user and non-super user to run the test case.
 #	2. Create basedir and a set of subdirectores and files within it.
 #	3. Grant user has write_attributes permission or
 #		PRIV_FILE_OWNER privilege
 #	4. Verify set/clear DOS attributes should succeed.
-#	
+#
 # TESTABILITY: explicit
 #
 # TEST_AUTOMATION_LEVEL: automated
@@ -57,10 +57,6 @@
 ################################################################################
 
 verify_runnable "both"
-
-if ! cifs_supported ; then
-	log_unsupported "CIFS not supported on current system."
-fi
 
 function cleanup
 {
@@ -92,7 +88,7 @@ function set_attribute
 		$RUNWATTR -u $user "$CHMOD S+c${attr} $object"
 		ret=$?
 	else
-        	$CHMOD S+c${attr} $object
+		$CHMOD S+c${attr} $object
 		ret=$?
 	fi
 
@@ -121,7 +117,7 @@ function clear_attribute
 		$RUNWATTR -u $user "$CHMOD S-c${attr} $object"
 		ret=$?
 	else
-        	$CHMOD S-c${attr} $object
+		$CHMOD S-c${attr} $object
 		ret=$?
 	fi
 
@@ -136,30 +132,30 @@ function clear_attribute
 #
 function grant_attr
 {
-        typeset user=$1
-        typeset object=$2
+	typeset user=$1
+	typeset object=$2
 
 	if [[ -z $user || -z $object ]]; then
 		log_fail "User($user), Object($object) not defined."
 	fi
 
-	# To increase the coverage, here we set 'deny' against 
+	# To increase the coverage, here we set 'deny' against
 	# superuser and owner.
 	# Only grant the user explicitly while it's not root neither owner.
 
-        if [[ $user == "root" ]]; then
-                log_must chmod A+user:root:write_attributes:deny $object
-        elif [[ $user == $(get_owner $object) ]]; then
-                if (( ( RANDOM % 2 ) == 0 )); then
-                        log_must chmod A+owner@:write_attributes:deny $object
-                else
-                        log_must chmod A+user:$user:write_attributes:deny \
-				$object
-                fi
-        else
-                log_must chmod A+user:$user:write_attributes:allow $object
-        fi
-        attr_mod="write_attributes"
+	if [[ $user == "root" ]]; then
+		log_must chmod A+user:root:write_attributes:deny $object
+	elif [[ $user == $(get_owner $object) ]]; then
+		if (((RANDOM % 2) == 0)); then
+			log_must chmod A+owner@:write_attributes:deny $object
+		else
+			log_must chmod A+user:$user:write_attributes:deny \
+			    $object
+		fi
+	else
+		log_must chmod A+user:$user:write_attributes:allow $object
+	fi
+	attr_mod="write_attributes"
 }
 
 #
@@ -170,15 +166,15 @@ function grant_attr
 #
 function revoke_attr
 {
-        typeset user=$1
-        typeset object=$2
+	typeset user=$1
+	typeset object=$2
 
 	if [[ -z $user || -z $object ]]; then
 		log_fail "User($user), Object($object) not defined."
 	fi
 
-        log_must chmod A0- $object
-        attr_mod=
+	log_must chmod A0- $object
+	attr_mod=
 }
 
 #
@@ -191,11 +187,11 @@ function revoke_attr
 #
 function verify_attr
 {
-        typeset func=$1
-        typeset object=$2
-        typeset opt=$3
-        typeset user=$4
-        typeset expect="log_mustnot"
+	typeset func=$1
+	typeset object=$2
+	typeset opt=$3
+	typeset user=$4
+	typeset expect="log_mustnot"
 
 	if [[ -z $func || -z $object ]]; then
 		log_fail "Func($func), Object($object), User($user), \
@@ -206,17 +202,16 @@ function verify_attr
 	# PRIV_FILE_OWNER privilege, it should log_must,
 	# otherwise log_mustnot.
 
-        if [[ -z $user ||  $user == "root"  || \
-                $user == $(get_owner $object) || \
-                 $attr_mod == *"write_attributes"* ]] ; then
-                        expect="log_must"
-        fi
+	if [[ -z $user ||  $user == "root"  || $user == \
+	    $(get_owner $object) || $attr_mod == *"write_attributes"* ]] ; then
+		expect="log_must"
+	fi
 
-        $expect $func $object $opt $user
+	$expect $func $object $opt $user
 }
 
 log_assert "Verify set/clear DOS attributes will succeed while user has " \
-	"write_attributes permission or PRIV_FILE_OWNER privilege"
+    "write_attributes permission or PRIV_FILE_OWNER privilege"
 log_onexit cleanup
 
 file="file.0"
@@ -234,16 +229,16 @@ for fs in $TESTPOOL $TESTPOOL/$TESTFS ; do
 			for user in root $ZFS_ACL_STAFF2 ; do
 				for opt in $XATTROPTIONS ; do
 					verify_attr set_attribute \
-						$object $opt $user
+					    $object $opt $user
 					verify_attr clear_attribute \
-						$object $opt $user
+					    $object $opt $user
 				done
 				log_must grant_attr $user $object
 				for opt in $XATTROPTIONS ; do
 					verify_attr set_attribute \
-						$object $opt $user
+					    $object $opt $user
 					verify_attr clear_attribute \
-						$object $opt $user
+					    $object $opt $user
 				done
 				log_must revoke_attr $user $object
 			done
@@ -253,4 +248,4 @@ for fs in $TESTPOOL $TESTPOOL/$TESTFS ; do
 done
 
 log_pass "Set/Clear DOS attributes succeed while user has " \
-	"write_attributes permission or PRIV_FILE_OWNER privilege"
+    "write_attributes permission or PRIV_FILE_OWNER privilege"

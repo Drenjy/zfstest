@@ -27,9 +27,5 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-if ! fs_prop_exist "copies" ; then
-	log_unsupported "copies is not supported by this release."
-fi
-
 DISK=${DISKS%% *}
 default_volume_setup $DISK

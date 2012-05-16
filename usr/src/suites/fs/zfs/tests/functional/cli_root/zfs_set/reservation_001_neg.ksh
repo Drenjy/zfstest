@@ -26,7 +26,6 @@
 #
 
 . $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/reservation/reservation.kshlib
 
 ###############################################################################
 #

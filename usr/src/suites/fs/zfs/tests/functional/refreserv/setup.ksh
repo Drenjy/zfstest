@@ -28,9 +28,5 @@
 . $STF_SUITE/include/libtest.kshlib
 
 verify_runnable "both"
-if ! fs_prop_exist "refreservation" ; then
-	log_unsupported "refreservation is not supported in this system."
-fi
-
 DISK=${DISKS%% *}
 default_setup $DISK

@@ -1,4 +1,4 @@
-#! /bin/ksh -p
+#!/usr/bin/bash -p
 #
 # CDDL HEADER START
 #
@@ -25,8 +25,12 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/reservation/reservation.kshlib
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
+. $STF_SUITE/include/libtest.shlib
+. $STF_SUITE/tests/functional/reservation/reservation.shlib
 
 ###############################################################################
 #
@@ -36,15 +40,17 @@
 #
 # DESCRIPTION:
 #
-# For a sparse volume changes to the volsize are not reflected in the reservation
+# For a sparse volume changes to the volsize are not reflected in the
+# reservation.
 #
 # STRATEGY:
-# 1) Create a regular and sparse volume 
+# 1) Create a regular and sparse volume
 # 2) Get the space available in the pool
-# 3) Set reservation with various size on the regular and sparse volume
+# 3) Set reservation with various sizes on the regular and sparse volumes
 # 4) Verify that the 'reservation' property for the regular volume has
 #    the correct value.
-# 5) Verify that the 'reservation' property for the sparse volume is set to 'none'
+# 5) Verify that the 'reservation' property for the sparse volume is set to
+#    'none'
 #
 # TESTABILITY: explicit
 #
@@ -54,63 +60,56 @@
 #
 # __stc_assertion_end
 #
-###############################################################################  
+###############################################################################
 
 verify_runnable "global"
 
 function cleanup
 {
 	typeset vol
-	
+
 	for vol in $regvol $sparsevol; do
-		datasetexists $vol &&  \
-			log_must $ZFS destroy $vol
+		datasetexists $vol &&  log_must $ZFS destroy $vol
 	done
 }
-
 log_onexit cleanup
 
-log_assert "Verify that the volsize changes of sparse volume are not reflected" \
-	"in the reservation"
+log_assert "Verify that the volsize changes of sparse volumes are not " \
+    "reflected in the reservation."
 log_onexit cleanup
 
-#Create a regular and sparse volume for testing.
+# Create a regular and sparse volume for testing.
 regvol=$TESTPOOL/$TESTVOL
 sparsevol=$TESTPOOL/$TESTVOL2
-log_must $ZFS create -V $VOLSIZE $regvol
-log_must $ZFS create -s -V $VOLSIZE $sparsevol
+log_must $ZFS create -V 64M $regvol
+log_must $ZFS create -s -V 64M $sparsevol
 
-typeset -l vsize=$(get_prop available $TESTPOOL)
+typeset -i vsize=$(get_prop available $TESTPOOL)
 typeset -i iterate=10
-typeset -l regreserv
-typeset -l sparsereserv
-typeset -l vblksize1=$(get_prop volblocksize $regvol)
-typeset -l vblksize2=$(get_prop volblocksize $sparsevol)
-typeset -l blknum=0
-if (( $vblksize1 != $vblksize2 )); then
-	log_must $ZFS set volblocksize=$vblksize1 $sparsevol
-fi
-(( blknum = vsize / vblksize1 ))
-
+typeset -i regreserv
+typeset -i sparsereserv
+typeset -i volblocksize=$(get_prop volblocksize $regvol)
+typeset -i blknum=0
 typeset -i randomblknum
-while (( iterate > 1 )); do
-	(( randomblknum = 1 + $RANDOM % $blknum )) 
-	#Make sure volsize is a multiple of volume block size
-	(( vsize = $randomblknum * $vblksize1 ))
+((blknum = vsize / volblocksize))
+
+while ((iterate > 1)); do
+	((randomblknum = 1 + RANDOM % blknum))
+	# Make sure volsize is a multiple of volume block size
+	((vsize = randomblknum * volblocksize))
 	log_must $ZFS set volsize=$vsize $regvol
 	log_must $ZFS set volsize=$vsize $sparsevol
-	if fs_prop_exist refreserv; then
-		regreserv=$(get_prop refreservation $regvol)
-	else
-		regreserv=$(get_prop reservation $regvol)
-	fi
+	vsize=$(volsize_to_reservation $regvol $vsize)
+	regreserv=$(get_prop refreservation $regvol)
 	sparsereserv=$(get_prop reservation $sparsevol)
-	(( $sparsereserv == $vsize )) && \
-		log_fail "volsize changes of sparse volume is reflected in reservation."
-	(( $regreserv != $vsize )) && \
-		log_fail "volsize changes of regular volume isnot reflected in reservation."
-
-	(( iterate = iterate - 1 ))
+	((sparsereserv == vsize)) && \
+		log_fail "volsize changes of sparse volume is reflected in " \
+		    "reservation (expected $vsize, got $sparsereserv)."
+	((regreserv != vsize)) && \
+		log_fail "volsize changes of regular volume is not reflected " \
+		    "in reservation (expected $vsize, got $regreserv)."
+	((iterate = iterate - 1))
 done
 
-log_pass "The volsize change of sparse volume is not reflected in reservation as expected."
+log_pass "The volsize changes of sparse volumes are not reflected in the " \
+    "reservation"

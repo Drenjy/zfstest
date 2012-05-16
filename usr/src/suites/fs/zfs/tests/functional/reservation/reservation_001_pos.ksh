@@ -1,4 +1,4 @@
-#! /bin/ksh -p
+#!/usr/bin/bash -p
 #
 # CDDL HEADER START
 #
@@ -25,8 +25,8 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/reservation/reservation.kshlib
+. $STF_SUITE/include/libtest.shlib
+. $STF_SUITE/tests/functional/reservation/reservation.shlib
 
 ###############################################################################
 #
@@ -37,14 +37,14 @@
 # DESCRIPTION:
 #
 # ZFS allows reservations to be set on filesystems and volumes, provided
-# the reservation is less than the space available in the pool. 
+# the reservation is less than the space available in the pool.
 #
 # STRATEGY:
-# 1) Create a regular and sparse volume 
+# 1) Create a regular and sparse volume
 #   (filesystem already created by default_setup)
 # 2) Get the space available in the pool
 # 3) Set a reservation on the filesystem less than the space available.
-# 4) Verify that the 'reservation' property for the filesystem has 
+# 4) Verify that the 'reservation' property for the filesystem has
 #    the correct value.
 # 5) Reset the reservation to 'none'
 # 6) Repeat steps 2-5 for both volume types
@@ -57,23 +57,21 @@
 #
 # __stc_assertion_end
 #
-###############################################################################  
+###############################################################################
 
 verify_runnable "both"
 
 function cleanup
 {
 	for obj in $OBJ_LIST; do
-		datasetexists $obj && \
-                	log_must $ZFS destroy -f $obj
+		datasetexists $obj && log_must $ZFS destroy -f $obj
 	done
 }
 
 log_onexit cleanup
 
-log_assert "Verify that to set a reservation on a filesystem" \
-        " or volume must use value smaller than space" \
-	" available property of pool"
+log_assert "Verify that to set a reservation on a filesystem or volume must " \
+    "use value smaller than space available property of pool"
 
 space_avail=`get_prop available $TESTPOOL`
 
@@ -82,9 +80,9 @@ if ! is_global_zone ; then
 else
 	OBJ_LIST="$TESTPOOL/$TESTVOL $TESTPOOL/$TESTVOL2"
 
-	(( vol_set_size = space_avail / 4 ))
+	((vol_set_size = space_avail / 4))
 	vol_set_size=$(floor_volsize $vol_set_size)
-	(( sparse_vol_set_size = space_avail * 4 ))
+	((sparse_vol_set_size = space_avail * 4))
 	sparse_vol_set_size=$(floor_volsize $sparse_vol_set_size)
 
 	#
@@ -94,45 +92,43 @@ else
 	#
 	log_must $ZFS create -V $vol_set_size $TESTPOOL/$TESTVOL
 	log_must $ZFS set reservation=none $TESTPOOL/$TESTVOL
-	if fs_prop_exist refreserv; then
-		log_must $ZFS set refreservation=none $TESTPOOL/$TESTVOL
-	fi
+	log_must $ZFS set refreservation=none $TESTPOOL/$TESTVOL
 	log_must $ZFS create -s -V $sparse_vol_set_size $TESTPOOL/$TESTVOL2
 fi
 
 
 for obj in $TESTPOOL/$TESTFS $OBJ_LIST; do
 
-        space_avail=`get_prop available $TESTPOOL`
-        resv_size_set=`expr $space_avail - $RESV_DELTA`
+	space_avail=`get_prop available $TESTPOOL`
+	resv_size_set=`expr $space_avail - $RESV_DELTA`
 
 	#
-	# For a regular (non-sparse) volume the upper limit 
-	# for reservations is not determined by the space 
-	# available in the pool but rather by the size of 
+	# For a regular (non-sparse) volume the upper limit
+	# for reservations is not determined by the space
+	# available in the pool but rather by the size of
 	# the volume itself.
 	#
-        [[ $obj == $TESTPOOL/$TESTVOL ]] && \
-                (( resv_size_set = vol_set_size - RESV_DELTA ))
+	[[ $obj == $TESTPOOL/$TESTVOL ]] && \
+	    ((resv_size_set = vol_set_size - RESV_DELTA))
 
-        log_must $ZFS set reservation=$resv_size_set $obj
+	log_must $ZFS set reservation=$resv_size_set $obj
 
-        resv_size_get=`get_prop reservation $obj`
-        if [[ $resv_size_set != $resv_size_get ]]; then
-                log_fail "Reservation not the expected value "\
-                        "($resv_size_set != $resv_size_get)"
-        fi
+	resv_size_get=`get_prop reservation $obj`
+	if [[ $resv_size_set != $resv_size_get ]]; then
+		log_fail "Reservation not the expected value " \
+		    "($resv_size_set != $resv_size_get)"
+	fi
 
-        log_must zero_reservation $obj
+	log_must zero_reservation $obj
 
-        new_space_avail=`get_prop available $obj`
+	new_space_avail=`get_prop available $obj`
 
-        #
-        # Due to the way space is consumed and released by metadata we
-        # can't do an exact check here, but we do do a basic sanity
-        # check.
-        #
-        log_must within_limits $space_avail $new_space_avail $RESV_TOLERANCE
+	#
+	# Due to the way space is consumed and released by metadata we
+	# can't do an exact check here, but we do do a basic sanity
+	# check.
+	#
+	log_must within_limits $space_avail $new_space_avail $RESV_TOLERANCE
 done
 
 log_pass "Successfully set reservation on filesystem and volume"

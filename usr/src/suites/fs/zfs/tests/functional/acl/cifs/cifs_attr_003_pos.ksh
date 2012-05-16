@@ -28,15 +28,15 @@
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 . $STF_SUITE/tests/functional/acl/cifs/cifs.kshlib
 
-#################################################################################
+################################################################################
 #
 # __stc_assertion_start
 #
 # ID: cifs_attr_003_pos
 #
 # DESCRIPTION:
-#	Verify the DOS attributes (Readonly, Hidden, Archive, System) 
-#	and BSD'ish attributes (Immutable, nounlink, and appendonly) 
+#	Verify the DOS attributes (Readonly, Hidden, Archive, System)
+#	and BSD'ish attributes (Immutable, nounlink, and appendonly)
 #	will provide the proper access limitation as expected.
 #
 #	Readonly means that the content of a file can't be modified, but
@@ -67,7 +67,7 @@
 #	2. Create basedir and a set of subdirectores and files within it.
 #	3. Set the file/dir with each kind of special attribute.
 #	4. Verify the access limitation works as expected.
-#	
+#
 # TESTABILITY: explicit
 #
 # TEST_AUTOMATION_LEVEL: automated
@@ -79,10 +79,6 @@
 ################################################################################
 
 verify_runnable "both"
-
-if ! cifs_supported ; then
-	log_unsupported "CIFS not supported on current system."
-fi
 
 function cleanup
 {
@@ -100,7 +96,7 @@ function cleanup
 # Set the special attribute to the given node
 #
 # $1: The given node (file/dir)
-# $2: The special attribute to be set 
+# $2: The special attribute to be set
 #
 function set_attribute
 {
@@ -191,11 +187,11 @@ function verify_expect
 	"$@" > /dev/null 2>&1
 	status=$?
 	if  [[ $status -eq 0 ]]; then
-		if (( expect != 0 )); then
+		if ((expect != 0)); then
 			log_fail "$@ unexpect return 0"
 		fi
 	else
-		if (( expect == 0 )); then
+		if ((expect == 0)); then
 			log_fail "$@ unexpect return $status"
 		fi
 	fi
@@ -208,7 +204,7 @@ function verify_expect
 # $2: Execute user
 # $3: Expect value, default to be zero
 #
-function unit_writefile 
+function unit_writefile
 {
 	typeset object=$1
 	typeset user=$2
@@ -243,7 +239,7 @@ function unit_writedir
 	fi
 }
 
-function unit_appenddata 
+function unit_appenddata
 {
 	typeset object=$1
 	typeset user=$2
@@ -387,7 +383,7 @@ function unit_writeacl
 #
 # $1: The given node, file/dir
 #
-function test_readonly 
+function test_readonly
 {
 	typeset object=$1
 
@@ -401,7 +397,7 @@ function test_readonly
 		if [[ -d $object ]]; then
 			log_must usr_exec chmod \
 				A+user:$user:${ace_dir}:allow $object
-		else 
+		else
 			log_must usr_exec chmod \
 				A+user:$user:${ace_file}:allow $object
 		fi
@@ -451,7 +447,7 @@ function test_immutable
 		if [[ -d $object ]]; then
 			log_must usr_exec chmod \
 				A+user:$user:${ace_dir}:allow $object
-		else 
+		else
 			log_must usr_exec chmod \
 				A+user:$user:${ace_file}:allow $object
 		fi
@@ -462,7 +458,7 @@ function test_immutable
 		unit_appenddata $object $user 1
 		unit_writexattr $object $user 1
 		unit_accesstime $object $user
-		unit_updatetime $object $user 1 
+		unit_updatetime $object $user 1
 		unit_writeacl $object $user 1
 		unit_deletecontent $object $user 1
 		unit_deletedata $object $user 1
@@ -494,7 +490,7 @@ function test_nounlink
 		if [[ -d $object ]]; then
 			log_must usr_exec chmod \
 				A+user:$user:${ace_dir}:allow $object
-		else 
+		else
 			log_must usr_exec chmod \
 				A+user:$user:${ace_file}:allow $object
 		fi
@@ -505,7 +501,7 @@ function test_nounlink
 		unit_appenddata $object $user
 		unit_writexattr $object $user
 		unit_accesstime $object $user
-		unit_updatetime $object $user 
+		unit_updatetime $object $user
 		unit_writeacl $object $user
 		unit_deletecontent $object $user 1
 		unit_deletedata $object $user 1
@@ -524,7 +520,7 @@ function test_nounlink
 # $1: The given node, file/dir
 #
 function test_appendonly
-{	
+{
 	typeset object=$1
 
 	if [[ -z $object ]]; then
@@ -537,7 +533,7 @@ function test_appendonly
 		if [[ -d $object ]]; then
 			log_must usr_exec chmod \
 				A+user:$user:${ace_dir}:allow $object
-		else 
+		else
 			log_must usr_exec chmod \
 				A+user:$user:${ace_file}:allow $object
 		fi
@@ -545,10 +541,10 @@ function test_appendonly
 
 		unit_writefile $object $user 1
 		unit_writedir $object $user
-		unit_appenddata $object $user 
+		unit_appenddata $object $user
 		unit_writexattr $object $user
 		unit_accesstime $object $user
-		unit_updatetime $object $user 
+		unit_updatetime $object $user
 		unit_writeacl $object $user
 		unit_deletecontent $object $user
 		unit_deletedata $object $user
@@ -595,7 +591,7 @@ for gattr in $ATTRS ; do
 		mtpt=$(get_prop mountpoint $fs)
 		$CHMOD 777 $mtpt
 		for user in root $ZFS_ACL_STAFF1; do
-			log_must set_cur_usr $user		
+			log_must set_cur_usr $user
 			for file in $FILES ; do
 				gobject=$mtpt/$file
 				create_object "file" $gobject $ZFS_ACL_CUR_USER

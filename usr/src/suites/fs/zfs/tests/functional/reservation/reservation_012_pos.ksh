@@ -1,4 +1,4 @@
-#! /bin/ksh -p
+#!/usr/bin/bash -p
 #
 # CDDL HEADER START
 #
@@ -25,8 +25,8 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/reservation/reservation.kshlib
+. $STF_SUITE/include/libtest.shlib
+. $STF_SUITE/tests/functional/reservation/reservation.shlib
 
 ###############################################################################
 #
@@ -67,14 +67,8 @@ function cleanup
 	log_must $ZFS destroy -f $TESTPOOL/$TESTFS2
 	log_must zero_reservation $TESTPOOL/$TESTFS
 
-	[[ -e $TESTDIR/$TESTFILE2 ]] && \
-		log_must $RM -rf $TESTDIR/$TESTFILE2
-
-	[[ -d $TESTDIR2 ]] && \
-		log_must $RM -rf $TESTDIR2
-
-	$ZFS unmount -a > /dev/null 2>&1
-	log_must $ZFS mount -a
+	[[ -e $TESTDIR/$TESTFILE2 ]] && log_must $RM -rf $TESTDIR/$TESTFILE2
+	[[ -d $TESTDIR2 ]] && log_must $RM -rf $TESTDIR2
 }
 
 log_onexit cleanup
@@ -84,19 +78,21 @@ log_must $ZFS set mountpoint=$TESTDIR2 $TESTPOOL/$TESTFS2
 
 space_avail=`get_prop available $TESTPOOL`
 
-(( resv_size_set = space_avail - RESV_FREE_SPACE ))
+((resv_size_set = space_avail - RESV_FREE_SPACE))
 
 log_must $ZFS set reservation=$resv_size_set $TESTPOOL/$TESTFS
 
-(( write_count = ( RESV_FREE_SPACE + RESV_TOLERANCE ) / BLOCK_SIZE ))
+((write_count = (RESV_FREE_SPACE + RESV_TOLERANCE) / BLOCK_SIZE))
 
-$FILE_WRITE -o create -f $TESTDIR2/$TESTFILE1 -b $BLOCK_SIZE -c $write_count -d 0
+$FILE_WRITE -o create -f $TESTDIR2/$TESTFILE1 -b $BLOCK_SIZE -c $write_count \
+    -d 0
 ret=$?
 if [[ $ret != $ENOSPC ]]; then
 	log_fail "Did not get ENOSPC (got $ret) for non-reserved filesystem"
 fi
 
-(( write_count = ( RESV_FREE_SPACE - RESV_TOLERANCE ) / BLOCK_SIZE ))
-log_must $FILE_WRITE -o create -f $TESTDIR/$TESTFILE2 -b $BLOCK_SIZE -c $write_count -d 0
+((write_count = (RESV_FREE_SPACE - RESV_TOLERANCE) / BLOCK_SIZE))
+log_must $FILE_WRITE -o create -f $TESTDIR/$TESTFILE2 -b $BLOCK_SIZE -c \
+    $write_count -d 0
 
 log_pass "Reserved space preserved correctly"

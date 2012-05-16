@@ -1,4 +1,4 @@
-#! /bin/ksh -p
+#!/usr/bin/bash -p
 #
 # CDDL HEADER START
 #
@@ -25,8 +25,8 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/reservation/reservation.kshlib
+. $STF_SUITE/include/libtest.shlib
+. $STF_SUITE/tests/functional/reservation/reservation.shlib
 
 ###############################################################################
 #
@@ -60,16 +60,16 @@
 
 verify_runnable "both"
 
-log_assert "Verify reservations on data sets doesn't affect other data sets at" \
-	" same level except for consuming space from common pool"
+log_assert "Verify reservations on data sets doesn't affect other data sets " \
+    "at same level except for consuming space from common pool"
 
-function cleanup {
+function cleanup
+{
+	datasetexists $TESTPOOL/$TESTFS2 && \
+	    log_must $ZFS destroy -f $TESTPOOL/$TESTFS2
 
-        datasetexists $TESTPOOL/$TESTFS2 && \
-                log_must $ZFS destroy -f $TESTPOOL/$TESTFS2
-
-        datasetexists $TESTPOOL/$TESTFS1 && \
-                log_must $ZFS destroy -f $TESTPOOL/$TESTFS1
+	datasetexists $TESTPOOL/$TESTFS1 && \
+	    log_must $ZFS destroy -f $TESTPOOL/$TESTFS1
 }
 
 log_onexit cleanup
@@ -84,15 +84,15 @@ resv_size_set=`expr $space_avail / 3`
 # then destroys them and ensures that space is correctly accounted
 # for.
 #
-# Any special arguments for create are passed in via the args 
+# Any special arguments for create are passed in via the args
 # paramater.
 #
 function create_resv_destroy { # args1 dataset1 args2 dataset2
 
 	args1=$1
-        dataset1=$2
-        args2=$3
-        dataset2=$4
+	dataset1=$2
+	args2=$3
+	dataset2=$4
 
 	log_must $ZFS create $args1 $dataset1
 
@@ -105,9 +105,9 @@ function create_resv_destroy { # args1 dataset1 args2 dataset2
 
 	log_must $ZFS set reservation=$RESV_SIZE $dataset2
 
-
-	# After destroying the second dataset the space used and 
-	# available totals should revert back to the values they 
+	#
+	# After destroying the second dataset the space used and
+	# available totals should revert back to the values they
 	# had after creating the first dataset.
 	#
 	log_must $ZFS destroy -f $dataset2

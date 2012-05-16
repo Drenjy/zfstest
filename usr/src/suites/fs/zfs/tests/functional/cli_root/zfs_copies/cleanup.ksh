@@ -28,10 +28,6 @@
 . $STF_SUITE/tests/functional/cli_root/zfs_copies/zfs_copies.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_copies/zfs_copies.cfg
 
-if ! fs_prop_exist "copies" ; then
-	log_unsupported "copies is not supported by this release."
-fi
-
 #
 # umount the ufs fs if there is timedout in the ufs test
 #

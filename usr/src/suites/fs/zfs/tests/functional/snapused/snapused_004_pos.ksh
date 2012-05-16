@@ -59,10 +59,6 @@
 #
 ################################################################################
 
-if ! usedby_supported ; then
-	log_unsupported "snapused property is not supported."
-fi
-
 verify_runnable "both"
 
 function cleanup
@@ -79,7 +75,7 @@ check_usedbyrefreservation $USEDTEST
 typeset -i i=0
 typeset -i r_size=0
 mntpnt=$(get_prop mountpoint $USEDTEST)
-while (( i < 5 )); do
+while ((i < 5)); do
 	((r_size=(i+1)*16))
 	log_must $ZFS set refreservation="$r_size"M $USEDTEST
 

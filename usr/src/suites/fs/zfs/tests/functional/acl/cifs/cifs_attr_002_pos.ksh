@@ -28,7 +28,7 @@
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 . $STF_SUITE/tests/functional/acl/cifs/cifs.kshlib
 
-#################################################################################
+################################################################################
 #
 # __stc_assertion_start
 #
@@ -38,13 +38,13 @@
 #	Verify the user with PRIV_FILE_FLAG_SET/PRIV_FILE_FLAG_CLEAR
 #	could set/clear BSD'ish attributes.
 #	(Immutable, nounlink, and appendonly)
-#	
+#
 # STRATEGY:
 #	1. Loop super user and non-super user to run the test case.
 #	2. Create basedir and a set of subdirectores and files within it.
 #	3. Grant user has PRIV_FILE_FLAG_SET/PRIV_FILE_FLAG_CLEAR separately.
 #	4. Verify set/clear BSD'ish attributes should succeed.
-#	
+#
 # TESTABILITY: explicit
 #
 # TEST_AUTOMATION_LEVEL: automated
@@ -56,10 +56,6 @@
 ################################################################################
 
 verify_runnable "global"
-
-if ! cifs_supported ; then
-	log_unsupported "CIFS not supported on current system."
-fi
 
 function cleanup
 {
@@ -100,7 +96,7 @@ function set_attribute
 
 	if [[ -n $user ]]; then
 		$RUNWATTR -u $user -p =basic${priv_mod} \
-			"$CHMOD S+c${attr} $object"
+		    "$CHMOD S+c${attr} $object"
 		ret=$?
 	else
 		$CHMOD S+c${attr} $object
@@ -137,7 +133,7 @@ function clear_attribute
 
 	if [[ -n $user ]]; then
 		$RUNWATTR -u $user -p =basic${priv_mod} \
-			"$CHMOD S-c${attr} $object"
+		    "$CHMOD S-c${attr} $object"
 		ret=$?
 	else
 		$CHMOD S-c${attr} $object
@@ -173,7 +169,7 @@ function grant_priv
 function revoke_priv
 {
 	typeset user=$1
-	
+
 	if [[ -z $user ]]; then
 		log_fail "User not defined."
 	fi
@@ -205,20 +201,20 @@ function verify_op
 	# And If has PRIV_FILE_FLAG_CLEAR, it could permit to clear_attribute,
 	# otherwise log_mustnot.
 	if [[ -z $user || $user == "root" ]] || \
-		[[ $priv_mod == *"file_flag_set"* ]] || \
-		[[ $priv_mod == *"all"* ]] ; then
-			expect="log_must"
+	    [[ $priv_mod == *"file_flag_set"* ]] || \
+	    [[ $priv_mod == *"all"* ]] ; then
+		expect="log_must"
 	fi
 	if [[ -d $object ]] && \
-		[[ $opt == *"q"* ]] ; then
+	    [[ $opt == *"q"* ]] ; then
 		expect="log_mustnot"
-	fi	
-				
+	fi
+
 	if [[ $func == clear_attribute ]]; then
 		if [[ $expect == "log_mustnot" ]]; then
 			expect="log_must"
 		elif [[ -z $user || $user == "root" ]] || \
-			[[ $priv_mod == *"all"* ]] ; then
+		    [[ $priv_mod == *"all"* ]] ; then
 			expect="log_must"
 		else
 			expect="log_mustnot"
@@ -227,9 +223,9 @@ function verify_op
 
 	$expect $func $object $opt $user
 }
-			
+
 log_assert "Verify set/clear BSD'ish attributes will succeed while user has " \
-	"PRIV_FILE_FLAG_SET/PRIV_FILE_FLAG_CLEAR privilege"
+    "PRIV_FILE_FLAG_SET/PRIV_FILE_FLAG_CLEAR privilege"
 log_onexit cleanup
 
 file="file.0"
@@ -250,18 +246,18 @@ for fs in $TESTPOOL $TESTPOOL/$TESTFS ; do
 				log_must grant_priv $user file_flag_set
 				for opt in $FLAGOPTIONS ; do
 					verify_op set_attribute \
-						$object $opt $user
+					    $object $opt $user
 					verify_op clear_attribute \
-						$object $opt $user
+					    $object $opt $user
 				done
 				log_must revoke_priv $user
 
 				log_must grant_priv $user all
 				for opt in $FLAGOPTIONS ; do
 					verify_op set_attribute \
-						$object $opt $user
+					    $object $opt $user
 					verify_op clear_attribute \
-						$object $opt $user
+					    $object $opt $user
 				done
 				log_must revoke_priv $user
 			done
@@ -271,4 +267,4 @@ for fs in $TESTPOOL $TESTPOOL/$TESTFS ; do
 done
 
 log_pass "Set/Clear BSD'ish attributes succeed while user has " \
-	"PRIV_FILE_FLAG_SET/PRIV_FILE_FLAG_CLEAR privilege"
+    "PRIV_FILE_FLAG_SET/PRIV_FILE_FLAG_CLEAR privilege"

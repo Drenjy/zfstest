@@ -28,9 +28,5 @@
 . $STF_SUITE/include/libtest.kshlib
 
 verify_runnable "both"
-if ! fs_prop_exist "refquota" ; then
-	log_unsupported "refquota is not supported by this release."
-fi
-
 DISK=${DISKS%% *}
 default_setup $DISK

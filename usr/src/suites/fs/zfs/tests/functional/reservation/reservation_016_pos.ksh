@@ -1,4 +1,4 @@
-#! /bin/ksh -p
+#!/usr/bin/bash -p
 #
 # CDDL HEADER START
 #
@@ -25,8 +25,12 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/reservation/reservation.kshlib
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
+. $STF_SUITE/include/libtest.shlib
+. $STF_SUITE/tests/functional/reservation/reservation.shlib
 
 ###############################################################################
 #
@@ -37,7 +41,7 @@
 # DESCRIPTION:
 #
 # In pool with a full filesystem and a regular volume (with implicit
-# reservation) destroying the volume should allow more data to be written 
+# reservation) destroying the volume should allow more data to be written
 # to the filesystem
 #
 #
@@ -61,54 +65,48 @@
 verify_runnable "global"
 
 log_assert "Destroying a regular volume with reservation allows more data to" \
-	" be written to top level filesystem"
+    " be written to top level filesystem"
 
-function cleanup 
+function cleanup
 {
 	datasetexists $TESTPOOL/$TESTVOL && \
-            log_must $ZFS destroy $TESTPOOL/$TESTVOL
+	    log_must $ZFS destroy $TESTPOOL/$TESTVOL
 
-	[[ -e $TESTDIR/$TESTFILE1 ]] && \
-		log_must $RM -rf $TESTDIR/$TESTFILE1
-
-	[[ -e $TESTDIR/$TESTFILE2 ]] && \
-		log_must $RM -rf $TESTDIR/$TESTFILE2
+	[[ -e $TESTDIR/$TESTFILE1 ]] && log_must $RM -rf $TESTDIR/$TESTFILE1
+	[[ -e $TESTDIR/$TESTFILE2 ]] && log_must $RM -rf $TESTDIR/$TESTFILE2
 }
-
 log_onexit cleanup
 
-space_avail=`get_prop available $TESTPOOL`
+space_avail=$(largest_volsize_from_pool $TESTPOOL)
 
 #
 # To make sure this test doesn't take too long to execute on
-# large pools, we calculate a volume size which will ensure we 
+# large pools, we calculate a volume size which will ensure we
 # have RESV_FREE_SPACE left free in the pool.
 #
-(( vol_set_size = space_avail - RESV_FREE_SPACE ))
+((vol_set_size = space_avail - RESV_FREE_SPACE))
 vol_set_size=$(floor_volsize $vol_set_size)
 
 # Creating a regular volume implicitly sets its reservation
 # property to the same value.
 log_must $ZFS create -V $vol_set_size $TESTPOOL/$TESTVOL
 
-space_avail_still=`get_prop available $TESTPOOL`
-
-fill_size=`expr $space_avail_still + $RESV_TOLERANCE`
-write_count=`expr $fill_size / $BLOCK_SIZE`
+space_avail_still=$(get_prop available $TESTPOOL)
+fill_size=$((space_avail_still + $RESV_TOLERANCE))
+write_count=$((fill_size / BLOCK_SIZE))
 
 # Now fill up the filesystem (which doesn't have a reservation set
 # and thus will use up whatever free space is left in the pool).
-$FILE_WRITE -o create -f $TESTDIR/$TESTFILE1 -b $BLOCK_SIZE \
-        -c $write_count -d 0
+$FILE_WRITE -o create -f $TESTDIR/$TESTFILE1 -b $BLOCK_SIZE -c $write_count -d 0
 ret=$?
-if (( $ret != $ENOSPC )); then
+if (($ret != $ENOSPC)); then
 	log_fail "Did not get ENOSPC as expected (got $ret)."
 fi
 
 log_must $ZFS destroy -f $TESTPOOL/$TESTVOL
 
-log_must $FILE_WRITE -o create -f $TESTDIR/$TESTFILE2 -b $BLOCK_SIZE \
-        -c 1000 -d 0
+log_must $FILE_WRITE -o create -f $TESTDIR/$TESTFILE2 -b $PAGESIZE \
+    -c 1000 -d 0
 
-log_pass "Destroying volume with reservation allows more data to" \
-	" be written to top level filesystem"
+log_pass "Destroying volume with reservation allows more data to be written " \
+    "to top level filesystem"

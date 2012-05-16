@@ -25,17 +25,13 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . ${STF_SUITE}/include/libtest.kshlib
 
 verify_runtime $RT_MEDIUM
 
-DISK=${DISKS%% *}
-
-default_setup_noexit $DISK
-#
-# Set compression=off to make sure the data is not compressed for 
-# reservation testing.
-#
-log_must $ZFS set compression=off $TESTPOOL
-
+default_setup_noexit ${DISKS%% *}
 log_pass

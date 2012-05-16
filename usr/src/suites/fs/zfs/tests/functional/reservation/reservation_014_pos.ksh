@@ -1,4 +1,4 @@
-#! /bin/ksh -p
+#!/usr/bin/bash -p
 #
 # CDDL HEADER START
 #
@@ -25,8 +25,8 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/reservation/reservation.kshlib
+. $STF_SUITE/include/libtest.shlib
+. $STF_SUITE/tests/functional/reservation/reservation.shlib
 
 ###############################################################################
 #
@@ -64,16 +64,11 @@ function cleanup
 	#
 	# Note we don't destroy $TESTFS as it's used by other tests
 	for obj in $OBJ_LIST ; do
-		datasetexists $obj && \
-			log_must $ZFS destroy -f $obj
+		datasetexists $obj && log_must $ZFS destroy -f $obj
 	done
 
 	log_must zero_reservation $TESTPOOL/$TESTFS
-
-	$ZFS unmount -a > /dev/null 2>&1
-	log_must $ZFS mount -a
 }
-
 log_onexit cleanup
 
 space_avail=`get_prop available $TESTPOOL`
@@ -83,11 +78,10 @@ if ! is_global_zone ; then
 else
 	OBJ_LIST="$TESTPOOL/$TESTVOL $TESTPOOL/$TESTVOL2"
 
-        (( vol_set_size = space_avail / 4 ))
+        ((vol_set_size = space_avail / 4))
 	vol_set_size=$(floor_volsize $vol_set_size)
-	(( sparse_vol_set_size = space_avail * 4 ))
+	((sparse_vol_set_size = space_avail * 4))
 	sparse_vol_set_size=$(floor_volsize $sparse_vol_set_size)
-
 
 	log_must $ZFS create -V $vol_set_size $TESTPOOL/$TESTVOL
 	log_must $ZFS create -s -V $sparse_vol_set_size $TESTPOOL/$TESTVOL2
@@ -95,44 +89,44 @@ fi
 
 for obj in $TESTPOOL/$TESTFS $OBJ_LIST ; do
 
-        space_avail=`get_prop available $TESTPOOL`
-        (( quota_set_size = space_avail / 3 ))
+	space_avail=`get_prop available $TESTPOOL`
+	((quota_set_size = space_avail / 3))
 
 	#
-	# A regular (non-sparse) volume's size is effectively 
-	# its quota so only need to explicitly set quotas for 
+	# A regular (non-sparse) volume's size is effectively
+	# its quota so only need to explicitly set quotas for
 	# filesystems and datasets.
 	#
-	# A volumes size is effectively its quota. The maximum 
-	# reservation value that can be set on a volume is 
+	# A volumes size is effectively its quota. The maximum
+	# reservation value that can be set on a volume is
 	# determined by the size of the volume or the amount of
 	# space in the pool, whichever is smaller.
-	# 
+	#
 	if [[ $obj == $TESTPOOL/$TESTFS ]]; then
-                log_must $ZFS set quota=$quota_set_size $obj
-		(( resv_set_size = quota_set_size + RESV_SIZE ))
+		log_must $ZFS set quota=$quota_set_size $obj
+		((resv_set_size = quota_set_size + RESV_SIZE))
 
 	elif [[ $obj == $TESTPOOL/$TESTVOL2 ]] ; then
 
-		(( resv_set_size = sparse_vol_set_size + RESV_SIZE ))
+		((resv_set_size = sparse_vol_set_size + RESV_SIZE))
 
 	elif [[ $obj == $TESTPOOL/$TESTVOL ]] ; then
 
-		(( resv_set_size = vol_set_size + RESV_SIZE ))
+		((resv_set_size = vol_set_size + RESV_SIZE))
 	fi
 
 	orig_quota=`get_prop quota $obj`
 
-        log_mustnot $ZFS set reservation=$resv_set_size $obj
+	log_mustnot $ZFS set reservation=$resv_set_size $obj
 	new_quota=`get_prop quota $obj`
-		
+
 	if [[ $orig_quota != $new_quota ]]; then
 		log_fail "Quota value changed from $orig_quota " \
 				"to $new_quota"
 	fi
 
 	if [[ $obj == $TESTPOOL/$TESTFS ]]; then
-        	log_must $ZFS set quota=none $obj
+		log_must $ZFS set quota=none $obj
 	fi
 done
 

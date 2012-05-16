@@ -57,35 +57,31 @@
 
 verify_runnable "both"
 
-if ! fs_prop_exist "version" ; then
-	log_unsupported "version is not supported by this release."
-fi
-
 log_assert "Verify invalid version values are rejected"
 
-set -A values '' '-1' '-1.0' '-1.8' '-9999999999999999' \
-	'0x1' '0b' '1b' '1.1b' '0' '0.000' '1.234'
+typeset values=('' '-1' '-1.0' '-1.8' '-9999999999999999' \
+	'0x1' '0b' '1b' '1.1b' '0' '0.000' '1.234')
 
-# 
+#
 # Function to loop through a series of bad reservation
 # values, checking they are when we attempt to set them
 # on a dataset.
 #
 function set_n_check # data-set
-{ 
+{
 	typeset obj=$1
 	typeset -i i=0
 	typeset -i j=0
 
 	orig_val=$(get_prop version $obj)
 
-	while (( $i < ${#values[*]} )); do
+	while (($i < ${#values[*]})); do
 		$ZFS set version=${values[$i]} $obj  > /dev/null 2>&1
 		if [[ $? -eq 0 ]]; then
 			log_note "$ZFS set version=${values[$i]} $obj"
 			log_fail "The above version set returned 0!"
 		fi
-		
+
 		new_val=$(get_prop version $obj)
 
 		if [[ $new_val != $orig_val ]]; then
@@ -93,7 +89,7 @@ function set_n_check # data-set
 				"($orig_val : $new_val)"
 		fi
 
-		(( i = i + 1 ))
+		((i = i + 1))
 	done
 }
 

@@ -26,9 +26,8 @@
 #
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
-. $STF_SUITE/tests/functional/acl/cifs/cifs.kshlib
 
-#################################################################################
+################################################################################
 #
 # __stc_assertion_start
 #
@@ -37,7 +36,7 @@
 # DESCRIPTION:
 #	Verify chmod have correct behaviour to directory and file when
 #	filesystem has the different aclinherit setting
-#	
+#
 # STRATEGY:
 #	1. Loop super user and non-super user to run the test case.
 #	2. Create basedir and a set of subdirectores and files within it.
@@ -45,12 +44,12 @@
 #	 	combine with the variable setting of aclinherit:
 #		"discard", "noallow", "secure" or "passthrough".
 #	4. Then create nested directories and files like the following.
-#	
-#                     ofile    
-#                     odir     	
-#          chmod -->  basedir -| 
+#
+#                     ofile
+#                     odir
+#          chmod -->  basedir -|
 #                              |_ nfile1
-#                              |_ ndir1 _ 
+#                              |_ ndir1 _
 #                                        |_ nfile2
 #                                        |_ ndir2 _
 #                                                  |_ nfile3
@@ -58,7 +57,7 @@
 #
 #	5. Verify each directories and files have the correct access control
 #	   capability.
-#	
+#
 # TESTABILITY: explicit
 #
 # TEST_AUTOMATION_LEVEL: automated
@@ -85,21 +84,21 @@ function cleanup
 		if [[ -d $dir ]]; then
 			log_must $RM -rf $dir
 		fi
-	done		
+	done
 }
 
 log_assert "Verify chmod have correct behaviour to directory and file when " \
-	"filesystem has the different aclinherit setting."
+    "filesystem has the different aclinherit setting."
 log_onexit cleanup
 
 # Define inherit flag
-set -A aclinherit_flag discard noallow secure passthrough
-set -A object_flag "f-" "-d" "fd"
-set -A strategy_flag "--" "i-" "-n" "in"
+typeset aclinherit_flag=(discard noallow secure passthrough)
+typeset object_flag=("f-" "-d" "fd")
+typeset strategy_flag=("--" "i-" "-n" "in")
 
-typeset ace_prefix1="owner@" 
+typeset ace_prefix1="owner@"
 typeset ace_prefix2="group@"
-typeset ace_prefix3="everyone@" 
+typeset ace_prefix3="everyone@"
 typeset ace_discard ace_noallow ace_secure ace_passthrough
 typeset ace_secure_new
 
@@ -112,11 +111,6 @@ nfile1=$basedir/nfile1; nfile2=$ndir1/nfile2; nfile3=$ndir2/nfile3
 
 # Verify all the node have expected correct access control
 allnodes="$ndir1 $ndir2 $ndir3 $nfile1 $nfile2 $nfile3"
-
-typeset cifs=""
-if cifs_supported ; then
-	cifs="true"
-fi
 
 #
 # According to inherited flag, verify subdirectories and files within it has
@@ -133,7 +127,7 @@ function verify_inherit #<aclinherit> <object> [strategy]
 	# count: the ACE item to fetch
 	# pass: to mark if the current ACE should apply to the target
 	# maxnumber: predefine as 4
-	# passcnt: counter, if it achieves to maxnumber, 
+	# passcnt: counter, if it achieves to maxnumber,
 	#	then no additional ACE should apply.
 	# isinherit: indicate if the current target is in the inherit list.
 	# step: indicate if the ACE be split during inherit.
@@ -159,7 +153,7 @@ function verify_inherit #<aclinherit> <object> [strategy]
 			inherit_nodes="$inherit_nodes $ndir2 $ndir3"
 		fi
 	fi
-	
+
 	for node in $allnodes; do
 		step=0
 		if [[ " $inherit_nodes " == *" $node "* ]]; then
@@ -174,14 +168,14 @@ function verify_inherit #<aclinherit> <object> [strategy]
 		i=0
 		count=0
 		passcnt=0
-		while (( i < maxnumber )); do
+		while ((i < maxnumber)); do
 			pass=0
 			eval expect1=\$acl$i
 			expect2=$expect1
 
 		#
 		# aclinherit=passthrough,
-		# inherit all inheritable ACL entries without any 
+		# inherit all inheritable ACL entries without any
 		# modifications made to the ACL entries when they
 		# are inherited.
 		#
@@ -199,10 +193,6 @@ function verify_inherit #<aclinherit> <object> [strategy]
 
 			case $inherit in
 				passthrough)
-					if [[ -z $cifs ]]; then
-						break
-					fi
-
 					action=${expect1##*:}
 					expect1=${expect1%:$action}
 					expect1=${expect1%-}
@@ -215,27 +205,22 @@ function verify_inherit #<aclinherit> <object> [strategy]
 				noallow)
 					if [[ $expect1 == *":allow" ]] ; then
 						pass=1
-						(( passcnt = passcnt + 1 ))
+						((passcnt = passcnt + 1))
 					else
 						eval expect2=\$acls$i
 					fi
-					;;	
+					;;
 				discard)
 					passcnt=maxnumber
 					break
 					;;
 			esac
 
-			if (( pass == 0 )) ; then
+			if ((pass == 0)) ; then
 				acltemp=${expect2%:*}
 				acltemp=${acltemp%:*}
 				aclaction=${expect2##*:}
-
-				if [[ -n $cifs ]]; then
-					expect2=${acltemp}:------I:${aclaction}
-				else
-					expect2=${acltemp}:------:${aclaction}
-				fi
+				expect2=${acltemp}:------I:${aclaction}
 
 				acltemp=${expect1%:*}
 				inh=${acltemp##*:}
@@ -251,32 +236,27 @@ function verify_inherit #<aclinherit> <object> [strategy]
 
 						step=0
 						expect1=""
-							
+
 					elif [[ $(get_substr $inh 3 1) != i ]]; then
 
 						#
-						# directory should append 
+						# directory should append
 						# "inherit_only" if not have
 						#
 						acltemp=${acltemp%i*}
-						if [[ -n $cifs ]]; then
-
-							expect1=${acltemp}i---I:${aclaction}
-						else
-							expect1=${acltemp}i---:${aclaction}
-						fi
-					elif [[ -n $cifs ]]; then
+						expect1=${acltemp}i---I:${aclaction}
+					else
 						acltemp=${acltemp%-}
 						acltemp=${acltemp%I}
 						expect1=${acltemp}I:${aclaction}
 					fi
 
 					#
-					# cleanup the first ACE if the directory 
+					# cleanup the first ACE if the directory
 					# not in inherit list
 					#
 
-					if (( isinherit == 0 )); then
+					if ((isinherit == 0)); then
 						expect1=""
 					fi
 				elif [[ -f $node ]] ; then
@@ -291,38 +271,40 @@ function verify_inherit #<aclinherit> <object> [strategy]
 					$LS -Vd $basedir
 					$LS -Vd $node
 					log_fail "$inherit $i #$count " \
-						"ACE: $aclcur, expect to be " \
-						"$expect1"
+					    "ACE: $aclcur, expect to be " \
+					    "$expect1"
 				fi
 
-				# Get the second ACE (if should have) to do comparison
-
-				if (( step > 0 )); then
-					(( count = count + step ))
+				#
+				# Get the second ACE (if should have) to do
+				# comparison
+				#
+				if ((step > 0)); then
+					((count = count + step))
 
 					aclcur=$(get_ACE $node $count compact)
 					aclcur=${aclcur#$count:}
 					if [[ -n $expect2 && \
-						$expect2 != $aclcur ]]; then
+					    $expect2 != $aclcur ]]; then
 
 						$LS -Vd $basedir
 						$LS -Vd $node
-						log_fail "$inherit $i #$count " \
-							"ACE: $aclcur, expect to be " \
-							"$expect2"
+						log_fail "$inherit $i " \
+						    "#$count ACE: $aclcur, " \
+						    "expect to be $expect2"
 					fi
 				fi
-				(( count = count + 1 ))
+				((count = count + 1))
 			fi
-			(( i = i + 1 ))
+			((i = i + 1))
 		done
 
 		#
 		# If there's no any ACE be checked, it should be identify as
 		# an normal file/dir, verify it.
 		#
- 
-		if (( passcnt == maxnumber )); then
+
+		if ((passcnt == maxnumber)); then
 			if [[ -d $node ]]; then
 				compare_acls $node $odir
 			elif [[	-f $node ]]; then
@@ -345,7 +327,7 @@ typeset acls0 acls1 acls2 acls3
 #
 # Set aclmode=passthrough to make sure
 # the acl will not change during chmod.
-# A general testing should verify the combination of 
+# A general testing should verify the combination of
 # aclmode/aclinherit works well,
 # here we just simple test them separately.
 #
@@ -366,15 +348,10 @@ for inherit in "${aclinherit_flag[@]}"; do
 		for obj in "${object_flag[@]}"; do
 			for str in "${strategy_flag[@]}"; do
 				typeset inh_opt=$obj
-				(( ${#str} != 0 )) && inh_opt=${inh_opt}${str}--
+				((${#str} != 0)) && inh_opt=${inh_opt}${str}--
 
-				if [[ -n $cifs ]]; then
-					inh_a=${inh_opt}-
-					inh_b=${inh_opt}I
-				else
-					inh_a=${inh_opt}
-					inh_b=${inh_opt}
-				fi
+				inh_a=${inh_opt}-
+				inh_b=${inh_opt}I
 
 				#
 				# Prepare 4 ACES, which should include :
@@ -414,26 +391,26 @@ for inherit in "${aclinherit_flag[@]}"; do
 				# Create basedir and tmp dir/file
 				# for comparison.
 				#
-				
+
 				log_note "$user: $CHMOD $acl $basedir"
 				log_must usr_exec $MKDIR $basedir
 				log_must usr_exec $MKDIR $odir
-				log_must usr_exec $TOUCH $ofile 
+				log_must usr_exec $TOUCH $ofile
 
 				i=5
-				while (( i >= 0 )); do
-					eval acl=\$acl$i 
+				while ((i >= 0)); do
+					eval acl=\$acl$i
 
 				#
 				# Place on a directory should succeed.
 				#
 					log_must usr_exec $CHMOD A+$acl $basedir
 
-					(( i = i - 1 ))
+					((i = i - 1))
 				done
-			
+
 				verify_inherit $inherit $obj $str
-			
+
 				log_must usr_exec $RM -rf $ofile $odir $basedir
 			done
 		done

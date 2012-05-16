@@ -25,7 +25,6 @@
 # Use is subject to license terms.
 #
 . $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/userquota/userquota_common.kshlib
 
 ################################################################################
 #
@@ -34,12 +33,13 @@
 # ID: zfs_002_pos
 #
 # DESCRIPTION:
-# With ZFS_ABORT set, all zfs commands should be able to abort and generate a core file.
+# With ZFS_ABORT set, all zfs commands should be able to abort and generate a
+# core file.
 #
 # STRATEGY:
 # 1. Create an array of zfs command
 # 2. Execute each command in the array
-# 3. Verify the command aborts and generate a core file 
+# 3. Verify the command aborts and generate a core file
 #
 # TESTABILITY: explicit
 #
@@ -53,13 +53,13 @@
 
 verify_runnable "both"
 
-function cleanup 
+function cleanup
 {
 	unset ZFS_ABORT
 
 	if [[ -d $corepath ]]; then
 		$RM -rf $corepath
-	fi 
+	fi
 	for ds in $fs1 $fs $ctr; do
 		if datasetexists $ds; then
 			log_must $ZFS destroy -rRf $ds
@@ -67,7 +67,8 @@ function cleanup
 	done
 }
 
-log_assert "With ZFS_ABORT set, all zfs commands can abort and generate a core file." 
+log_assert "With ZFS_ABORT set, all zfs commands can abort and generate a " \
+    "core file."
 log_onexit cleanup
 
 #preparation work for testing
@@ -86,27 +87,16 @@ snap=$fs@$TESTSNAP
 clone=$ctr/$TESTCLONE
 streamf=$corepath/s.$$
 
-set -A cmds "create $fs" "list $fs" "snapshot $snap" "set snapdir=hidden $fs" \
-	    "get snapdir $fs" "rollback $snap" "inherit snapdir $fs" \
-	    "rename $fs $fs-new" "rename $fs-new $fs" "unmount $fs" \
-	    "mount $fs" "share $fs" "unshare $fs" "send $snap \>$streamf" \
-	    "receive $fs1 \<$streamf" "clone $snap $clone" "promote $clone" \
-	    "promote $fs" "destroy -rRf $fs"
+typeset cmds=("create $fs" "list $fs" "snapshot $snap" "set snapdir=hidden $fs" \
+    "get snapdir $fs" "rollback $snap" "inherit snapdir $fs" \
+    "rename $fs $fs-new" "rename $fs-new $fs" "unmount $fs" \
+    "mount $fs" "share $fs" "unshare $fs" "send $snap \>$streamf" \
+    "receive $fs1 \<$streamf" "clone $snap $clone" "promote $clone" \
+    "promote $fs" "destroy -rRf $fs")
 
-set -A badparams "" "create" "destroy" "snapshot" "rollback" "clone" "promote" "rename" \
-		"list -*" "set" "get -*" "inherit" "mount -A" "unmount" "share" \
-		"unshare" "send" "receive"
-
-if ! is_userquota_supported; then
-	typeset -i i=${cmds[#]}
-	cmds[i]="allow everyone snapshot $fs"
-	cmds[((i+1))]="unallow everyone snapshot $fs"
-
-	i=${badparams[#]}
-	badparams[i]="allow"
-	badparams[((i+1))]="unallow"
-fi
-
+typeset badparams=("" "create" "destroy" "snapshot" "rollback" "clone" \
+    "promote" "rename" "list -*" "set" "get -*" "inherit" "mount -A" \
+    "unmount" "share" "unshare" "send" "receive")
 
 log_must $COREADM -p ${corepath}/core.%f
 log_must export ZFS_ABORT=yes
@@ -115,9 +105,11 @@ for subcmd in "${cmds[@]}" "${badparams[@]}"; do
 	log_mustnot $ZFS $subcmd
 	corefile=${corepath}/core.zfs
 	if [[ ! -e $corefile ]]; then
-		log_fail "$ZFS $subcmd cannot generate core file  with ZFS_ABORT set."
+		log_fail "$ZFS $subcmd cannot generate core file with " \
+		    "ZFS_ABORT set."
 	fi
 	log_must $RM -f $corefile
 done
 
-log_pass "With ZFS_ABORT set, zfs command can abort and generate core file as expected."
+log_pass "With ZFS_ABORT set, zfs command can abort and generate core file " \
+    "as expected."

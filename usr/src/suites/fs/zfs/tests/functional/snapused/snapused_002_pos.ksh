@@ -43,7 +43,7 @@
 #	3. Set reservation of the sub filesystem.
 #	4. Create volume under it.
 #	5. Snapshot it.
-#	6. Check usedbychildren is correct. 
+#	6. Check usedbychildren is correct.
 #
 # TESTABILITY: explicit
 #
@@ -54,10 +54,6 @@
 # __stc_assertion_end
 #
 ################################################################################
-
-if ! usedby_supported ; then
-	log_unsupported "snapused property is not supported."
-fi
 
 verify_runnable "both"
 
@@ -75,7 +71,7 @@ check_usedbychildren $USEDTEST
 typeset -i i=0
 typeset -i r_size=0
 mntpnt=$(get_prop mountpoint $USEDTEST)
-while (( i < 5 )); do
+while ((i < 5)); do
 	((r_size=(i+1)*16))
 
 	log_must $ZFS create $USEDTEST/fs$i

@@ -26,15 +26,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-function cifs_supported
-{
-     	if check_version "5.11" ; then
-		fs_prop_exist "sharesmb"
-		return $?
-	fi
-	return 1
-}
-
 #
 # Create a file or direcotry
 #
@@ -51,12 +42,12 @@ function create_object
 	destroy_object $object
 
 	case $type in
-		dir)
-			$MKDIR -p $object
-			;;
-		file)
-			$ECHO "ZFS test suites" > $object
-			;;
+	dir)
+		$MKDIR -p $object
+		;;
+	file)
+		$ECHO "ZFS test suites" > $object
+		;;
 	esac
 
 	if [[ -n $owner ]]; then
@@ -83,4 +74,3 @@ function destroy_object
 	done
 	return 0
 }
-

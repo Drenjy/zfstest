@@ -1,4 +1,4 @@
-#! /bin/ksh -p
+#!/usr/bin/bash -p
 #
 # CDDL HEADER START
 #
@@ -25,8 +25,8 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/reservation/reservation.kshlib
+. $STF_SUITE/include/libtest.shlib
+. $STF_SUITE/tests/functional/reservation/reservation.shlib
 
 ###############################################################################
 #
@@ -61,17 +61,14 @@
 
 verify_runnable "both"
 
-log_assert "Setting top level dataset reservation to 'none' allows more data to" \
-	" be written to top level filesystem"
+log_assert "Setting top level dataset reservation to 'none' allows more data "
+    "to be written to top level filesystem"
 
-function cleanup 
+function cleanup
 {
 	log_must $RM -rf $TESTDIR/$TESTFILE1
 	log_must $RM -rf $TESTDIR/$TESTFILE2
 	log_must $ZFS destroy -f $TESTPOOL/$TESTFS1
-
-	$ZFS unmount -a > /dev/null 2>&1
-	log_must $ZFS mount -a
 }
 
 log_onexit cleanup
@@ -83,10 +80,10 @@ space_avail=`get_prop available $TESTPOOL`
 #
 # To make sure this test doesn't take too long to execute on
 # large pools, we calculate a reservation setting which when
-# applied to the dataset will ensure we have RESV_FREE_SPACE 
+# applied to the dataset will ensure we have RESV_FREE_SPACE
 # left free in the pool which we can quickly fill.
 #
-(( resv_size_set = space_avail - RESV_FREE_SPACE ))
+((resv_size_set = space_avail - RESV_FREE_SPACE))
 
 log_must $ZFS set reservation=$resv_size_set $TESTPOOL/$TESTFS1
 
@@ -100,14 +97,14 @@ write_count=`expr $fill_size / $BLOCK_SIZE`
 $FILE_WRITE -o create -f $TESTDIR/$TESTFILE1 -b $BLOCK_SIZE \
         -c $write_count -d 0
 ret=$?
-if (( $ret != $ENOSPC )); then
+if (($ret != $ENOSPC)); then
 	log_fail "Did not get ENOSPC as expected (got $ret)."
 fi
 
 log_must $ZFS set reservation=none $TESTPOOL/$TESTFS1
 
-log_must $FILE_WRITE -o create -f $TESTDIR/$TESTFILE2 -b $BLOCK_SIZE \
-        -c 1000 -d 0
+log_must $FILE_WRITE -o create -f $TESTDIR/$TESTFILE2 -b $PAGESIZE \
+    -c 1000 -d 0
 
 log_pass "Setting top level dataset reservation to 'none' allows more " \
-	"data to be written to the top level filesystem"
+    "data to be written to the top level filesystem"

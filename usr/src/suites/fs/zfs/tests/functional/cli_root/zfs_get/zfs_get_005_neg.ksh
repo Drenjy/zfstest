@@ -26,7 +26,6 @@
 #
 
 . $STF_SUITE/tests/functional/cli_root/zfs_get/zfs_get_common.kshlib
-. $STF_SUITE/tests/functional/userquota/userquota_common.kshlib
 
 ###############################################################################
 #
@@ -55,37 +54,28 @@
 
 verify_runnable "both"
 
-set -A val_opts p r H
-set -A v_props type used available creation volsize referenced compressratio mounted \
-	origin recordsize quota reservation mountpoint sharenfs checksum \
-	compression atime devices exec readonly setuid zoned snapdir aclmode \
-	aclinherit canmount primarycache secondarycache \
-	usedbychildren usedbydataset usedbyrefreservation usedbysnapshots
+typeset val_opts=(p r H
+typeset v_props=(type used available creation volsize referenced compressratio \
+    mounted origin recordsize quota reservation mountpoint sharenfs checksum \
+    compression atime devices exec readonly setuid zoned snapdir aclmode \
+    aclinherit canmount primarycache secondarycache \
+    usedbychildren usedbydataset usedbyrefreservation usedbysnapshots version)
 
-$ZFS upgrade -v > /dev/null 2>&1
-if [[ $? -eq 0 ]]; then
-	set -A v_props ${v_props[*]} version
-fi
-
-if is_userquota_supported; then
-	set -A  userquota_props userquota@root groupquota@root \
-		userused@root groupused@root	
-fi
-
-set -A val_pros -- "${v_props[@]}" "${userquota_props[@]}"
-
+typeset  userquota_props=(userquota@root groupquota@root userused@root \
+    groupused@root)
+typeset val_pros=(-- "${v_props[@]}" "${userquota_props[@]}")
 set -f	# Force shell does not parse '?' and '*' as the wildcard
-set -A inval_opts P R h ? * 
-set -A inval_props Type 0 ? * -on --on readonl time USED RATIO MOUNTED
+typeset inval_opts=(P R h ? *)
+typeset inval_props=(Type 0 ? * -on --on readonl time USED RATIO MOUNTED)
 
-set -A dataset $TESTPOOL/$TESTFS $TESTPOOL/$TESTCTR $TESTPOOL/$TESTVOL \
-	$TESTPOOL/$TESTFS@$TESTSNAP $TESTPOOL/$TESTVOL@$TESTSNAP 
+typeset dataset=($TESTPOOL/$TESTFS $TESTPOOL/$TESTCTR $TESTPOOL/$TESTVOL \
+    $TESTPOOL/$TESTFS@$TESTSNAP $TESTPOOL/$TESTVOL@$TESTSNAP)
 
 typeset -i opt_numb=6
 typeset -i prop_numb=12
 
 val_opts_str=$(gen_option_str "${val_opts[*]}" "-" "" $opt_numb)
-val_props_str=$(gen_option_str "${val_props[*]}" "" "," $prop_numb) 
+val_props_str=$(gen_option_str "${val_props[*]}" "" "," $prop_numb)
 val_props_str="$val_props_str -a -d"
 
 inval_opts_str=$(gen_option_str "${inval_opts[*]}" "-" "" $opt_numb)
@@ -108,8 +98,8 @@ function test_options
 				$ZFS get $opt $prop $dst > /dev/null 2>&1
 				ret=$?
 				if [[ $ret == 0 ]]; then
-					log_fail "$ZFS get \
-    $opt $prop $dst unexpectedly succeeded."
+					log_fail "$ZFS get $opt $prop $dst " \
+					    "unexpectedly succeeded."
 				fi
 			done
 		done
@@ -117,7 +107,7 @@ function test_options
 }
 
 log_assert "Setting the invalid option and properties, 'zfs get' should be \
-	failed."
+    failed."
 log_onexit cleanup
 
 # Create filesystem and volume's snapshot

@@ -1,4 +1,4 @@
-#! /bin/ksh -p
+#!/usr/bin/bash -p
 #
 # CDDL HEADER START
 #
@@ -25,8 +25,8 @@
 # Use is subject to license terms.
 #
 
-. $STF_SUITE/include/libtest.kshlib
-. $STF_SUITE/tests/functional/reservation/reservation.kshlib
+. $STF_SUITE/include/libtest.shlib
+. $STF_SUITE/tests/functional/reservation/reservation.shlib
 
 ###############################################################################
 #
@@ -66,19 +66,8 @@ verify_runnable "both"
 
 function cleanup
 {
-	[[ -e $TESTDIR/$TESTFILE1 ]] && \
-		log_must $RM -rf $TESTDIR/$TESTFILE1
-
+	[[ -e $TESTDIR/$TESTFILE1 ]] && log_must $RM -rf $TESTDIR/$TESTFILE1
 	log_must $ZFS set reservation=none $TESTPOOL/$TESTFS
-
-	#
-	# To ensure subsequent tests see correct USED/AVAIL totals
-	# we need to unmount and remount all the datasets that will
-	# not be destroyed.
-	#
-
-	$ZFS unmount -a > /dev/null 2>&1
-	log_must $ZFS mount -a
 }
 
 log_onexit cleanup
@@ -91,12 +80,12 @@ log_must $ZFS set reservation=$RESV_SIZE $TESTPOOL/$TESTFS
 
 #
 # Calculate how many writes of BLOCK_SIZE it would take to fill
-# up RESV_SIZE + 20971520 (20 MB). 
+# up RESV_SIZE + 20971520 (20 MB).
 #
 fill_size=`expr $RESV_SIZE + 20971520`
 write_count=`expr $fill_size / $BLOCK_SIZE`
 
 log_must $FILE_WRITE -o create -f $TESTDIR/$TESTFILE1 -b $BLOCK_SIZE \
-	-c $write_count -d 0
+    -c $write_count -d 0
 
 log_pass "Able to create files inside and outside reserved area"

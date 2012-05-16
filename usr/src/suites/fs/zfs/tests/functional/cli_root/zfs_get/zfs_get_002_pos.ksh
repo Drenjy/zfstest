@@ -26,7 +26,6 @@
 #
 
 . $STF_SUITE/tests/functional/cli_root/zfs_get/zfs_get_common.kshlib
-. $STF_SUITE/tests/functional/userquota/userquota_common.kshlib
 
 ###############################################################################
 #
@@ -56,32 +55,22 @@
 
 verify_runnable "both"
 
-set -A options " " p r H
+typeset options=(" " p r H)
 
-set -A zfs_props type used available creation volsize referenced compressratio \
-	mounted origin recordsize quota reservation mountpoint sharenfs \
-	checksum compression atime devices exec readonly setuid zoned snapdir \
-	aclmode aclinherit canmount primarycache secondarycache \
-	usedbychildren usedbydataset usedbyrefreservation usedbysnapshots
+typeset zfs_props=("type" used available creation volsize referenced \
+    compressratio mounted origin recordsize quota reservation mountpoint \
+    sharenfs checksum compression atime devices exec readonly setuid zoned \
+    snapdir aclmode aclinherit canmount primarycache secondarycache \
+    usedbychildren usedbydataset usedbyrefreservation usedbysnapshots version)
 
+typeset userquota_props=(userquota@root groupquota@root userused@root \
+    groupused@root)
+typeset props=("${zfs_props[@]}" "${userquota_props[@]}")
+typeset dataset=($TESTPOOL/$TESTCTR $TESTPOOL/$TESTFS $TESTPOOL/$TESTVOL \
+	$TESTPOOL/$TESTFS@$TESTSNAP $TESTPOOL/$TESTVOL@$TESTSNAP)
 
-$ZFS upgrade -v > /dev/null 2>&1
-if [[ $? -eq 0 ]]; then
-	set -A zfs_props ${zfs_props[*]} version
-fi
-
-if is_userquota_supported; then
-	set -A  userquota_props userquota@root groupquota@root \
-		userused@root groupused@root	
-fi
-
-set -A props -- "${zfs_props[@]}" "${userquota_props[@]}"
-
-set -A dataset $TESTPOOL/$TESTCTR $TESTPOOL/$TESTFS $TESTPOOL/$TESTVOL \
-	$TESTPOOL/$TESTFS@$TESTSNAP $TESTPOOL/$TESTVOL@$TESTSNAP
-
-log_assert "Setting the valid options and properties 'zfs get' return correct "\
-	"value. It should be successful."
+log_assert "Setting the valid options and properties 'zfs get' return " \
+    "correct value. It should be successful."
 log_onexit cleanup
 
 # Create volume and filesystem's snapshot
@@ -91,7 +80,7 @@ create_snapshot $TESTPOOL/$TESTVOL $TESTSNAP
 #
 # Begin to test 'get [-prH] <property[,property]...>
 # 			<filesystem|dataset|volume|snapshot>'
-# 		'get [-prH] <-a|-d> <filesystem|dataset|volume|snapshot>" 
+# 		'get [-prH] <-a|-d> <filesystem|dataset|volume|snapshot>"
 #
 typeset -i opt_numb=8
 typeset -i prop_numb=20
