@@ -24,6 +24,11 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
+
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_mount/zfs_mount.kshlib
 
@@ -45,7 +50,7 @@
 #	3. Import it using the various combinations.
 #		- Regular import
 #		- Alternate Root Specified
-#	4. Verify the mount & share status is restored. 
+#	4. Verify the mount & share status is restored.
 #
 # TESTABILITY: explicit
 #
@@ -59,8 +64,6 @@
 
 verify_runnable "global"
 
-log_unsupported "For unknown reason it'll cause pool lost"
-
 set -A pools "$TESTPOOL" "$TESTPOOL1"
 set -A devs "" "-d $DEVICE_DIR"
 set -A options "" "-R $ALTER_ROOT"
@@ -71,8 +74,8 @@ function cleanup
 {
 	typeset -i i=0
 
-	while (( i < ${#pools[*]} )); do
-		if poolexists ${pools[i]} ; then
+	while ((i < ${#pools[*]})); do
+		if poolexists ${pools[i]}; then
 			log_must $ZPOOL export ${pools[i]}
 			log_note "Try to import ${devs[i]} ${pools[i]}"
 			$ZPOOL import ${devs[i]} ${pools[i]}
@@ -81,20 +84,20 @@ function cleanup
 			$ZPOOL import $option ${devs[i]} ${pools[i]}
 		fi
 
-		if poolexists ${pools[i]} ; then
+		if poolexists ${pools[i]}; then
 			is_shared ${pools[i]} && \
-				log_must $ZFS set sharenfs=off ${pools[i]}
+			    log_must $ZFS set sharenfs=off ${pools[i]}
 
 			ismounted "${pools[i]}/$TESTFS" || \
-				log_must $ZFS mount ${pools[i]}/$TESTFS
+			    log_must $ZFS mount ${pools[i]}/$TESTFS
 		fi
-	
+
 		((i = i + 1))
 	done
 
 	destroy_pool $TESTPOOL1
 
-	if datasetexists $TESTPOOL/$TESTFS ; then
+	if datasetexists $TESTPOOL/$TESTFS; then
 		log_must $ZFS destroy -Rf $TESTPOOL/$TESTFS
 	fi
 	log_must $ZFS create $TESTPOOL/$TESTFS
@@ -110,6 +113,7 @@ log_assert "Verify all mount & share status of sub-filesystems within a pool \
 	can be restored after import [-Df]."
 
 setup_filesystem "$DEVICE_FILES" $TESTPOOL1 $TESTFS $TESTDIR1
+# create a heirarchy of filesystem
 for pool in ${pools[@]} ; do
 	log_must $ZFS create $pool/$TESTFS/$TESTCTR
 	log_must $ZFS create $pool/$TESTFS/$TESTCTR/$TESTCTR1
@@ -123,63 +127,81 @@ for pool in ${pools[@]} ; do
 done
 
 typeset mount_fs="$TESTFS $TESTFS/$TESTFS1 $TESTCLONE1 \
-		$TESTFS/$TESTCTR/$TESTFS1 $TESTFS/$TESTCTR/$TESTCTR1/$TESTFS1" 
+		$TESTFS/$TESTCTR/$TESTFS1 $TESTFS/$TESTCTR/$TESTCTR1/$TESTFS1"
 typeset nomount_fs="$TESTFS/$TESTCTR $TESTFS/$TESTCTR/$TESTCTR1"
 
 typeset -i i=0
 typeset -i j=0
+typeset -i nfs_share_bit=0
+typeset -i guid_bit=0
 typeset basedir
 
-for option in "" "-Df" ; do
+for option in "" "-Df"; do
 	i=0
-	while (( i < ${#pools[*]} )); do
+	while ((i < ${#pools[*]})); do
 		pool=${pools[i]}
-		guid=$(get_config $pool pool_guid)
+		guid=$(get_pool_prop guid $pool)
 		j=0
-		while (( j < ${#options[*]} )); do
-			typeset f_share=""
-			if ((RANDOM % 2 == 0)); then
-				log_note "Set sharenfs=on $pool"
-				log_must $ZFS set sharenfs=on $pool
-				log_must is_shared $pool
-				f_share="true"
-			fi
-
-			if [[ -z $option ]]; then
-				log_must $ZPOOL export $pool
-			else
-				log_must $ZPOOL destroy $pool
-			fi
-
-			typeset target=$pool
-			if (( RANDOM % 2 == 0 )) ; then
-				log_note "Import by guid."
-				if [[ -z $guid ]]; then
-					log_fail "guid should not be empty!"
-				else
-					target=$guid
+		while ((j < ${#options[*]})); do
+			# set sharenfs property off/on
+			nfs_share_bit=0
+			while ((nfs_share_bit <= 1)); do
+				typeset f_share=""
+				typeset nfs_flag="sharenfs=off"
+				if ((nfs_share_bit == 1)); then
+					log_note "Set sharenfs=on $pool"
+					log_must $ZFS set sharenfs=on $pool
+					log_must is_shared $pool
+					f_share="true"
+					nfs_flag="sharenfs=on"
 				fi
-			fi
-			log_must $ZPOOL import $option \
-				${devs[i]} ${options[j]} $target
+				# for every off/on nfs bit import guid/pool_name
+				guid_bit=0
+				while ((guid_bit <= 1)); do
+					typeset guid_flag="pool name"
+					if [[ -z $option ]]; then
+						log_must $ZPOOL export $pool
+					else
+						log_must $ZPOOL destroy $pool
+					fi
 
-			log_must poolexists $pool
+					typeset target=$pool
+					if ((guid_bit == 1)); then
+						log_note "Import by guid."
+						if [[ -z $guid ]]; then
+							log_fail "guid should "\
+							    "not be empty!"
+						else
+							target=$guid
+							guid_flag="$guid"
+						fi
+					fi
+					log_note "Import with $nfs_flag and " \
+					    "$guid_flag"
+					log_must $ZPOOL import $option \
+					    ${devs[i]} ${options[j]} $target
 
-			for fs in $mount_fs ; do
-				log_must ismounted $pool/$fs
-				[[ -n $f_share ]] && \
-					log_must is_shared $pool/$fs
+					log_must poolexists $pool
+
+					for fs in $mount_fs; do
+						log_must ismounted $pool/$fs
+						[[ -n $f_share ]] && \
+						    log_must is_shared $pool/$fs
+					done
+
+					for fs in $nomount_fs; do
+						log_mustnot ismounted $pool/$fs
+						log_mustnot is_shared $pool/$fs
+					done
+					((guid_bit = guid_bit + 1))
+				done
+				# reset nfsshare=off
+				if [[ -n $f_share ]]; then
+					log_must $ZFS set sharenfs=off $pool
+					log_mustnot is_shared $pool
+				fi
+				((nfs_share_bit = nfs_share_bit + 1))
 			done
-
-			for fs in $nomount_fs ; do
-				log_mustnot ismounted $pool/$fs
-				log_mustnot is_shared $pool/$fs
-			done
-
-			if [[ -n $f_share ]] ; then
-				log_must $ZFS set sharenfs=off $pool
-				log_mustnot is_shared $pool
-			fi
 
 			((j = j + 1))
 		done
