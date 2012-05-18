@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: enospc_001
 #
 # DESCRIPTION:
 # ENOSPC is returned on an attempt to write a second file
@@ -43,15 +38,6 @@
 # 3. Write a second file while the file system remains full.
 # 4. Verify the return code is ENOSPC.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

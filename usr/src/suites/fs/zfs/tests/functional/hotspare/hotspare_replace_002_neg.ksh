@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/tests/functional/hotspare/hotspare.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotspare_replace_002_neg
 #
 # DESCRIPTION: 
 # 	'zpool replace <pool> <odev> <ndev>...' should return fail if
@@ -42,15 +37,6 @@
 #	3. Try to replace the basic vdev with the smaller hot spares
 #	4. Verify the the replace operation failes
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2006-06-07)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "global"
 

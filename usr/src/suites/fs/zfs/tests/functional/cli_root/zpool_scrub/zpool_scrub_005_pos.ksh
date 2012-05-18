@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_scrub_005_pos
 #
 # DESCRIPTION:
 #	When scrubbing, detach device should not break system.
@@ -41,15 +36,6 @@
 #	2. Detaching and attaching the device when scrubbing.
 #	3. Try it twice, verify both of them work fine.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

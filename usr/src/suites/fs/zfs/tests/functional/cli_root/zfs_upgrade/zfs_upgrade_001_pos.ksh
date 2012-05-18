@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_upgrade/zfs_upgrade.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_upgrade_001_pos
 #
 # DESCRIPTION:
 # 	Executing 'zfs upgrade' command succeeds, it should report 
@@ -47,15 +42,6 @@
 # 3. Remove all old-version filesystems, then execute 'zfs upgrade' again,
 #	verify return 0, and get the expected message.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-25)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

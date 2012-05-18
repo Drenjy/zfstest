@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_allow_001_pos
 #
 # DESCRIPTION:
 # 	"everyone" is interpreted as the keyword "everyone" whatever the same
@@ -43,15 +38,6 @@
 #	3. Create group 'everyone'.
 #	4. Verify 'everyone' is interpreted as keywords.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-14)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

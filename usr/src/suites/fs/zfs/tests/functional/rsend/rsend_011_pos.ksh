@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/rsend/rsend.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: rsend_011_pos
 #
 # DESCRIPTION:
 #	Changes made by 'zfs inherit' can be properly received.
@@ -41,15 +36,6 @@
 #	2. Send and restore them in the target pool
 #	3. Verify all the datasets can be properly backup and receive
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-10-10)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

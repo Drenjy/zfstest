@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/reservation/reservation.shlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: reservation_012_pos
 #
 # DESCRIPTION:
 #
@@ -48,15 +43,6 @@
 # set) until all space is consumed
 # 4) Verify can still write to the filesystem which has a reservation
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

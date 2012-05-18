@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: nestedfs_001_pos
 #
 # DESCRIPTION:
 # Given a pool create a nested file system and a ZFS file system
@@ -44,15 +39,6 @@
 # 2. Unmount the new mountpoint
 # 3. Show a nested file system with file systems cannot be destroyed
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

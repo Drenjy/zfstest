@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_receive_007_neg
 #
 # DESCRIPTION:
 #	'zfs recv -F' should fail if the incremental stream does not match
@@ -42,15 +37,6 @@
 #	3. Keep the incremental stream and restore the stream to the pool
 #	4. Verify receiving the stream fails
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-10-13)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

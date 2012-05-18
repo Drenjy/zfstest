@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/hotplug/hotplug.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotplug_007_pos
 #
 # DESCRIPTION:
 #	When autoreplace is 'on', replacing the device with a smaller one.
@@ -45,15 +40,6 @@
 #	5. Verify the device's status is 'UNAVAIL'.
 #	6. Verify FMA fault has been generated.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 log_unsupported "WARNING: Disable it temporarily due to bug 6563887"
 

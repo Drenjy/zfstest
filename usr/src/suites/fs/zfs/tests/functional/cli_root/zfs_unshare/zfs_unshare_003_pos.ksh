@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_unshare_003_pos
 #
 # DESCRIPTION:
 # Verify that a file system and its dependant are unshared when turn off sharenfs
@@ -45,15 +40,6 @@
 # 5. Turn off the sharenfs property
 # 6. Verify that both are unshared.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-18)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

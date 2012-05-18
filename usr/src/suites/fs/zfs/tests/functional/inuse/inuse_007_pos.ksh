@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: inuse_007_pos
 #
 # DESCRIPTION:
 # dumpadm will interfere with devices and spare devices that are in use 
@@ -42,15 +37,6 @@
 # 2. Export the pool
 # 3. Try to dumpadm against the disk, verify it succeeds as expect.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-12-30)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

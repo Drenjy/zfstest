@@ -27,11 +27,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: mounttest
 #
 # DESCRIPTION:
 # zfs mount and unmount commands should mount and unmount existing
@@ -43,15 +38,6 @@
 # 3. Call zfs unmount command
 # 4. Make sure the file systems were unmounted
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 
 unmountcmd=""

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_rename_013_pos
 #
 # DESCRIPTION:
 #	zfs rename -r can rename snapshot when child datasets
@@ -42,15 +37,6 @@
 #	2. Rename snapshot recursively.
 #	3. Verify rename -r snapshot correctly.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-04-24)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

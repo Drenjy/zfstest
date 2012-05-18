@@ -28,11 +28,6 @@
 . $STF_SUITE/tests/functional/cli_root/zfs_mount/zfs_mount.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_unmount/zfs_unmount.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_unmount_all_001_pos
 #
 # DESCRIPTION:
 #       Verify that 'zfs unmount -a[f]' succeeds as root.
@@ -45,15 +40,6 @@
 #	   and all available ZFS filesystems are unmounted.
 #	5. Verify that 'zfs mount' is identical with 'df -F zfs'
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-12)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

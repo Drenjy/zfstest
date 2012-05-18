@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_clone_007_pos
 #
 # DESCRIPTION:
 # 'zfs clone -o version=' could upgrade version, but downgrade is denied.
@@ -39,15 +34,6 @@
 # 1. Create clone with "-o version=" specified
 # 2. Verify it succeed while upgrade, but fails while the version downgraded.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-12-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 ZFS_VERSION=$($ZFS upgrade | $HEAD -1 | $AWK '{print $NF}' \
 	| $SED -e 's/\.//g')

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: refquota_003_pos
 #
 # DESCRIPTION:
 #	Sub-filesystem quotas are not enforced by property 'refquota'
@@ -41,15 +36,6 @@
 #	2. Verify sub-filesystem will not be limited by refquota
 #	3. Verify sub-filesystem will only be limited by quota
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-11-02)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

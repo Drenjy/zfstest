@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_share_005_pos
 #
 # DESCRIPTION:
 # Verify that NFS share options are propagated correctly.
@@ -41,15 +36,6 @@
 # 2. For each option in the list, set the sharenfs property.
 # 3. Verify through the share command that the options are propagated.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

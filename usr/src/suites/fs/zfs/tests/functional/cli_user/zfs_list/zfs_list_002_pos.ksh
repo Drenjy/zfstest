@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/tests/functional/cli_user/zfs_list/zfs_list.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_list_002_pos
 #
 # DESCRIPTION:
 # The sort functionality in 'zfs list' works as expected.
@@ -40,15 +35,6 @@
 # 2. Sort the datasets by name, checksum options, creation date.
 # 3. Verify that the datasets are sorted correctly.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-08)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

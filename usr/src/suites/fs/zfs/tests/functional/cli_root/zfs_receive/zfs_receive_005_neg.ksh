@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/cli_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_receive_005_neg
 #
 # DESCRIPTION:
 #	Verify 'zfs receive' fails with unsupported scenarios.
@@ -45,15 +40,6 @@
 #	2. Execute 'zfs receive' 
 #	3. Verify the results are failed
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-09-06)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

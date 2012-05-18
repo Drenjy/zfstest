@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_set/zfs_set_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_inherit_003_pos
 #
 # DESCRIPTION:
 # 'zfs inherit' should return an error with bad parameters in one command. 
@@ -42,15 +37,6 @@
 # 2. Execute 'zfs inherit' with bad options and passing invlid properties
 # 3. Verify an error is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-19)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

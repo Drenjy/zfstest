@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_chmod_compact_001_pos
 #
 # DESCRIPTION:
 #	chmod A{+|-|=} could set compact ACL correctly.
@@ -42,15 +37,6 @@
 #	4. Separately chmod +|-|=
 #	5. Check compact ACL display as expected
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-11)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

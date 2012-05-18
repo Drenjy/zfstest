@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_allow_011_neg
 #
 # DESCRIPTION:
 #	Verify zpool subcmds and system readonly properties can't be delegated.
@@ -41,15 +36,6 @@
 #	   'create' & 'destroy'.
 #	2. Verify those subcmd or properties can't be delegated.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-13)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

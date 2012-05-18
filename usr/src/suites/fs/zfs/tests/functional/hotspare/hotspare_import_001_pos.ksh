@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/tests/functional/hotspare/hotspare.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotspare_import_001_pos
 #
 # DESCRIPTION: 
 #	If a storage pool has hot spare, 
@@ -49,15 +44,6 @@
 #	3. Verify the export/import runs successfully,
 #		and the data keep integrity after import
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2006-06-14)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "global"
 

@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/snapused/snapused.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: snapused_004_pos
 #
 # DESCRIPTION:
 #	Verify usedbyrefreservation is correct.
@@ -49,15 +44,6 @@
 #	9. Makefile the cloned filesystem.
 #	10. Check usedbyrefreservation is correct.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-04-28)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

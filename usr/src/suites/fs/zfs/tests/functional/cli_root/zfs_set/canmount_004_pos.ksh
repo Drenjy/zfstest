@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: canmount_sharenfs_001_pos
 #
 # DESCRIPTION:
 # Verify canmount=noauto work fine when setting sharenfs or sharesmb.
@@ -41,15 +36,6 @@
 # 2. Set sharenfs or sharesmb.
 # 3. Verify the fs is umounted.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-05-25)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

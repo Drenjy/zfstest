@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_promote_004_pos
 #
 # DESCRIPTION: 
 #	'zfs promote' can deal with multi-level clones.
@@ -40,15 +35,6 @@
 #	2. Promote a clone filesystem
 #	3. Verify the dataset dependency relationships are correct after promotion. 
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-05-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

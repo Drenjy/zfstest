@@ -29,11 +29,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.shlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_create_004_pos
 #
 # DESCRIPTION:
 # 'zpool create [-f]' can create a storage pool with large number of
@@ -46,15 +41,6 @@
 # 4. Add the new file into vdevs list and create a pool
 # 5. Creating a storage pool with the new vdevs list should be failed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-08-25)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

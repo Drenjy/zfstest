@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_scrub_004_pos
 #
 # DESCRIPTION:
 #	Resilver prevent scrub from starting until the resilver completes
@@ -41,15 +36,6 @@
 #	2. Detach one of devices
 #	3. Verify scrub failed until the resilver completed 
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

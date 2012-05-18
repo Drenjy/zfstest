@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zpool_add/zpool_add.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_add_002_pos
 #
 # DESCRIPTION:
 # 	'zpool add -f <pool> <vdev> ...' can successfully add the specified
@@ -44,15 +39,6 @@
 # 	pool 
 # 	4. Verify the device is added successfully
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-09-29)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

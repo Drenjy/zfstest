@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_import_004_pos
 #
 # DESCRIPTION:
 #	Destroyed pools devices was moved to another directory, it still can be
@@ -43,15 +38,6 @@
 #	3. Move devices to another directory.
 #	4. Verify 'zpool import -D' succeed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-12)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

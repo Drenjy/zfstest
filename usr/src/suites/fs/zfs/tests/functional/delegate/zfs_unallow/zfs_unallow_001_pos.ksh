@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_unallow_001_pos
 #
 # DESCRIPTION:
 #	Verify '-l' only removed the local permissions.
@@ -41,15 +36,6 @@
 #	2. Implement unallow -l to $ROOT_TESTFS or $TESTVOL
 #	3. Verify '-l' only remove the local permissions.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-29)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

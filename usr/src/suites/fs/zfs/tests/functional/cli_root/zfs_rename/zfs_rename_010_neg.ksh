@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_rename_010_neg
 #
 # DESCRIPTION:
 #	The recursive flag -r can only be used for snapshots and not for
@@ -41,15 +36,6 @@
 #	1. Loop pool, fs, container and volume.
 #	2. Verify none of them can be rename by rename -r.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-03-15)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

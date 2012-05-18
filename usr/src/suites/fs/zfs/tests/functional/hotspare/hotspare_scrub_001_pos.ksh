@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/tests/functional/hotspare/hotspare.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotspare_scrub_001_pos
 #
 # DESCRIPTION: 
 #	If a storage pool has hot spare, 
@@ -45,15 +40,6 @@
 #		- the hotspare is activated
 #	4. Verify the scrub runs successfully.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2006-06-07)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "global"
 

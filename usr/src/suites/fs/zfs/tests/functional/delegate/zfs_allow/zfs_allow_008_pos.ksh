@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_allow_008_pos
 #
 # DESCRIPTION:
 #	non-root user can allow any permissions which he is holding to
@@ -42,15 +37,6 @@
 #	2. Verify the non-root user can allow permission if he has allow
 #	   permission.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-20)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

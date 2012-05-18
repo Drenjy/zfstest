@@ -27,11 +27,6 @@
 
 . ${STF_SUITE}/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: threadsappend_001_pos
 #
 # DESCRIPTION:
 #
@@ -43,15 +38,6 @@
 #	2) Create multiple threads with each appending to a file
 #       3) Verify that the resulting file is the expected size
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "both"
 

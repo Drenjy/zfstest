@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_unmount_001_pos
 #
 # DESCRIPTION:
 # Creates a file system and verifies that it can be unmounted
@@ -45,15 +40,6 @@
 # 	- Using the unmount sub-command.
 # 	- Using the umount sub-command.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: snapshot_001_pos
 #
 # DESCRIPTION:
 # A zfs file system snapshot is identical to
@@ -44,15 +39,6 @@
 # 4. Append to the original file
 # 5. Verify the snapshot and file agree
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "both"
 

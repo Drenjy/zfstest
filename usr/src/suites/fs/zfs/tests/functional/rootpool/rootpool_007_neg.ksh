@@ -28,11 +28,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  rootpool_007_neg
 #
 # DESCRIPTION:
 #
@@ -43,15 +38,6 @@
 # 2) get the rootfs
 # 3) set the rootfs's compression to gzip 1-9 which should fail.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-07-08)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

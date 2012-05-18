@@ -24,12 +24,7 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-################################################################################
 #
-#
-# __stc_assertion_start
-#
-# ID: userquota_001_pos
 #
 # DESCRIPTION:
 #       Check the basic function of the userquota and groupquota
@@ -41,16 +36,7 @@
 #       3. Set groupquota and overwrite the quota size
 #       4. The write operation should fail with Disc quota exceeded
 #
-# TESTABILITY: explicit
 #
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2009-04-16)
-#
-# __stc_assertion_end
-#
-#
-###############################################################################
 
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/userquota/userquota_common.kshlib

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_import_003_pos
 #
 # DESCRIPTION:
 #	Destroyed pools are not listed unless with -D option is specified.
@@ -41,15 +36,6 @@
 #	2. Destroy pool A.
 #	3. Verify only 'import -D' can list pool A.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-12)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

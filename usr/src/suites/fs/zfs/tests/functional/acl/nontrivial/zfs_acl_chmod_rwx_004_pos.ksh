@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_chmod_rwx_004_pos
 #
 # DESCRIPTION:
 #	Verify that explicit ACL setting to specified user or group will
@@ -42,15 +37,6 @@
 #	2. Loop the specified access one by one.
 #	3. Loop verify explicit ACL set to specified user and group.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-10-14)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

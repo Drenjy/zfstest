@@ -26,11 +26,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/xattr/xattr_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  xattr_005_pos
 #
 # DESCRIPTION:
 # read/write/create/delete xattr on a clone filesystem
@@ -42,15 +37,6 @@
 #       3. Verify the xattr can still be read, written, deleted
 #	4. Verify we can create new xattrs on new files created on the clone
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-13)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup {
 

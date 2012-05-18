@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_chmod_001_neg
 #
 # DESCRIPTION:
 # 	Verify  1) Illegal options to chmod should fail.
@@ -44,15 +39,6 @@
 #	3. Verify 'chmod A0-' will fail when try to delete all the ACE.
 #	4. Verify 'chmod A+' will succeed when the ACE number exceed 1024.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-10-14)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

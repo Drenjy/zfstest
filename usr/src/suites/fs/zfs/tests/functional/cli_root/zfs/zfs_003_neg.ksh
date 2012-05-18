@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_003_neg
 #
 # DESCRIPTION:
 # zfs command will failed with unexpected scenarios:
@@ -42,15 +37,6 @@
 # 2. Execute each command in the array
 # 3. Verify the command aborts and generate a core file 
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-29)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_status_002_pos
 #
 # DESCRIPTION:
 # Executing 'zpool status' with correct options succeeds
@@ -40,15 +35,6 @@
 # 2. Execute each element of the array.
 # 3. Verify use of each option is successful.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

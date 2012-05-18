@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/rsend/rsend.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: rsend_006_pos
 #
 # DESCRIPTION:
 #	Rename snapshot name will not change the dependent order.
@@ -42,15 +37,6 @@
 #	3. Send -R all the POOL
 #	4. Verify snapshot name will not change the dependent order.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

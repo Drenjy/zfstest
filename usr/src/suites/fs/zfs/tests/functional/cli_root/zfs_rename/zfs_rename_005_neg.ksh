@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_rename/zfs_rename.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_rename_005_neg
 #
 # DESCRIPTION:
 #       'zfs rename' should fail when the dataset are not within the same pool 
@@ -42,15 +37,6 @@
 #       3. Verify the operation fails, and only the original name 
 #	   is displayed by zfs list.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-09-13)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "global"
 

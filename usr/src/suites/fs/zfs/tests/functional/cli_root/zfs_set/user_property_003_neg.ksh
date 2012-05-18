@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/zfs_set/zfs_set_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: user_property_003_neg
 #
 # DESCRIPTION:
 #	ZFS can handle any invalid user defined property.
@@ -43,15 +38,6 @@
 #	4. Verify all the invalid user defined properties can not be set to the
 #	   dataset in #1.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

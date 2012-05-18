@@ -27,11 +27,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_upgrade_005_neg
 #
 # DESCRIPTION:
 # Variations of upgrade -v print usage message, return with non-zero status
@@ -40,15 +35,6 @@
 # 1. Execute the command with several invalid options
 # 2. Verify a 0 exit status for each
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-07)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

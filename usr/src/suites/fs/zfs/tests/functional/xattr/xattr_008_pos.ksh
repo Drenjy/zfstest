@@ -26,11 +26,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/xattr/xattr_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  xattr_008_pos
 #
 # DESCRIPTION:
 # We verify that the special . and .. dirs work as expected for xattrs.
@@ -40,15 +35,6 @@
 #	2. List the . directory, verifying the output
 #	3. Verify we're unable to list the ../ directory
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup {
 	typeset file

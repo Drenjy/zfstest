@@ -31,11 +31,6 @@
 
 . $STF_SUITE/tests/functional/history/history_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: history_008_pos
 #
 # DESCRIPTION:
 #	Pool history records all recursive operations.
@@ -47,15 +42,6 @@
 #	4. Do the same verification for hold, release, inherit, rollback and
 #	   destroy.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-22)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: snapshot_013_pos
 #
 # DESCRIPTION:
 #	verify that the snapshots created by 'snapshot -r' can be used for 
@@ -42,15 +37,6 @@
 #	3. select one snapshot used  for zfs send/recv
 #	4. verify the data integrity after zfs send/recv
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-20)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

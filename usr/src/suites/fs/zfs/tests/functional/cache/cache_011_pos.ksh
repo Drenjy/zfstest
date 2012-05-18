@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cache/cache.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: cache_011_pos
 #
 # DESCRIPTION:
 #	Remove cache device from pool with spare device should succeed.
@@ -41,15 +36,6 @@
 #	2. Remove cache device from the pool
 #	3. The upper action should succeed
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-12-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 verify_disk_count "$LDEV2"

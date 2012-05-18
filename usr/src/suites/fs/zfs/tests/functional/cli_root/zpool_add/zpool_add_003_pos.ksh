@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zpool_add/zpool_add.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_add_003_pos
 #
 # DESCRIPTION:
 # 	'zpool add -n <pool> <vdev> ...' can display the configuration without
@@ -42,15 +37,6 @@
 # 	2. Use -n to add a device to the pool
 # 	3. Verify the device is not added actually
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-09-29)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: quota_006_neg
 #
 # DESCRIPTION:
 #
@@ -43,15 +38,6 @@
 #	currently in use.
 # 3) Verify that the attempt fails.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-13)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

@@ -27,11 +27,6 @@
 #
 . $STF_SUITE/tests/functional/hotspare/hotspare.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotspare_onoffline_003_neg
 #
 # DESCRIPTION:
 #	A hot spare may be made offline or online if it is currently active
@@ -47,15 +42,6 @@
 #		- have been activated (succeed)
 #	3. Verify offline/online results as expected.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2006-06-07)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "global"
 

@@ -31,11 +31,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: history_003_pos
 #
 # DESCRIPTION:
 #	zpool history will truncate on small pools, leaving pool creation intact
@@ -47,15 +42,6 @@
 #	4. Make sure 'zpool history' output is truncated
 #	5. Verify that the initial pool creation is preserved.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-07-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

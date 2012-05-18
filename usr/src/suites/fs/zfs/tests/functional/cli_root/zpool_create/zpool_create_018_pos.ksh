@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_create_018_pos
 #
 # DESCRIPTION:
 #
@@ -44,15 +39,6 @@
 # 3. Create a pool with two properties set
 # 4. Verify both properties are set correctly
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup
 {

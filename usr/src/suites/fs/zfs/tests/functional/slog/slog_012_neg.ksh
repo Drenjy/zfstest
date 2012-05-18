@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/slog/slog.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: slog_012_neg
 #
 # DESCRIPTION:
 #	Pool can survive when one of mirror log device get corrupted
@@ -41,15 +36,6 @@
 #	2. Make corrupted on one disk
 #	3. Verify the pool is fine
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-20)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_create/properties.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_clone_008_neg
 #
 # DESCRIPTION:
 # 'zfs clone -o <filesystem>' fails with bad <filesystem> arguments, including:
@@ -43,15 +38,6 @@
 # 2. Execute 'zfs clone -o <filesystem>' with each argument
 # 3. Verify an error is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-12-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

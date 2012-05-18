@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_rollback_001_neg
 #
 # DESCRIPTION:
 #
@@ -43,15 +38,6 @@
 #    (showing the snapshot rollback failed)
 #
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 log_assert "zfs rollback returns an error when run as a user"
 

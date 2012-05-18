@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_create_003_pos
 #
 # DESCRIPTION:
 # 'zpool create -n <pool> <vspec> ...' can display the configuration without
@@ -41,15 +36,6 @@
 # 1. Create storage pool with -n option
 # 2. Verify the pool has not been actually created
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: replacement_001_pos
 #
 # DESCRIPTION:
 # 	Replacing disks during I/O should pass for supported pools.
@@ -42,15 +37,6 @@
 #	2. Replace a disk in the pool with anbother disk.
 #	3. Verify the integrity of the file system and the resilvering.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-10-18)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

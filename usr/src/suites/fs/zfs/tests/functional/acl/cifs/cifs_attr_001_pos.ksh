@@ -28,11 +28,6 @@
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 . $STF_SUITE/tests/functional/acl/cifs/cifs.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: cifs_attr_001_pos
 #
 # DESCRIPTION:
 #	Verify the user with write_attributes permission or
@@ -46,15 +41,6 @@
 #		PRIV_FILE_OWNER privilege
 #	4. Verify set/clear DOS attributes should succeed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-11-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

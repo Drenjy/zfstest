@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_create/properties.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_clone_009_neg
 #
 # DESCRIPTION:
 # 'zfs clone -o <volume>' fails with badly formed arguments,including:
@@ -43,15 +38,6 @@
 # 2. For each argument, execute 'zfs clone -o <volume>'
 # 3. Verify an error is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-12-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

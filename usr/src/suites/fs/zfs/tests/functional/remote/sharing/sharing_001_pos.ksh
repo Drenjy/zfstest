@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: sharing_001_pos
 #
 # DESCRIPTION:
 #	Verify .zfs support with NFS version 3 & 4, but not support with NFS 
@@ -44,15 +39,6 @@
 #	   with different NFS version: 2, 3 and  4
 #	3. Verify the data in the file system and the snapshot directory
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-04-26)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

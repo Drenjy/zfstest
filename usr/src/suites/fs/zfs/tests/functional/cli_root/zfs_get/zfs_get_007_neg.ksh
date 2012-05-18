@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/zfs_get/zfs_get_common.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_get_007_neg
 #
 # DESCRIPTION:
 # 'zfs get -o' should fail with invalid column names 
@@ -40,15 +35,6 @@
 # 1. Run zfs get -o with invalid column name combinations
 # 2. Verify that zfs get returns error
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-21)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

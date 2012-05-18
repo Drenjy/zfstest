@@ -28,11 +28,6 @@
 . ${STF_SUITE}/include/libtest.kshlib
 . ${STF_SUITE}/tests/stress/replica_stress/replica_stress_common.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: mirror_stress_002
 #
 # DESCRIPTION:
 #	running multiple copies of zfs_dataset_create_write_destroy on
@@ -50,15 +45,6 @@
 #	The test is considered to have passed if the machine stays up during the
 #       time the stress tests are running and doesn't hit the stf time limit.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-08)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 log_assert "parallel dataset_create_write_destroy's on multiple mirrored " \
 	"pools won't fail"

@@ -31,11 +31,6 @@
 
 . $STF_SUITE/tests/functional/history/history_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: history_010_pos
 #
 # DESCRIPTION:
 #	Verify internal long history information are correct.
@@ -45,15 +40,6 @@
 #	2. Do some zfs operations as a root and non-root user.
 #	3. Verify the long history information is correct.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

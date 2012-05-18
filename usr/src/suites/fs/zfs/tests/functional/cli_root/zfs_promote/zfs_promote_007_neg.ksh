@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_promote_007_neg
 #
 # DESCRIPTION: 
 #	'zfs promote' can deal with conflicts in the namespaces.
@@ -41,15 +36,6 @@
 #	3. Promote the clone filesystem
 #	4. Verify the promote operation fail due to the name conflicts.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-05-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

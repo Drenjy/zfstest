@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/redundancy/redundancy.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: redundancy_002_pos
 #
 # DESCRIPTION:
 #	A raidz2 pool can withstand 2 devices are failing or missing.
@@ -45,15 +40,6 @@
 #	6. Verify the data is correct to prove raidz2 can withstand 2 devices 
 #	   are failing.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-21)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

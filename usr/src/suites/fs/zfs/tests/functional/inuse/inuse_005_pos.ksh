@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: inuse_005_pos
 #
 # DESCRIPTION:
 # newfs will not interfere with devices and spare devices that are in use 
@@ -41,15 +36,6 @@
 # 1. Create a regular|mirror|raidz|raidz2 pool with the given disk
 # 2. Try to newfs against the disk, verify it fails as expect.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-12-30)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

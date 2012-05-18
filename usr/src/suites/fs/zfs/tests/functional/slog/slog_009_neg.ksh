@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/slog/slog.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: slog_009_neg
 #
 # DESCRIPTION:
 #	A raidz/raidz2 log can not be added to existed pool.
@@ -41,15 +36,6 @@
 #	2. Add a raidz/raidz2 log to this pool.
 #	3. Verify failed to add.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-20)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

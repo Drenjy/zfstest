@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_snapshot_005_neg
 #
 # DESCRIPTION:
 #	Long name filesystem with snapshot should not break ZFS.
@@ -41,15 +36,6 @@
 #	2. When the snapshot length is 256, rename the filesystem.
 #	3. Verify it does not break ZFS
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-09)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

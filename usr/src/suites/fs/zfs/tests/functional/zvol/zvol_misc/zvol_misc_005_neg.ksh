@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zvol_misc_005_neg
 #
 # DESCRIPTION:
 # 	Verify a device cannot be dump and swap at the same time.
@@ -42,15 +37,6 @@
 # 2. Set it as swap device.
 # 3. Verify dumpadm with this zvol will fail.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-03-10)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

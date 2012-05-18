@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/mv_files/mv_files_common.kshlib
 
-##############################################################################
-#
-# __stc_assertion_start
-#
-# ID: mv_files_002_pos
 #
 # DESCRIPTION:
 # Doing a 'mv' of a large amount of files between two directories across
@@ -50,15 +45,6 @@
 # 7. repeat steps 3,4,5,6 above
 # 8. verify the data integrity
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

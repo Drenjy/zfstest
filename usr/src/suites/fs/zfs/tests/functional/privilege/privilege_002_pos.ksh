@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  privilege_002_pos
 #
 # DESCRIPTION:
 #
@@ -58,15 +53,6 @@
 #	6. Assign the FS profile, then attempt to destroy the fs, which
 #	   should succeed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

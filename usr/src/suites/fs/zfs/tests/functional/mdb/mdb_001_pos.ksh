@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: mdb_001_pos
 #
 # DESCRIPTION:
 #	Verify that the ZFS mdb dcmds and walkers are working as expected.
@@ -41,15 +36,6 @@
 #	2) Step through each element of the list
 #	3) Verify the output by checking for "mdb:" in the output string
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-10-11)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

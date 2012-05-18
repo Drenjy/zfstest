@@ -25,11 +25,6 @@
 # Use is subject to license terms.
 #
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zinject_003_pos
 #
 # DESCRIPTION:
 #
@@ -42,15 +37,6 @@
 # 3) Verify the filesystem unmountable, 
 #	and 'zpool status -v' will display the error as expect.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-02-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 . $STF_SUITE/tests/functional/zinject/zinject.kshlib
 

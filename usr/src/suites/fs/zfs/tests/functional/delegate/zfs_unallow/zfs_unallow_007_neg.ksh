@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_unallow_007_neg
 #
 # DESCRIPTION:
 #	zfs unallow will not remove those permissions which inherited from
@@ -42,15 +37,6 @@
 #	2. Create $SUBFS and assign perm2 to it.
 #	3. Verify unallow can not affect perm1 on $SUBFS
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-30)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

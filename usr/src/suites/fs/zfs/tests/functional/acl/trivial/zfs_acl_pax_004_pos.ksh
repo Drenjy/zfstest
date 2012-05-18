@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_pax_004_pos
 #
 # DESCRIPTION:
 #	Verify files include attribute in pax archive and restore with pax
@@ -45,15 +40,6 @@
 #	5. Record all the files cksum in derectory C.
 #	6. Verify the two records should be identical.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

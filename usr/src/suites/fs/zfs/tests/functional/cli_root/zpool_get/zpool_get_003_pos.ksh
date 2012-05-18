@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zpool_get/zpool_get.cfg
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  zpool_get_003_pos
 #
 # DESCRIPTION:
 #
@@ -41,15 +36,6 @@
 # STRATEGY:
 # 1. For all properties, verify zpool get retrieves a value
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-03-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 log_assert "Zpool get returns values for all known properties"
 

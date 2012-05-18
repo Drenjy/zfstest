@@ -26,11 +26,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/xattr/xattr_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  xattr_002_neg
 #
 # DESCRIPTION:
 #
@@ -40,15 +35,6 @@
 #	1. Create a file
 #       2. Try to read a non-existent xattr, check that an error is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-12-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup {
 

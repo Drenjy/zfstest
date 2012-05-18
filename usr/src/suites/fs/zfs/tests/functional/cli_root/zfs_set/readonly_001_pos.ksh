@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/zfs_set/zfs_set_common.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: readonly_001_pos
 #
 # DESCRIPTION:
 # Setting readonly on a dataset, it should keep the dataset as readonly.
@@ -42,15 +37,6 @@
 # 3. Check the return value and make sure it is 0.
 # 4. Verify the stuff under mountpoint is readonly.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-04-21)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

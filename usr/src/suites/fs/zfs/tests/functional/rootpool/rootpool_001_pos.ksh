@@ -28,11 +28,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  rootpool_001_pos
 #
 # DESCRIPTION:
 # 
@@ -44,15 +39,6 @@
 # 3) check the rootpool's bootfs value
 # 4) chek if the boofs equal to rootfs
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-01-21)
-#
-# __stc_assertion_end
-#
-################################################################################
 verify_runnable "global"
 log_assert "rootpool's bootfs property must be equal to <rootfs>"
 

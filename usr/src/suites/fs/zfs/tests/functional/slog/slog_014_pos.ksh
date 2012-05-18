@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/slog/slog.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: slog_014_pos
 #
 # DESCRIPTION:
 #	log device can survive when one of pool device get corrupted
@@ -41,15 +36,6 @@
 #	2. remove one disk
 #	3. Verify the log is fine
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-05-26)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_unmount_006_pos
 #
 # DESCRIPTION:
 #	Re-creating zfs files, 'zfs unmount' still succeed. 
@@ -41,15 +36,6 @@
 #	2. Recreating the same file in this fs for a while, then breaking out.
 #	3. Verify the filesystem can be unmount successfully.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-07-18)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

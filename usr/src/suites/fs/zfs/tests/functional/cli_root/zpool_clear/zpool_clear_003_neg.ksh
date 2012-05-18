@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_clear_003_neg
 #
 # DESCRIPTION:
 # Verify 'zpool clear' cannot used to spare device. 
@@ -40,15 +35,6 @@
 # 2. Try to clear the spare device
 # 3. Verify it returns an error.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

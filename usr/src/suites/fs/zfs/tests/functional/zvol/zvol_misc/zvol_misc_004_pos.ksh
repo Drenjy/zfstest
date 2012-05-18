@@ -32,11 +32,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zvol_misc_004_pos
 #
 # DESCRIPTION:
 # Verify the ability to take snapshots of zvols used as dump or swap.
@@ -46,15 +41,6 @@
 # 2. Set the volume as dump or swap
 # 3. Verify creating a snapshot of the zvol succeeds.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-01-07)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

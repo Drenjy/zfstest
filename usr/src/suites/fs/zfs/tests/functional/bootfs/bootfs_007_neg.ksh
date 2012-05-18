@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  bootfs_007_neg
 #
 # DESCRIPTION:
 #
@@ -43,15 +38,6 @@
 # 2. create a filesystem on this pool
 # 3. verify we can not set bootfs on the filesystem we just created.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-07-08)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_set/zfs_set_common.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: mountpoint_002_pos
 #
 # DESCRIPTION:
 # 	If ZFS is currently managing the file system but it is currently unmoutned, 
@@ -44,15 +39,6 @@
 # 2. Change the mountpoint to the valid mountpoint value.
 # 3. Check the file system remains unmounted.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

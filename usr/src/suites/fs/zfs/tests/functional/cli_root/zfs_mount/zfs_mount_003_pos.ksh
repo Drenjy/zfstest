@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_mount/zfs_mount.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_mount_003_pos
 #
 # DESCRIPTION:
 # Invoke "zfs mount <filesystem>" with a filesystem whose mountpoint property
@@ -46,15 +41,6 @@
 #	- zfs set mountpoint=none <filesystem>
 # 3. Verify that mount failed with return code of 1.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

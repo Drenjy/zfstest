@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_unallow_005_pos
 #
 # DESCRIPTION:
 #	Verify option '-c' will remove the created permission set.
@@ -44,15 +39,6 @@
 #	5. Unallow created time permission with option '-c'.
 #	6. Created $SUBFS and verify $STAFF1 have not created time permissions.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-30)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

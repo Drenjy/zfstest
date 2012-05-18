@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_set/zfs_set_common.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_set_001_neg
 #
 # DESCRIPTION:
 # Setting invalid value to mountpoint, checksum, atime, readonly, setuid,
@@ -42,15 +37,6 @@
 # 1. Create pool, then create file system & volume within it.
 # 2. Setting invalid value, it should be failed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_unmount/zfs_unmount.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_unmount_005_pos
 #
 # DESCRIPTION:
 # If invoke "zfs unmount" with a specific filesystem|mountpoint
@@ -53,15 +48,6 @@
 # 	- With force option. (PASS)
 # 5. Verify the above expected results of the filesystem|mountpoint.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-07)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

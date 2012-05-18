@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/rsend/rsend.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: rsend_001_pos
 #
 # DESCRIPTION:
 #	zfs send -R send replication stream up to the named snap.
@@ -42,15 +37,6 @@
 #	3. Back up all the data from root filesystem POOL2
 #	4. Verify all the data can be recovered, too
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

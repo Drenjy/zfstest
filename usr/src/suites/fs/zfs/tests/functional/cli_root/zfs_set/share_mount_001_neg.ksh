@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/zfs_set/zfs_set_common.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: share_mount_001_neg
 #
 # DESCRIPTION:
 # Verify that we cannot share or mount legacy filesystems.
@@ -41,15 +36,6 @@
 # 2. Use zfs share or zfs mount to share or mount the filesystem
 # 3. Verify that the command returns error
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-9)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

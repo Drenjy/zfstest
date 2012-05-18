@@ -25,11 +25,6 @@
 # Use is subject to license terms.
 #
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: userquota_009_pos
 #
 # DESCRIPTION:
 #       Check user|group quota to snapshot that:
@@ -44,15 +39,6 @@
 #	3. set user|group quota to fs and check the snapshot
 #	4. re-set user|group quota to fs and check the snapshot's value
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2009-04-16)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/userquota/userquota_common.kshlib

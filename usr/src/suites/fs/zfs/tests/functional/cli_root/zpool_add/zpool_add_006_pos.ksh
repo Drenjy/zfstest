@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zpool_add/zpool_add.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_add_006_pos
 #
 # DESCRIPTION:
 # 'zpool add [-f]' can add large numbers of file-in-zfs-filesystem-based vdevs 
@@ -45,15 +40,6 @@
 # as vdev
 # 4. Add the new file into the pool should be failed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-10-09)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 log_notinuse "bug 6391576"
 

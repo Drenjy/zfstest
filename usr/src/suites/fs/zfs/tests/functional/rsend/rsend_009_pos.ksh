@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/rsend/rsend.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: rsend_009_pos
 #
 # DESCRIPTION:
 #	zfs receive can handle out of space correctly.
@@ -43,15 +38,6 @@
 #	4. Receive this stream in small pool.
 #	5. Verify zfs receive can handle the out of space error correctly.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-10-10)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

@@ -29,11 +29,6 @@
 . $STF_SUITE/tests/functional/cli_root/zfs_create/zfs_create_common.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_create/properties.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_clone_004_pos
 #
 # DESCRIPTION:
 # 'zfs clone -o property=value filesystem' can successfully create a ZFS
@@ -44,15 +39,6 @@
 # 2. Verify the filesystem created successfully
 # 3. Verify the properties are correctly set
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-12-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

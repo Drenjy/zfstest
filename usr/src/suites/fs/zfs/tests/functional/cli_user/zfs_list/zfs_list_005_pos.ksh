@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/tests/functional/cli_user/zfs_list/zfs_list.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_list_005_pos
 #
 # DESCRIPTION:
 #	Verify 'zfs list' evaluate multiple '-s' options from left to right
@@ -42,15 +37,6 @@
 #	3. Setting reservation for filesystem and volume
 #	3. Verify 'zfs list' evaluated multiple -s options from left to right.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-07-23)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

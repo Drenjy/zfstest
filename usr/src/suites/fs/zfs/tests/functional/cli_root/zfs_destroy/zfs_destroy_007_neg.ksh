@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_destroy_007_neg
 #
 # DESCRIPTION:
 #	'zpool destroy' failed if this filesystem is namespace-parent
@@ -43,15 +38,6 @@
 #	3. Promote this clone
 #	4. Verify the original fs can not be destroyed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-07-18)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

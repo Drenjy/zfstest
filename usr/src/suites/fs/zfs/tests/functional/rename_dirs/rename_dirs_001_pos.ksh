@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###########################################################################
-#
-# __stc_assertion_start
-#
-# ID: rename_dirs_001_pos
 #
 # DESCRIPTION:
 # Create two directory trees in ZFS filesystem, and concurently rename
@@ -44,15 +39,6 @@
 # 3. Continually rename directory from one tree to another tree in two process
 # 4. After the specified time duration, the system should not be panic.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-02-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

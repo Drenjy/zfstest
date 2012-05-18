@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_mount/zfs_mount.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_import_001_pos
 #
 # DESCRIPTION:
 # Once a pool has been exported, it should be recreated after a
@@ -47,15 +42,6 @@
 #	4. Verify it shows up under 'zpool list'.
 #	5. Verify it can be mounted again and contains a file.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

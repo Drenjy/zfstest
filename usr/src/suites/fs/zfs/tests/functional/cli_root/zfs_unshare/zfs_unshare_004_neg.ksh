@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_unshare_004_neg
 #
 # DESCRIPTION:
 # Verify that "zfs unshare" issue error message with badly formed parameter.
@@ -41,15 +36,6 @@
 # 2. Invoke 'zfs unshare'
 # 3. Verify that unshare fails and issue error message.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-18)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

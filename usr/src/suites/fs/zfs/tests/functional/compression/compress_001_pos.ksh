@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: compress_001_pos
 #
 # DESCRIPTION:
 # Create two files of exactly the same size. One with compression
@@ -40,15 +35,6 @@
 # Use "zfs set" to turn on compression and create files before
 # and after the set call. The compressed file should be smaller.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

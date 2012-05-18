@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  zpool_get_001_pos
 #
 # DESCRIPTION:
 #
@@ -42,15 +37,6 @@
 #	2. Check that exit status is set to 2
 #	3. Check usage message contains text "usage"
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-03-06)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 log_assert "Zpool get usage message is displayed when called with no arguments."
 

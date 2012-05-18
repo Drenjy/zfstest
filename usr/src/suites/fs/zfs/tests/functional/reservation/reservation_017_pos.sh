@@ -32,11 +32,6 @@
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/reservation/reservation.shlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: reservation_017_pos
 #
 # DESCRIPTION:
 #
@@ -52,15 +47,6 @@
 # 5) Verify that the 'reservation' property for the sparse volume is set to
 #    'none'
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-17)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "global"
 

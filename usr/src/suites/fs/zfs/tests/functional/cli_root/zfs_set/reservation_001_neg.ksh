@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: reservation_001_neg
 #
 # DESCRIPTION:
 # Valid reservation values should be positive integers only.
@@ -44,15 +39,6 @@
 # 3) Verify that attempt fails and the reservation value remains
 # unchanged
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

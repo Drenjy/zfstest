@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_send_003_pos
 #
 # DESCRIPTION:
 #	'zfs send -i' can deal with abbreviated snapshot name. 
@@ -40,15 +35,6 @@
 #	1. Create pool, fs and two snapshots.
 #	2. Make sure 'zfs send -i' support abbreviated snapshot name.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-07-18)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

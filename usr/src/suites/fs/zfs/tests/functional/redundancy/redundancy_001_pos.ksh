@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/redundancy/redundancy.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: redundancy_001_pos
 #
 # DESCRIPTION:
 #	A raidz pool can withstand at most 1 device failing or missing.
@@ -45,15 +40,6 @@
 #	6. Verify the data is correct to prove raidz can withstand 1 devicd is
 #	   failing.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-08-21)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

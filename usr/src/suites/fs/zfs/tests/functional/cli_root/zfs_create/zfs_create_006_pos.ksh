@@ -29,11 +29,6 @@
 . $STF_SUITE/tests/functional/cli_root/zfs_create/zfs_create_common.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_create/properties.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_create_006_pos
 #
 # DESCRIPTION:
 # 'zfs create -o property=value -V size volume' can successfully create a ZFS
@@ -44,15 +39,6 @@
 # 2. Verify the volume created successfully
 # 3. Verify the property is correctly set
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-07)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_mount/zfs_mount.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_mount_009_neg
 #
 # DESCRIPTION: 
 #	Try each 'zfs mount' with inapplicable scenarios to make sure
@@ -44,15 +39,6 @@
 #	2. For each parameter in the array, execute the sub-command
 #	3. Verify an error is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-07)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

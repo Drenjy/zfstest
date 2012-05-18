@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_rename/zfs_rename.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_rename_006_pos
 #
 # DESCRIPTION: 
 #       'zfs rename' can successfully rename a volume snapshot.
@@ -42,14 +37,6 @@
 #	3. Rename volume to a new one.
 #       5. Verify that the rename operations are successful and zfs list can
 #	   list them.
-#
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-02-05)
-#
-# __stc_assertion_end
 #
 ############################################################################### 
 

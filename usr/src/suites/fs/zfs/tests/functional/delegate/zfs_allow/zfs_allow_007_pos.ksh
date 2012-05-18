@@ -28,11 +28,6 @@
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_allow_007_pos
 #
 # DESCRIPTION:
 #	Verify the permissions set will be masked on its descendent
@@ -49,15 +44,6 @@
 #	7. Verify $perms1 is not appended to $STAFF1 on $ROOT_TESTFS/childfs and
 #	   its descendent since it is masked
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-19)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

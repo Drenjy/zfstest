@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/tests/functional/hotspare/hotspare.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotspare_add_003_neg
 #
 # DESCRIPTION: 
 # 'zpool add' with hot spares will fail
@@ -49,15 +44,6 @@
 #	2. For each scenario, try to add [-f] the device to the pool
 #	3. Verify the add operation failes as expected.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-07)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "global"
 

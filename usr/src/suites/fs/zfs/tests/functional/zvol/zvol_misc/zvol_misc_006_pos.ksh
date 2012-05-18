@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zvol_misc_006_pos
 #
 # DESCRIPTION:
 # ZFS volume as dump device, it should always have 128k volblocksize
@@ -42,15 +37,6 @@
 # 2. Use dumpadm set the volume as dump device
 # 3. Verify the volume's volblocksize=128k
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-12-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

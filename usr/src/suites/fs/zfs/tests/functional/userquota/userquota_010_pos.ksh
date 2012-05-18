@@ -23,11 +23,6 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: userquota_010_pos
 #
 # DESCRIPTION:
 #       Check userquota and groupquota be overwrited at same time
@@ -38,15 +33,6 @@
 #       2. write to exceed the userquota size to check the result
 #       3. write to exceed the groupquota size to check the result
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2009-04-16)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/userquota/userquota_common.kshlib

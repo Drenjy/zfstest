@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_allow_009_neg
 #
 # DESCRIPTION:
 #	zfs allow can deal with invalid arguments.(Invalid options or combination)
@@ -41,15 +36,6 @@
 #	2. Verify non-optional argument was missing will cause error.
 #	3. Verify invalid options cause error.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-20)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

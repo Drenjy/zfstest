@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/redundancy/redundancy.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: redundancy_004_neg
 #
 # DESCRIPTION:
 #	Striped pool have no data redundancy. Any device errors will
@@ -45,15 +40,6 @@
 #	5. Damage one of the virtual disk file.
 #	6. Verify the data is error.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-17)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

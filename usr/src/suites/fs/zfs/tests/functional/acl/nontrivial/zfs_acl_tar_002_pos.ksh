@@ -29,11 +29,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_tar_002_pos
 #
 # DESCRIPTION:
 # Verify that '$TAR' command with -p@ option supports to archive ZFS ACLs 
@@ -48,15 +43,6 @@
 # 6. Verify that the restored ACLs & xttrs of file and directory identify
 #    with the origional ones. 
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-12-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

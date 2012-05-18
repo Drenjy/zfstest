@@ -26,11 +26,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/xattr/xattr_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  xattr_004_pos
 #
 # DESCRIPTION:
 #
@@ -43,15 +38,6 @@
 #	3. Ensure the xattrs can be read and written
 #	4. Do the same in reverse.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 # we need to be able to create zvols to hold our test
 # ufs filesystem.

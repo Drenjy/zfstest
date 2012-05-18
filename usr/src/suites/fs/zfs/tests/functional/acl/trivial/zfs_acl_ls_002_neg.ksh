@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_ls_002_neg
 #
 # DESCRIPTION:
 #	Verifies that ls doesn't display @ in the file permissions using ls -@
@@ -42,15 +37,6 @@
 #	2. Removed all attribute files.
 #	3. Verify 'ls -l' can't display @ in file permission.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

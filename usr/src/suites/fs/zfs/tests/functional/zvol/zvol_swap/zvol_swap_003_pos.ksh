@@ -32,11 +32,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
-##################################################################
-#
-# __stc_assertion_start
-#
-# ID: zvol_swap_003_pos
 #
 # DESCRIPTION:
 # Verify that a zvol device can be used as a swap device
@@ -47,15 +42,6 @@
 # 2. Use /sbin/swapadd to add zvol as swap device throuth /etc/vfstab
 # 3. Create a file under /tmp and verify the file
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

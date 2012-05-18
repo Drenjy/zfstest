@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: snapshot_007_pos
 #
 # DESCRIPTION:
 # Verify that many snapshots can be made on a zfs dataset.
@@ -41,15 +36,6 @@
 # 3) Remove all the files from the original dataset
 # 4) For each snapshot directory verify consistency
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

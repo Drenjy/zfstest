@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_allow_006_pos
 #
 # DESCRIPTION:
 #	Changing permissions in a set will change what is allowed wherever the
@@ -44,15 +39,6 @@
 #	4. Reset snapshot,allow to $basic
 #	5. Verify now $STAFF1 have create,allow,destroy permissions.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-19)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

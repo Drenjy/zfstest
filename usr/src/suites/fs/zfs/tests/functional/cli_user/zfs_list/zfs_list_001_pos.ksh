@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_get/zfs_get_list_d.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_list_001_pos
 #
 # DESCRIPTION:
 # Executing well-formed 'zfs list' commands should return success.
@@ -41,15 +36,6 @@
 # 2. Execute each element in the array.
 # 3. Verify success is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

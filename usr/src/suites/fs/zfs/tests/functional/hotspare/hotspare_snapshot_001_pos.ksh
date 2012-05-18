@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/tests/functional/hotspare/hotspare.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotspare_snapshot_001_pos
 #
 # DESCRIPTION: 
 #	If a hot spare have been activated, create snapshot upon filesystem,
@@ -45,15 +40,6 @@
 #	5. Do 'zpool detach' with the spare in device
 #	6. Verify the 2 snapshots are all kept, and verify the data integrity within them.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2006-06-07)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "global"
 

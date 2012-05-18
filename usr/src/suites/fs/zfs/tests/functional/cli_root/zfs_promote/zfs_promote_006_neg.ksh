@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_promote_006_neg
 #
 # DESCRIPTION: 
 #	'zfs promote' will fail with invalid arguments:
@@ -46,15 +41,6 @@
 #	2. For each invalid argument in the array, 'zfs promote' should fail
 #	3. Verify the return code from zfs promote
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-05-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

@@ -31,11 +31,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_expand_001_pos
 #
 # DESCRIPTION:
 # Once zpool set autoexpand=on poolname, zpool can autoexpand by
@@ -49,15 +44,6 @@
 # 4) Expand the vol size by 'zfs set volsize'
 # 5) Check that the pool size was expanded
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-06-12)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

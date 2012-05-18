@@ -29,11 +29,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zpool_upgrade/zpool_upgrade.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_upgrade_002_pos
 #
 # DESCRIPTION:
 # import pools of all versions - zpool upgrade on each pools works
@@ -42,15 +37,6 @@
 # 1. Execute the command with several invalid options
 # 2. Verify a 0 exit status for each
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-07)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

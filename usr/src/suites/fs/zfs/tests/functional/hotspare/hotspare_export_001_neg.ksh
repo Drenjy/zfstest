@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/tests/functional/hotspare/hotspare.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotspare_export_001_neg
 #
 # DESCRIPTION: 
 #	If 2 storage pools have shared hotspares, if the shared hotspare was used by
@@ -43,15 +38,6 @@
 #	4. Verify the export will failed with warning message.
 #	5. Verify export -f will success.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2008-12-12)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "global"
 

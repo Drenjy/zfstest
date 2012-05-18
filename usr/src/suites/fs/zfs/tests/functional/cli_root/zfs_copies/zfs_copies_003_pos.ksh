@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/zfs_copies/zfs_copies.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_copies_003_pos
 #
 # DESCRIPTION:
 # 	Verify that the volume space used by multiple copies is charged correctly
@@ -43,15 +38,6 @@
 #	4. Copy specified size data into each filesystem; 
 #	5. Verify that the volume space is charged as expected.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-05-31)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

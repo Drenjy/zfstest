@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_import_006_pos
 #
 # DESCRIPTION:
 #	For mirror, N-1 destroyed pools devices was removed or used by other
@@ -43,15 +38,6 @@
 #	3. Create another pool with N-1 disks which was used by this mirror.
 #	4. Verify import mirror can succeed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-12)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_create_006_pos
 #
 # DESCRIPTION:
 #	Verify zpool create succeed with multiple keywords combination.
@@ -41,15 +36,6 @@
 #	2. Create several files >= 64M.
 #	3. Verify 'zpool create' succeed with valid keywords combination.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

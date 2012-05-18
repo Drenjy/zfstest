@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cache/cache.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: cache_007_neg
 #
 # DESCRIPTION:
 #	A mirror/raidz/raidz2 cache is not supported. 
@@ -40,15 +35,6 @@
 #	1. Try to create pool with unsupported type
 #	2. Verify failed to create pool.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-04-24)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 verify_disk_count "$LDEV2"

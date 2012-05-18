@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_import_002_neg
 #
 # DESCRIPTION:
 # Executing 'zpool import' as regular user should denied.
@@ -40,15 +35,6 @@
 # 2. Execute 'zpool import' with each element of the array by regular user.
 # 3. Verify an error code is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-02)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

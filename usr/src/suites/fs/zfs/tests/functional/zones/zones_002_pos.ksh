@@ -28,11 +28,6 @@
 . ${STF_SUITE}/include/libtest.kshlib
 . ${STF_SUITE}/tests/functional/zones/zones_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  zones_002_pos
 #
 # DESCRIPTION:
 #
@@ -43,15 +38,6 @@
 #	1. The setup script should have created the zone.
 #       2. Verify that a new ZFS filesystem has been created.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-10-11)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

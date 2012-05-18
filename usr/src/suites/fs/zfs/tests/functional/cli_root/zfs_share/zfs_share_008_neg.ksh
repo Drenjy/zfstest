@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_share_008_neg
 #
 # DESCRIPTION:
 # Verify that sharing a dataset other than filesystem fails.
@@ -41,15 +36,6 @@
 # 2. For each dataset in the list, set the sharenfs property.
 # 3. Verify that the invalid datasets are not shared.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

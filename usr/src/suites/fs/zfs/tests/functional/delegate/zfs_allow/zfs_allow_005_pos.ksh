@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_allow_005_pos
 #
 # DESCRIPTION:
 #	Verify option '-c' will be granted locally to the creator on any
@@ -44,15 +39,6 @@
 #	4. Verify only creator can create descendent dataset on 
 #	   $ROOT_TESTFS/$user.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-19)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

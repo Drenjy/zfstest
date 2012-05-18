@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: snapshot_010_pos
 #
 # DESCRIPTION:
 #	Verify 'destroy -r' can correctly destroy a snapshot tree at any point. 
@@ -41,15 +36,6 @@
 #	snapshots beneath the point.
 # 3. Verify the destroy results.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-20)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

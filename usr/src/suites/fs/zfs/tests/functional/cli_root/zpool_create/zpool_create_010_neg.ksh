@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_create_010_neg
 #
 # DESCRIPTION:
 # 'zpool create' should return an error with VDEVsof size  <64mb
@@ -40,15 +35,6 @@
 # 2. For each parameter in the array, execute 'zpool create'
 # 3. Verify an error is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-09-30)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 log_assert "'zpool create' should return an error with VDEVs <64mb"
 

@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_cli_006_neg
 #
 # DESCRIPTION:
 # Verify that 'zfs destroy' fails as non-root.
@@ -40,15 +35,6 @@
 # 2. Execute each element of the array.
 # 3. Verify an error code is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

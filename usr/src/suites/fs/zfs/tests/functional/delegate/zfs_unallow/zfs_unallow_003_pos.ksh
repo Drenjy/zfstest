@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_unallow_003_pos
 #
 # DESCRIPTION:
 #	Verify options '-r' or '-l' + '-d' will unallow permission to this 
@@ -44,15 +39,6 @@
 #	3. Verify '-l' + '-d' will unallow local + descendent permission.
 #	4. Verify '-r' will unallow local + descendent permission.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-29)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

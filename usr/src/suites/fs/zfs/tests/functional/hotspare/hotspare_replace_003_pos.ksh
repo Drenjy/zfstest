@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/tests/functional/hotspare/hotspare.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotspare_replace_003_pos
 #
 # DESCRIPTION: 
 #	If an active spare that itself fails, it should detach the failed one
@@ -43,15 +38,6 @@
 #	3. Error out the active hotspace
 #	4. Verify the failed one was detatched while the other spare attatched.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2009-04-16)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "global"
 

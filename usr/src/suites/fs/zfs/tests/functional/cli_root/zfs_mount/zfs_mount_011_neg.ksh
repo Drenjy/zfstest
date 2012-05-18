@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_mount_011_neg
 #
 # DESCRIPTION:
 # Verify that zfs mount should fail with bad parameters
@@ -41,15 +36,6 @@
 # 2. Use zfs mount to mount the filesystem
 # 3. Verify that zfs mount returns error
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-9)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

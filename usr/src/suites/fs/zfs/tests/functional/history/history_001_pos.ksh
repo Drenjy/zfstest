@@ -30,11 +30,6 @@
 
 . $STF_SUITE/tests/functional/history/history_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: history_001_pos
 #
 # DESCRIPTION:
 #	Create a scenario to verify the following zpool subcommands are logged.
@@ -46,15 +41,6 @@
 #	2. Run and verify pool commands, with special casing for destroy/export.
 #	3. Import a pool and upgrade it, verifying 'upgrade' was logged.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-07-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

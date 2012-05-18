@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_clone_001_neg
 #
 # DESCRIPTION:
 #
@@ -42,15 +37,6 @@
 # 1. Verify that we're unable to clone snapshots as a user
 #
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 log_assert "zfs clone returns an error when run as a user"
 log_mustnot $ZFS clone $TESTPOOL/$TESTFS@snap $TESTPOOL/$TESTFS.myclone

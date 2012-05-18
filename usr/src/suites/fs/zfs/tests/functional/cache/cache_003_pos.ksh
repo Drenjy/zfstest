@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cache/cache.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: cache_003_pos
 #
 # DESCRIPTION:
 #	Adding an extra cache device works
@@ -42,15 +37,6 @@
 #	3. Display pool status
 #	4. Destroy and loop to create pool with different configuration.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-04-24)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 verify_disk_count "$LDEV2"

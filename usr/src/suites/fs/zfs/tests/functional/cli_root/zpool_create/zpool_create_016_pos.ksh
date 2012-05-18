@@ -31,11 +31,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_create_016_pos
 #
 #
 # DESCRIPTION:
@@ -47,15 +42,6 @@
 # 2. create a zpool
 # 3. Verify the creation is successed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-04-17)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

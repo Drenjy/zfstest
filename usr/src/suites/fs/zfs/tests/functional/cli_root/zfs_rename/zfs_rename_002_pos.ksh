@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_rename/zfs_rename.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_rename_002_pos
 #
 # DESCRIPTION: 
 #       'zfs rename' should successfully be capable of renaming
@@ -43,14 +38,6 @@
 #       3. Rename each dataset back to its original name.
 #       4. Repeat steps 2 and 3 multiple times.
 #       5. Verify that the correct name is displayed by zfs list.
-#
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-06-29)
-#
-# __stc_assertion_end
 #
 ############################################################################### 
 

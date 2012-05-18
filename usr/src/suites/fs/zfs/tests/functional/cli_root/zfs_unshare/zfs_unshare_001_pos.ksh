@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_unshare_001_pos
 #
 # DESCRIPTION:
 # Verify that 'zfs unshare <filesystem|mountpoint>' unshares a given shared 
@@ -44,15 +39,6 @@
 # 4. Verify that unsharing an unshared file system fails
 # 5. Verify that "zfs unshare -a" succeeds to unshare all zfs file systems.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-18)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

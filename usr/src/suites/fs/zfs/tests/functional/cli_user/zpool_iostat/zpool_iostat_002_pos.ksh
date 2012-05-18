@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_iostat_002_pos
 #
 # DESCRIPTION:
 # Verify that 'zpool iostat [interval [count]' can be executed as non-root.
@@ -40,15 +35,6 @@
 # 2. sleep 30 seconds
 # 3. Verify that the output have 6 record.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-18)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

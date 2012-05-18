@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_upgrade/zfs_upgrade.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_create_012_pos
 #
 # DESCRIPTION:
 # 'zfs create -p -o version=1' should only cause the leaf filesystem to be version=1
@@ -40,15 +35,6 @@
 # 1. Create $newdataset with -p option, verify it is created
 # 2. Verify only the leaf filesystem to be version=1, others use the current version
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-08)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 ZFS_VERSION=$($ZFS upgrade | $HEAD -1 | $AWK '{print $NF}' \
 	| $SED -e 's/\.//g')

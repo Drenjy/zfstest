@@ -28,11 +28,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  rootpool_005_pos
 #
 # DESCRIPTION:
 #
@@ -45,15 +40,6 @@
 # 3) get the mountpoint value of rootpool/ROOT
 # 4) check to see if the upper value equal to legacy or not.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-02-26)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 log_assert "rootpool/ROOT's mountpoint must be legacy"

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/rsend/rsend.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: rsend_002_pos
 #
 # DESCRIPTION:
 #	zfs send -I sends all incrementals from fs@init to fs@final.
@@ -42,15 +37,6 @@
 #	3. Destroy all the snapshot except @snapA
 #	4. Make sure all the snapshots and content are recovered
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

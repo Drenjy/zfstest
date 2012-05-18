@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-###########################################################################
-#
-# __stc_assertion_start
-#
-# ID: read_mmap_001_pos
 #
 # DESCRIPTION:
 # read()s from mmap()'ed file contain correct data.
@@ -41,15 +36,6 @@
 # 3. unmount this file system
 # 4. Verify the integrity of this pool & dateset
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

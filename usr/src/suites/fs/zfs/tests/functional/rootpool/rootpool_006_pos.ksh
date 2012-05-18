@@ -28,11 +28,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  rootpool_006_pos
 #
 # DESCRIPTION:
 #
@@ -43,15 +38,6 @@
 # 2) get the rootfs
 # 3) check the rootfs's mount ponit, it must be mounted and must be /
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-01-21)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 log_assert "zfs rootfs's mountpoint must be mounted and must be /"

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/cli_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_send_002_pos
 #
 # DESCRIPTION:
 #	Verify 'zfs send' can generate valid streams with a property setup. 
@@ -43,15 +38,6 @@
 #	4. Receive the send stream
 #	5. Verify the receive result
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-07-11)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

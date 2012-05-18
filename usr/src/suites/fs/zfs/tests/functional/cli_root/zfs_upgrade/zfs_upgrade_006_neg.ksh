@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_upgrade/zfs_upgrade.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_upgrade_006_neg
 #
 # DESCRIPTION:
 # Verify that invalid upgrade parameters and options are caught.
@@ -42,15 +37,6 @@
 # 2. For each option in the list, try 'zfs upgrade'.
 # 3. Verify that the operation fails as expected.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-26)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

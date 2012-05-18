@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_promote_008_pos
 #
 # DESCRIPTION: 
 #	'zfs promote' can successfully promote a volume clone.
@@ -40,15 +35,6 @@
 #	2. Promote the volume clone
 #	3. Verify the dependency changed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-02-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

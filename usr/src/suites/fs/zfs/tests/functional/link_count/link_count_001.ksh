@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: link_count_001
 #
 # DESCRIPTION:
 # Verify file link count is zero on zfs
@@ -41,15 +36,6 @@
 # 3. Call the binary
 # 4. Make sure the files can be removed successfully
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-07-13)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  bootfs_009_neg
 #
 # DESCRIPTION:
 #
@@ -42,15 +37,6 @@
 # 2. Try setting encrypted datasets as boot filesystems
 # 3. Verify failures.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-07-29)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

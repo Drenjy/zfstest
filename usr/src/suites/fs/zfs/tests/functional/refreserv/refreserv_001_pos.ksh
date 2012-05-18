@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: refreserv_001_pos
 #
 # DESCRIPTION:
 #	Reservations are enforced using the maximum of 'reserv' and 'refreserv'
@@ -42,15 +37,6 @@
 #	3. Verify the sub-fs reservation are enforced by the maximum of 'reserv'
 #	   and 'refreserv'.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-11-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

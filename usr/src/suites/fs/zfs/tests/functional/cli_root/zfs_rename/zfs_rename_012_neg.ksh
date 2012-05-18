@@ -31,11 +31,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_rename_012_neg
 #
 # DESCRIPTION:
 #	'zfs rename' should be failed with bad option, null target dataset,  
@@ -46,15 +41,6 @@
 #	2. Try 'zfs rename' with various illegal scenarios;
 #	3. Verify 'zfs rename' command should be failed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-15)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

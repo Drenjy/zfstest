@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_set/zfs_set_common.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: checksum_001_pos
 #
 # DESCRIPTION:
 # Setting a valid checksum on a pool, file system, volume, it should be 
@@ -43,15 +38,6 @@
 # 2. Setting different valid checksum to each dataset.
 # 3. Check the return value and make sure it is 0.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

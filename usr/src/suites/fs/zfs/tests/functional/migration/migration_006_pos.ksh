@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/migration/migration.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: migration_006_pos
 #
 # DESCRIPTION:
 # Migrating test file from UFS fs to ZFS fs using cpio
@@ -44,15 +39,6 @@
 # 4. Calculate chksum of extracted file
 # 5. Compare old and new chksums.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: pool_names_001_pos
 #
 # DESCRIPTION:
 #
@@ -44,15 +39,6 @@
 # 2) Given a list of valid pool names, try to create and destroy
 # pools with the given names.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-11-21)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-# __stc_assertion_start
-#
-# ID: iscsi_002_neg
-#
 # DESCRIPTION:
 #	Verify file systems and snapshots can not be shared via iSCSI
 #
@@ -39,15 +34,6 @@
 #	1) Turn on shareiscsi property directly on the filesystem
 #	2) Check if the target is created or not
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-21)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

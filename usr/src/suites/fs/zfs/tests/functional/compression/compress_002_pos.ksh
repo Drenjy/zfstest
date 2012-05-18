@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: compress_002_pos
 #
 # DESCRIPTION:
 # Create two files of exactly the same size. One with compression
@@ -42,15 +37,6 @@
 # Create a dataset, turn on compression and create files before
 # and after the property change. The compressed file should be smaller.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

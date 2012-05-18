@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: rebooting_001_pos
 #
 # DESCRIPTION:
 #	Do some I/O work in zfs filesystem in a remote machine, reboot it and  
@@ -43,15 +38,6 @@
 #	2. Reboot the system
 #	3. Verify the system boots up correctly
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-05-26)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

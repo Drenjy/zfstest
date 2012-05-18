@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_rename/zfs_rename.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_rename_011_pos
 #
 # DESCRIPTION
 #       'zfs rename -p' should work as expected
@@ -41,15 +36,6 @@
 #       2. Make sure without -p option, 'zfs rename' will fail
 #       3. With -p option, rename works
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-05)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "both"
 

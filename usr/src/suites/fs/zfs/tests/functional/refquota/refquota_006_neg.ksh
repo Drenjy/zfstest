@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: refquota_006_neg
 #
 # DESCRIPTION:
 #	'zfs set refquota/refreserv' can handle incorrect arguments correctly.
@@ -41,15 +36,6 @@
 #	2. Set the bad argument to refquota.
 #	3. Verify zfs can handle it correctly.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-11-09)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

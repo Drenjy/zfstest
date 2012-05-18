@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/hotplug/hotplug.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotplug_002_pos
 #
 # DESCRIPTION:
 #	When removing a device from a redundant pool, then reinserting  it 
@@ -46,15 +41,6 @@
 #	5. Detect removed devices status is 'ONLINE'.
 #	6. Detect no FMA faulty message.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

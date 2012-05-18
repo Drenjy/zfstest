@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_set/zfs_set_common.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: canmount_003_pos
 #
 # DESCRIPTION:
 # While canmount=noauto and  the dataset is mounted, 
@@ -43,15 +38,6 @@
 # 2. Set canmount=noauto for each dataset and check the return value
 #    and check if it still can not be unmounted when the dataset is mounted
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-09-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: snapshot_011_pos
 #
 # DESCRIPTION:
 #	use 'snapshot -r' to create a snapshot tree, add some files to one child 
@@ -45,15 +40,6 @@
 #	5. verify that the child filesystem get back to the status while being 
 #	   snapshot'd
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-20)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

@@ -25,11 +25,6 @@
 # Use is subject to license terms.
 #
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: userquota_008_pos
 #
 # DESCRIPTION:
 #       
@@ -39,15 +34,6 @@
 #       1. set userquota and groupquota to a fs
 #       2. check zfs get all fs
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2009-04-16)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/userquota/userquota_common.kshlib

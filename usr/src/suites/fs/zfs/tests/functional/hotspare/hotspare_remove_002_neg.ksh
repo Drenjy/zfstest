@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/tests/functional/hotspare/hotspare.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotspare_remove_002_neg
 #
 # DESCRIPTION: 
 # 	'zpool remove <pool> <vdev> ...' should return fail if
@@ -44,15 +39,6 @@
 #	3. For each scenario, try to remove the hot spares
 #	4. Verify the the remove operation get failed 
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2005-09-27)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "global"
 

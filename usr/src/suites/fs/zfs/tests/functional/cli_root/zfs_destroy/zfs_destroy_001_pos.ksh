@@ -30,11 +30,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_destroy/zfs_destroy_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_destroy_001_pos
 #
 # DESCRIPTION:
 #	'zfs destroy -r|-rf|-R|-Rf <fs|ctr|vol|snap>' should recursively destroy
@@ -47,15 +42,6 @@
 #	3. Run 'zfs destroy [-rRf] <dataset>'
 #	4. According to dataset and option, check if get the expected results.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-22)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

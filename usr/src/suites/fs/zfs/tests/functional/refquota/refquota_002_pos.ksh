@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: refquota_002_pos
 #
 # DESCRIPTION:
 #	Quotas are enforced using the minimum of the two properties: 
@@ -43,15 +38,6 @@
 #	3. Switch the value of quota and refquota.
 #	4. Verify file should be limited by refquota.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-11-02)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

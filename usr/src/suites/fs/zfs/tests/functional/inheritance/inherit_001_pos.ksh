@@ -29,11 +29,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/inheritance/inherit.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: inherit_001_pos
 #
 # DESCRIPTION:
 # Test that properties are correctly inherited using 'zfs set',
@@ -45,15 +40,6 @@
 # and verify that the properties have the correct values
 # 3) Repeat steps 1-2 for each configX and stateX files found.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 verify_runtime $RT_MEDIUM

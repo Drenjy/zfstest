@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_reservation_002_pos
 #
 # DESCRIPTION:
 # A reservation of 'none' (which is an alias for 0) should be allowed. This
@@ -42,15 +37,6 @@
 # 3. Verify the associated reservation is indeed 0.
 # 4. Repeat with reservation set to 0.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

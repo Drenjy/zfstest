@@ -28,12 +28,7 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/atime/atime_common.kshlib
 
-################################################################################
 #
-# __stc_assertion_start 
-#
-# ID: atime_002_neg
-# 
 # DESCRIPTION:
 # When atime=off, verify the access time for files is not updated when read. 
 # It is available to pool, fs snapshot and clone.
@@ -45,15 +40,6 @@
 # 4. Setting atime=off on dataset and read '$TESTFILE'.
 # 5. Verify the access time is not updated.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-11)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

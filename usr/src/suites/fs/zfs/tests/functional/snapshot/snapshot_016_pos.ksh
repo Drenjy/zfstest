@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: snapshot_016_pos
 #
 # DESCRIPTION:
 #	Verify renamed snapshots via mv can be destroyed
@@ -41,15 +36,6 @@
 #	2. Rename the snapshot via mv command
 #	2. Verify destroying the renamed snapshot via 'zfs destroy' succeeds
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-01-26)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

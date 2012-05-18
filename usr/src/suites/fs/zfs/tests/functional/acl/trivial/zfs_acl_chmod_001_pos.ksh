@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_chmod_001_pos
 #
 # DESCRIPTION:
 #	Verify chmod permission settings on files and directories, as both root
@@ -43,15 +38,6 @@
 #	3. Execute 'chmod' with specified options.
 #	4. Check 'ls -l' output and compare with expect results.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-09-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

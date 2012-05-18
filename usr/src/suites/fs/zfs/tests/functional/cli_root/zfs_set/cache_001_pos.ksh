@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_set/zfs_set_common.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: cache_001_pos
 #
 # DESCRIPTION:
 # Setting a valid primarycache and secondarycache on file system or volume.
@@ -42,15 +37,6 @@
 # 1. Create pool, then create filesystem & volume within it.
 # 2. Setting valid cache value, it should be successful.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-04-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

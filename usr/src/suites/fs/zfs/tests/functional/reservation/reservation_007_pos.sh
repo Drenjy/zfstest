@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/reservation/reservation.shlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: reservation_007_pos
 #
 # DESCRIPTION:
 #
@@ -48,15 +43,6 @@
 # 5) Destroy both the filesystems
 # 6) Verify space accounted for correctly
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

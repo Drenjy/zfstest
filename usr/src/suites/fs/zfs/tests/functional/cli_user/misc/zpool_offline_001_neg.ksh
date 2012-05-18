@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_offline_001_neg
 #
 # DESCRIPTION:
 #
@@ -42,15 +37,6 @@
 # 2. Verify that the command fails
 #
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function check_for_offline
 {

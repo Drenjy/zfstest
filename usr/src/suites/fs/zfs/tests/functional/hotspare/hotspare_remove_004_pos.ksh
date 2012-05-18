@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/tests/functional/hotspare/hotspare.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotspare_remove_004_pos
 #
 # DESCRIPTION: 
 # 	'zpool remove <pool> <vdev> ...' can successfully remove the specified 
@@ -46,15 +41,6 @@
 #	7. Verify the devices are removed from the spare list 
 #		of the given pool successfully
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2008-02-25)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "global"
 

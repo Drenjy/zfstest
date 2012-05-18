@@ -25,11 +25,6 @@
 # Use is subject to license terms.
 #
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: userquota_005_neg
 #
 # DESCRIPTION:
 #       Check the invalid parameter of zfs set user|group quota
@@ -39,15 +34,6 @@
 #       1. check the invalid zfs set user|group quota to fs 
 #       1. check the valid zfs set user|group quota to snapshots
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2009-04-16)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/userquota/userquota_common.kshlib

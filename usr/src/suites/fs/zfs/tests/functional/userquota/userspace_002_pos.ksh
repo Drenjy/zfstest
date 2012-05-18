@@ -25,11 +25,6 @@
 # Use is subject to license terms.
 #
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: userspace_002_pos
 #
 # DESCRIPTION:
 #       Check the user used size and quota in zfs userspace
@@ -40,15 +35,6 @@
 #       2. write some data to the fs with specified user and size
 #	3. use zfs userspace to check the used size and quota size
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2009-04-16)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/userquota/userquota_common.kshlib

@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: snapshot_014_pos
 #
 # DESCRIPTION:
 #	verify that creating/destroying snapshots do things clean
@@ -42,15 +37,6 @@
 #	4. then create file to use all spaces in the dataset
 #	5. verify removing the first file should succeed
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-10-13)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

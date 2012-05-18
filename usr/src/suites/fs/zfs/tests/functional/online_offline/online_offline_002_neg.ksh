@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: online_offline_002_neg
 #
 # DESCRIPTION:
 # 	Turning both disks offline should fail.
@@ -42,15 +37,6 @@
 #	3. Only one disk can be offline at any one time.
 #	4. Verify the integrity of the file system and the resilvering.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-10-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

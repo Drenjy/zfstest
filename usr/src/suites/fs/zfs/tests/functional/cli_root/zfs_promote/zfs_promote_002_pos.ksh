@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_promote_002_pos
 #
 # DESCRIPTION: 
 #	'zfs promote' can deal with multiple snapshots in the origin filesystem.
@@ -40,15 +35,6 @@
 #	2. Promote the clone filesystem
 #	3. Verify the promoted filesystem included all snapshots
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-05-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

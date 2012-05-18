@@ -27,12 +27,7 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
 #
-# __stc_assertion_start 
-#
-# ID: exec_001_pos
-# 
 # DESCRIPTION:
 # When set property exec=on on a filesystem, processes can be executed from
 # this filesystem.
@@ -44,15 +39,6 @@
 # 4. Make sure '/usr/bin/ls' can work in this ZFS file system.
 # 5. Make sure mmap which is using the PROT_EXEC calls succeed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-11)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

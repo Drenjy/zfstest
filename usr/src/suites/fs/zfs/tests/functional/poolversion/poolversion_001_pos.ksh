@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: poolversion_001_pos
 #
 # DESCRIPTION:
 #
@@ -42,15 +37,6 @@
 # 2. For all known versions, set the version of the pool using zpool set
 # 3. Verify that pools version
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 log_assert "zpool set version can upgrade a pool"

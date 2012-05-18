@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: mountpoint_003_pos
 #
 # DESCRIPTION:
 #	Verify FSType-specific option works well with legacy mount.
@@ -43,15 +38,6 @@
 #	4. Verify the filesystem was mounted with specific option.
 #	5. Loop check all the options.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-01-26)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

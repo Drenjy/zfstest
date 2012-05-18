@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: interop_001_pos
 #
 # DESCRIPTION:
 # Create a SVM device and add this to an existing ZFS pool
@@ -42,15 +37,6 @@
 # 3. Add SVM metadevice to the ZFS pool
 # 4. Create files and fill the pool.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 
 function cleanup

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: grow_pool_001_pos
 #
 # DESCRIPTION:
 # A ZFS file system is limited by the amount of disk space
@@ -43,15 +38,6 @@
 # 2) Grow the pool by adding a disk
 # 3) Verify that more data can now be written to the file system
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

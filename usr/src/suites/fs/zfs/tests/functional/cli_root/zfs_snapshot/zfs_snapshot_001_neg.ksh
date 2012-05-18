@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_snapshot_001_neg
 #
 # DESCRIPTION: 
 #	Try each 'zfs snapshot' with inapplicable scenarios to make sure
@@ -52,15 +47,6 @@
 #	2. For each parameter in the array, execute the sub-command
 #	3. Verify an error is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-26)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

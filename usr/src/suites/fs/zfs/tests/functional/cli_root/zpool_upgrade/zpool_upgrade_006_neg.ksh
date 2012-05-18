@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_upgrade_006_neg
 #
 # DESCRIPTION:
 # Attempting to upgrade a non-existent pool will return an error
@@ -40,15 +35,6 @@
 # 1. Verify a pool doesn't exist, then try to upgrade it
 # 2. Verify a 0 exit status
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-07)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 log_assert "Attempting to upgrade a non-existent pool will return an error"
 NO_POOL=notapool

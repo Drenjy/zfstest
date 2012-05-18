@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/cli_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_receive_009_neg
 #
 # DESCRIPTION:
 #	Verify 'zfs receive' fails with bad options, missing argument or too many 
@@ -42,15 +37,6 @@
 #	2. Execute 'zfs receive' with illegal arguments
 #	3. Verify the command should be failed
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-20)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

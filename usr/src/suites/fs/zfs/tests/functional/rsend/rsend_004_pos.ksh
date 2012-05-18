@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/rsend/rsend.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: rsend_004_pos
 #
 # DESCRIPTION:
 #	zfs send -R -i send incremental from fs@init to fs@final.
@@ -43,15 +38,6 @@
 #	4. Verify zfs send -R -i will backup all the datasets which has 
 #	   snapshot suffix @final
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

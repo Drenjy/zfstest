@@ -25,11 +25,6 @@
 # Use is subject to license terms.
 #
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: userquota_004_pos
 #
 # DESCRIPTION:
 #       Check the basic function user|group used
@@ -38,15 +33,6 @@
 # STRATEGY:
 #       1. Write some data to fs by normal user and check the user|group used
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2009-04-16)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/userquota/userquota_common.kshlib

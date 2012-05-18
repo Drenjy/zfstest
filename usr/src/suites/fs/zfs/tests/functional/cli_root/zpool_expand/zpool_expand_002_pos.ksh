@@ -31,11 +31,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_expand_002_pos
 #
 # DESCRIPTION:
 # After zpool online -e poolname zvol vdevs, zpool can autoexpand by
@@ -50,15 +45,6 @@
 # 5  Use zpool online -e to online the zvol vdevs
 # 6) Check that the pool size was expaned
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-06-12)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

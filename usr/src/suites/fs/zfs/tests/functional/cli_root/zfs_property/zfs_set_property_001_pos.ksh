@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_set_property_001_pos
 #
 # DESCRIPTION:
 # For each property verify that it accepts on/off/inherit.
@@ -41,15 +36,6 @@
 # 3. For each property set to every possible value.
 # 4. Verify success is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

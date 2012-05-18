@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_ls_001_pos
 #
 # DESCRIPTION:
 #	Verifies that ls displays @ in the file permissions using ls -@ 
@@ -41,15 +36,6 @@
 #	1. Create files with attribute files in directory A.
 #	2. Verify 'ls -l' can display @ in file permissions.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

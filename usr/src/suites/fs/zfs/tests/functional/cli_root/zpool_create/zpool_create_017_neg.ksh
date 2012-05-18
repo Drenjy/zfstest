@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_create_017_neg
 #
 #
 # DESCRIPTION:
@@ -41,15 +36,6 @@
 # 1. Prepare the mountpoint put some stuff into it.
 # 2. Verify 'zpool create' over that mountpoint fails.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-02)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

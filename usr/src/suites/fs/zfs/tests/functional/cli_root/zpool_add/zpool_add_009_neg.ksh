@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zpool_add/zpool_add.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_add_009_neg
 #
 # DESCRIPTION: 
 #       'zpool add' should return fail if vdevs are the same or vdev is 
@@ -42,15 +37,6 @@
 #	2. Add the two same devices to pool A
 #	3. Add the device in pool A to pool A again
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-09-29)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "global"
 

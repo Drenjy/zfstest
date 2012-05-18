@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_cp_003_neg
 #
 # DESCRIPTION:
 #	Verifies that cp will not be able to include file attribute when
@@ -43,15 +38,6 @@
 #	3. Implement 'cp -@p' to files.
 #	4. Verify attribute files are not existing for non-root user.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

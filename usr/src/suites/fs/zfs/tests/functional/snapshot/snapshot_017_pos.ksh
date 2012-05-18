@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: snapshot_017_pos 
 #
 # DESCRIPTION:
 #
@@ -48,15 +43,6 @@
 # 4. Walk down the snapshot directory structure verifying it
 #    checking with both absolute and relative paths
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-05-31)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

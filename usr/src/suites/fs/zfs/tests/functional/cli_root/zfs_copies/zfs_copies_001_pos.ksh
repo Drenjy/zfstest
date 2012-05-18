@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_copies/zfs_copies.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_copies_001_pos
 #
 # DESCRIPTION:
 # 	Verify "copies" property can be correctly set as 1,2 and 3 and different
@@ -42,15 +37,6 @@
 #	1. Create different filesystems with copies set as 1,2,3;
 #	2. Verify that the "copies" property has been set correctly
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-05-31)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

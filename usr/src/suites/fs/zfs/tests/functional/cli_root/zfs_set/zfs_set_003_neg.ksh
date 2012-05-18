@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/zfs_set/zfs_set_common.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_set_003_neg
 #
 # DESCRIPTION:
 # 'zfs set mountpoint/sharenfs' should fail when the mountpoint is invlid 
@@ -41,15 +36,6 @@
 # 2. Run zfs set mountpoint/sharenfs with invalid value
 # 3. Verify that zfs set returns expected errors
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-9)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

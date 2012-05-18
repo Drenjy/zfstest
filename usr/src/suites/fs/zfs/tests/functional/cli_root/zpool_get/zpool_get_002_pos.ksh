@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zpool_get/zpool_get.cfg
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  zpool_get_002_pos
 #
 # DESCRIPTION:
 #
@@ -48,15 +43,6 @@
 # Test for those properties are expected to check whether their
 # default values are sane, or whether they can be changed with zpool set.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-03-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 log_assert "Zpool get all works as expected"
 

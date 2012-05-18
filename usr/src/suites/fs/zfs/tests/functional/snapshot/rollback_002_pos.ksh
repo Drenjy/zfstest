@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: rollback_002_pos
 #
 # DESCRIPTION:
 # Verify that rollbacks are with respect to the latest snapshot.
@@ -45,15 +40,6 @@
 # 7. Perform a rollback
 # 8. Verify the latest snapshot and file system agree
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

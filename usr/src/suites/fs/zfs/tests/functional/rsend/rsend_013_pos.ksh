@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/rsend/rsend.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: rsend_013_pos
 #
 # DESCRIPTION:
 #	zfs receive -dF with incremental stream will destroy all the 
@@ -45,15 +40,6 @@
 #	5. Verify receive -dF will destroy all the dataset that not exist
 #	   on the sender side.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-12-15)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

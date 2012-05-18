@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_create_020_pos
 #
 # DESCRIPTION:
 #
@@ -44,17 +39,6 @@
 # 3. Verify that cachefile=none for the pool
 # 4. Verify that root=<mountpoint> for the pool
 # 5. Verify that no reference to the pool is found in /etc/zfs/zpool.cache
-
-#
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup
 {

@@ -30,11 +30,6 @@
 . $STF_SUITE/tests/functional/cli_root/zpool_upgrade/zpool_upgrade.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_upgrade/zfs_upgrade.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_upgrade_007_pos
 #
 # DESCRIPTION:
 # import pools of all versions - verify the following operation not break.
@@ -47,15 +42,6 @@
 # 2. Setup a test enviorment over the old pools.
 # 3. Verify the commands related to 'zfs upgrade' succeed as expected.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-28)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

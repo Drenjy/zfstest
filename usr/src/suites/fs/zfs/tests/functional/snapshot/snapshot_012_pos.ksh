@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: snapshot_012_pos
 #
 # DESCRIPTION:
 #	Verify 'snapshot -r' can create snapshot for promoted clone, and vice
@@ -47,15 +42,6 @@
 #	7. promote the clone
 #	8. verify that the clone is promoted correctly.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-20)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

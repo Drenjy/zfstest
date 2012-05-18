@@ -28,11 +28,6 @@
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_unallow_008_neg
 #
 # DESCRIPTION:
 #	zfs unallow can handle invalid arguments.
@@ -41,15 +36,6 @@
 #	1. Set up basic test environment.
 #	2. Verify zfs unallow handle invalid arguments correctly.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-30)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

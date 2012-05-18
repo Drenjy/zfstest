@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: refreserv_005_pos
 #
 # DESCRIPTION:
 #	Volume refreservation is limited by volsize
@@ -42,15 +37,6 @@
 #	3. Verify volume refreservation is only limited by volsize
 #	4. Verify volume refreservation can be changed when volsize changed
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-11-07)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

@@ -26,11 +26,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/xattr/xattr_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  xattr_001_pos
 #
 # DESCRIPTION:
 #
@@ -44,15 +39,6 @@
 #	4. Delete the xattr
 #	5. List the xattr namespace successfully, checking for deletion
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup {
 

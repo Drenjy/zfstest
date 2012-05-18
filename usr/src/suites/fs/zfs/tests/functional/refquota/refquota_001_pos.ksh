@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: refquota_001_pos
 #
 # DESCRIPTION:
 #	refquota limits the amount of space a dataset can consume, but does
@@ -43,15 +38,6 @@
 #	3. Verify refquota limits the amount of space a dataset can consume
 #	4. Verify the limit does not impact descendents
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-12-13)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

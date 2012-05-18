@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: inuse_004_pos
 #
 # DESCRIPTION:
 # format will disallow modification of a mounted zfs disk partition or a spare
@@ -42,15 +37,6 @@
 # 2. Add a spare device to the ZFS pool
 # 3. Attempt to format the disk and the spare device.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

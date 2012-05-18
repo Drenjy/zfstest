@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/zfs_get/zfs_get_list_d.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_list_007_pos
 #
 # DESCRIPTION:
 #	'zfs list -d <n>' should get expected output.
@@ -41,15 +36,6 @@
 #	2. 'zfs list -r|egrep' to get the expected output.
 #	3. Compare the two outputs, they shoud be same.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-05-25)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

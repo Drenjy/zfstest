@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_share_003_pos
 #
 # DESCRIPTION:
 # Invoking "zfs share <file system>" with a file system
@@ -45,15 +40,6 @@
 # - zfs set sharenfs=none <file system>
 # 3. Verify that share failed with return code of 1.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

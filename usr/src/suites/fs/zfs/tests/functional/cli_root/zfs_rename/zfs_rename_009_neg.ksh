@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_rename_009_neg
 #
 # DESCRIPTION:
 #	A snapshot already exists with the new name, then none of the
@@ -43,15 +38,6 @@
 #	3. Using rename -r command with exists snapshot name.
 #	4. Verify none of the snapshots is renamed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-03-15)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

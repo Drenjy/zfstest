@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: online_offline_001_pos
 #
 # DESCRIPTION:
 # 	Turning a disk offline and back online during I/O completes.
@@ -41,15 +36,6 @@
 #	2. For each disk in the mirror, set it offline and online
 #	3. Verify the integrity of the file system and the resilvering.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-10-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

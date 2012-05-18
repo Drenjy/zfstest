@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_snapshot_004_neg
 #
 # DESCRIPTION:
 #	Verify recursive snapshotting could not break ZFS. 
@@ -40,15 +35,6 @@
 #	1. Create deeply-nested filesystems until it is too long to create snap
 #	2. Verify zfs snapshot -r pool@snap will not break ZFS
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-08)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

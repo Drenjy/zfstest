@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_allow_002_pos
 #
 # DESCRIPTION:
 # <user|group> argument is interpreted as a user if possible, then as a group as
@@ -44,15 +39,6 @@
 #	4. Delete user $STAFF_GROUP and allow the permission to $STAFF_GROUP
 #	5. Verify $STAFF_GROUP is interpreted as group.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-14)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_list_003_pos
 #
 # DESCRIPTION:
 # 	Verify 'zfs list -r' could recursively display any children 
@@ -41,15 +36,6 @@
 # 2. Execute 'zfs list -r' at the top of these datasets.
 # 3. Verify all child datasets are all be shown.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-05-24)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup
 {

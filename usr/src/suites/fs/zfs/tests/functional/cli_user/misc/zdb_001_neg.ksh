@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zdb_001_neg
 #
 # DESCRIPTION:
 #
@@ -41,15 +36,6 @@
 # 1. Run zdb as a user, it should print information
 # 2. Run zdb as a user on different datasets, it should fail
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function check_zdb
 {

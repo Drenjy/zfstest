@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_cp_002_neg
 #
 # DESCRIPTION:
 #	Verifies that cp will not include file attribute when the -@ flag is not
@@ -42,15 +37,6 @@
 #	2. Implement cp to files without '-@'
 #	3. Verify attribute files will not include file attribute
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

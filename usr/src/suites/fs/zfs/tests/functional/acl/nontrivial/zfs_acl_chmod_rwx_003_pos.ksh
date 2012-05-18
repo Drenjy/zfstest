@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_chmod_rwx_003_pos
 #
 # DESCRIPTION:
 #	Verify that the read_data/write_data/execute permission for 
@@ -44,15 +39,6 @@
 #	4. According to ACE list and override rule, expect that 
 #	   read/write/execute file or directory succeed or fail.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-10-09)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/tests/functional/hotspare/hotspare.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotspare_create_001_neg
 #
 # DESCRIPTION:
 # 'zpool create [-f]' with hot spares will fail 
@@ -49,15 +44,6 @@
 # 	of the virtual devices
 # 3. Verify the creation is failed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-07)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

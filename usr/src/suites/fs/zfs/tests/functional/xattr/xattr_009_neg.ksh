@@ -26,11 +26,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/xattr/xattr_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  xattr_009_neg
 #
 # DESCRIPTION:
 # links between xattr and normal file namespace fail
@@ -40,15 +35,6 @@
 #       2. Verify we're unable to create a symbolic link
 #	3. Verify we're unable to create a hard link
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-13)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup {
 

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_find_002_neg
 #
 # DESCRIPTION:
 #	Verifies ability to find files with attribute with -xattr flag and using
@@ -43,15 +38,6 @@
 #	2. Verify all the specified files can not be found with '-xattr', 
 #	3. Verify all the attribute files can not be found with '-exec runat ls'
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

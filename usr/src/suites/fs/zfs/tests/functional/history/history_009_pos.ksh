@@ -31,11 +31,6 @@
 
 . $STF_SUITE/tests/functional/history/history_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: history_009_pos
 #
 # DESCRIPTION:
 #	Verify the delegation internal history are correctly.
@@ -45,15 +40,6 @@
 #	2. Define permission sets and verify the internal history correctly.
 #	3. Separately verify the internal history above is correct.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-26)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

@@ -31,11 +31,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_import_013_neg
 #
 # DESCRIPTION:
 #	For pool may be in use from other system, 
@@ -46,15 +41,6 @@
 #	2. Verify 'zpool import' will fail.
 #	3. Verify 'zpool import -f' succeed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

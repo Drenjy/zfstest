@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_create_001_pos
 #
 # DESCRIPTION:
 # 'zfs create <filesystem>' can create a ZFS filesystem in the namespace.
@@ -39,15 +34,6 @@
 # 1. Create a ZFS filesystem in the storage pool
 # 2. Verify the filesystem created successfully
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

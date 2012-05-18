@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_unmount_009_pos
 #
 # DESCRIPTION:
 # Verify that zfs unmount and destroy in a snapshot directory will not cause error.
@@ -47,15 +42,6 @@
 # 8. Verify that zpool destroy the pool will succeed
 # 9. Verify 'ls' 'cd /' 'zpool list' and etc will succeed
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-07-29)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

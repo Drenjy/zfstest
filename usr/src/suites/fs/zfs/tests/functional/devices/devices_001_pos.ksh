@@ -28,12 +28,7 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/devices/devices_common.kshlib
 
-################################################################################
 #
-# __stc_assertion_start 
-#
-# ID: devices_001_pos
-# 
 # DESCRIPTION:
 # When set property devices=on on file system, devices files can be used in
 # this file system. 
@@ -45,15 +40,6 @@
 # 4. Separately read from those two device files.
 # 5. Check the return value, and make sure it succeeds.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-11)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: poolversion_002_pos
 #
 # DESCRIPTION:
 #
@@ -43,15 +38,6 @@
 # 3. Attempt to set prior versions
 # 4. Verify it's still set to version 6
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 log_assert "zpool set version can only increment pool version"

@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_create_005_pos
 #
 # DESCRIPTION:
 # 'zpool create [-R root][-m mountpoint] <pool> <vdev> ...' can create an
@@ -41,15 +36,6 @@
 # 1. Create a pool with '-m' option 
 # 2. Verify the pool is mounted at the specified mountpoint
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

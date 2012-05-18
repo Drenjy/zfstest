@@ -28,11 +28,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_003_pos
 #
 # DESCRIPTION:
 #	Verify debugging features of zpool such as ABORT and freeze/unfreeze
@@ -43,15 +38,6 @@
 # 2. For each element, execute the zpool command.
 # 3. Verify it run successfully.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-18)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

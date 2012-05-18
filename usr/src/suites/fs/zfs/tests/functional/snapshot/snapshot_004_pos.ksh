@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: snapshot_004_pos
 #
 # DESCRIPTION:
 # Create a null snapshot i.e. a snapshot created before file system
@@ -42,15 +37,6 @@
 # 3. Populate the file system
 # 4. Verify the snapshot is still empty
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

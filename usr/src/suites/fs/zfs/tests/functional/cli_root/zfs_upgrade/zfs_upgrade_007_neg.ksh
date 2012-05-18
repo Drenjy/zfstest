@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_upgrade/zfs_upgrade.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_upgrade_007_neg
 #
 # DESCRIPTION:
 # Verify that version should only by '1' '2' or current version, 
@@ -42,15 +37,6 @@
 # 1. For each invalid value of version in the list, try 'zfs upgrade -V version'.
 # 2. Verify that the operation fails as expected.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-26)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

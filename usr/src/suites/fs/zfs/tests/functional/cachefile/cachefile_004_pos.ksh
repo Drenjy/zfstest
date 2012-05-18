@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cachefile/cachefile.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: cachefile_004_pos
 #
 # DESCRIPTION:
 #	Verify set, export and destroy when cachefile is set on pool.
@@ -47,15 +42,6 @@
 #	7. Destroy the two pools.
 #	8. Verify cachefile2 not exist.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-04-24)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

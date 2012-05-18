@@ -32,11 +32,6 @@
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/reservation/reservation.shlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: reservation_013_pos
 #
 # DESCRIPTION:
 #
@@ -55,15 +50,6 @@
 # 8) Re-import the pool
 # 9) Verify that the reservation settings are correct
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-19)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

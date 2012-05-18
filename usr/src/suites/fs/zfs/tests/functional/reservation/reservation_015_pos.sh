@@ -32,11 +32,6 @@
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/reservation/reservation.shlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: reservation_015_pos
 #
 # DESCRIPTION:
 #
@@ -53,15 +48,6 @@
 # 4) Set the reservation on the volume to 'none'
 # 5) Verify can write more data to the filesystem
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-19)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

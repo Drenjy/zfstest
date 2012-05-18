@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: inuse_002_pos
 #
 # DESCRIPTION:
 # ZFS will not interfere with devices that are in use by SVM
@@ -41,15 +36,6 @@
 # 2. Try to create a ZFS pool with same disk
 # 3. Try a use the same disk as a spare device
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

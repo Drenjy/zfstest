@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_export_001_pos
 #
 # DESCRIPTION:
 # Exported pools should no longer be visible from 'zpool list'.
@@ -42,15 +37,6 @@
 # 2. Export the pool.
 # 3. Verify the pool is no longer present in the list output.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zvol_swap_002_pos
 #
 # DESCRIPTION:
 #	Add a swap zvol, and consume most (not all) of the space. This test
@@ -43,15 +38,6 @@
 #	2. Fill /tmp with 80% the size of the zvol
 #	5. Remove the new zvol, and restore original swap devices
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 log_assert "Using a zvol as swap space, fill /tmp to 80%."

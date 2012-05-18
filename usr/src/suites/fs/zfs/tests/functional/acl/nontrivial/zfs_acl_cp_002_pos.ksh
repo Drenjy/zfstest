@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_cp_002_pos
 #
 # DESCRIPTION:
 # 	Verify that '/usr/bin/cp [-p@]' supports ZFS ACL & xattrs
@@ -46,15 +41,6 @@
 #	   (abstractions entry are treated special, since they represent the 
 #	   traditional permission bit mapping.)
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-10-11)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

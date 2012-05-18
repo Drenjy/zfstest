@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_clear_001_pos
 #
 # DESCRIPTION:
 # Verify 'zpool clear' can clear pool errors. 
@@ -41,15 +36,6 @@
 # 3. Use zpool clear to clear errors
 # 4. Verify the errors has been cleared.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-10)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

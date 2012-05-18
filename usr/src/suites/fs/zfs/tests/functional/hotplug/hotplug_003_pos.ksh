@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/hotplug/hotplug.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotplug_003_pos
 #
 # DESCRIPTION:
 #	Set/Unset autoreplace, remove device from redundant pool and insert new
@@ -48,15 +43,6 @@
 #	7. Set autoreplace=off, redo steps 4 - 6, verify the new device's
 #	   status is 'UNAVAIL'. There are FMA faulty.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  zones_004_pos
 #
 # DESCRIPTION:
 #
@@ -44,15 +39,6 @@
 #       2. Delete our ZFS rooted zone, verify the filesystem has been deleted.
 #	3. Delete our non-ZFS rooted zone, the zonepath dir should still exist.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-10-11)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

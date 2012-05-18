@@ -26,11 +26,6 @@
 #
 
 . $STF_SUITE/include/libtest.kshlib
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  zpool_set_001_pos
 #
 # DESCRIPTION:
 #
@@ -42,15 +37,6 @@
 #	3. Check usage message contains text "usage"
 #
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-03-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 log_assert "zpool set usage message is displayed when called with no arguments"
 

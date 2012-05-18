@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_destroy_002_pos
 #
 # DESCRIPTION: 
 #	'zfs destroy <filesystem|volume|snapshot>' can successfully destroy 
@@ -41,15 +36,6 @@
 #	2. Destroy the filesystem,volume and snapshot
 #	3. Verify the datasets are destroyed successfully
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-07)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

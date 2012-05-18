@@ -30,11 +30,6 @@
 
 . $STF_SUITE/tests/functional/history/history_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: history_002_pos
 #
 # DESCRIPTION:
 #	Create a  scenario to verify the following zfs subcommands are logged.
@@ -45,15 +40,6 @@
 #	1. Verify that all the zfs commands listed (barring send) produce an
 #	   entry in the pool history.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-07-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

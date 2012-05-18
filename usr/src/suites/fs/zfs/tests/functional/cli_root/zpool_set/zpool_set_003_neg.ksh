@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_set_003_neg
 #
 # DESCRIPTION:
 #
@@ -41,15 +36,6 @@
 # 1. Create a pool
 # 2. Verify that we can't set readonly properties on that pool
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-24)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

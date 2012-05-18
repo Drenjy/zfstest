@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/remote/cross_endian/cross_endian_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: cross_endian_001_pos
 #
 # DESCRIPTION:
 #	storage pool can be exported and imported between two any architecture
@@ -44,15 +39,6 @@
 #	2. Exported the storage pool and rcp the block files to a remote host  
 #	3. Imported the pool in the remote host and verify the data integrity
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-05-26)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

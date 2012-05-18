@@ -29,11 +29,6 @@
 . $STF_SUITE/tests/functional/cli_root/zpool_upgrade/zpool_upgrade.cfg
 . $STF_SUITE/tests/functional/cli_root/zpool_upgrade/zpool_upgrade.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  bootfs_005_neg
 #
 # DESCRIPTION:
 #
@@ -44,15 +39,6 @@
 # 2. Create a filesystem on each
 # 3. Verify that zpool set bootfs fails on each
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-03-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

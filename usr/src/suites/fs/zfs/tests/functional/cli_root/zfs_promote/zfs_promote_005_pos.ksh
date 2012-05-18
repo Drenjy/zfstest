@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_promote_005_pos
 #
 # DESCRIPTION:
 #	The original fs was unmounted, 'zfs promote' still should succeed.
@@ -41,15 +36,6 @@
 #	2. Create clone of fs.
 #	3. Unmount fs, then verify 'zfs promote' clone still succeed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-07-19)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

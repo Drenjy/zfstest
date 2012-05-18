@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/utils_test/utils_test.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: utils_test_003_pos
 #
 # DESCRIPTION:
 # Ensure that the fsdb(1M) utility fails on a ZFS file system.
@@ -41,15 +36,6 @@
 # 2. Run fsdb against the raw device.
 # 3. Ensure it fails.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

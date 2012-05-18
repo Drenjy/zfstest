@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_chmod_rwacl_001_pos
 #
 # DESCRIPTION:
 #	Verify assigned read_acl/write_acl to owner@/group@/everyone@,
@@ -49,15 +44,6 @@
 #	6. Verify the group was deny except specified user, this user can read
 #	   and write acl
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-10-19)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

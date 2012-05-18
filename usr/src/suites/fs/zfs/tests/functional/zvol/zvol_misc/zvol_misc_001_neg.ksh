@@ -32,11 +32,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zvol_misc_001_neg
 #
 # DESCRIPTION:
 #	Verify that using a zvol as a dump device works.
@@ -46,15 +41,6 @@
 # 2. Use dumpadm add the volume as dump device
 # 3. Verify the return code as expected.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-03-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

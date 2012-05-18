@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zvol_ENOSPC_001_pos
 #
 # DESCRIPTION:
 # A zvol volume will return ENOSPC when the underlying pool runs out of
@@ -44,15 +39,6 @@
 # 4. Mount the ufs file system
 # 5. Fill volume until ENOSPC is returned
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

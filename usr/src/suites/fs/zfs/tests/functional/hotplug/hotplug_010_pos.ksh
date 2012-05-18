@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/hotplug/hotplug.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotplug_010_pos
 #
 # DESCRIPTION:
 #	Removing device offlined and reinsert onlined, verify device status is 
@@ -46,15 +41,6 @@
 #	6. Load ZFS module and insert the device again.
 #	7. Verify device's status is 'ONLINE'. No FMA fault is generated.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

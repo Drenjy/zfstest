@@ -25,11 +25,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/xattr/xattr_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  xattr_007_neg
 #
 # DESCRIPTION:
 # Creating and writing xattrs on files in snapshot directories fails. Also,
@@ -44,15 +39,6 @@
 #	4. Verify we're unable to alter the xattr on the first file
 #	5. Verify we're unable to list the xattrs on the second file
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-13)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup {
 	log_must $ZFS destroy $TESTPOOL/$TESTFS@snap

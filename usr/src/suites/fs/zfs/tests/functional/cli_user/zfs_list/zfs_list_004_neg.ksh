@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_list_004_neg
 #
 # DESCRIPTION:
 # 	Verify 'zfs list [-r]' should fail while 
@@ -43,15 +38,6 @@
 # 2. Execute each element in the array.
 # 3. Verify failure is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-05-24)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

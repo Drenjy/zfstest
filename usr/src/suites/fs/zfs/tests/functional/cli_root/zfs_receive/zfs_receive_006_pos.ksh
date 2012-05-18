@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_receive_006_pos
 #
 # DESCRIPTION:
 #	'zfs recv -d <fs>' should create ancestor filesystem if it does not
@@ -46,15 +41,6 @@
 #	5. Verify receiving the stream still succeeds when ancestor filesystem
 #	   exists
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-10-13)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

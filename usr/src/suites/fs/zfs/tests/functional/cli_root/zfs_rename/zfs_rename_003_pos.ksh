@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_rename_003_pos
 #
 # DESCRIPTION:
 #	'zfs rename' can address the abbreviated snapshot name. 
@@ -40,15 +35,6 @@
 #	1. Create pool, fs and snap.
 #	2. Verify 'zfs rename' support the abbreviated snapshot name.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-07-18)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

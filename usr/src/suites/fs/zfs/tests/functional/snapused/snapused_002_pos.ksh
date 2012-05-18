@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/snapused/snapused.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: snapused_002_pos
 #
 # DESCRIPTION:
 #	Verify usedbychildren is correct.
@@ -45,15 +40,6 @@
 #	5. Snapshot it.
 #	6. Check usedbychildren is correct.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-04-28)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

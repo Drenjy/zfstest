@@ -25,11 +25,6 @@
 # Use is subject to license terms.
 #
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: userquota_006_pos
 #
 # DESCRIPTION:
 #       Check the invalid parameter of zfs get user|group quota
@@ -39,15 +34,6 @@
 #       1. check the invalid zfs get user|group quota to fs 
 #       2. check the valid zfs get user|group quota to snapshots
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2009-04-16)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/userquota/userquota_common.kshlib

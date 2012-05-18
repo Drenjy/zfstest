@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: quota_005_pos
 #
 # DESCRIPTION:
 #
@@ -41,14 +36,6 @@
 # 1) Set quota for parents
 # 2) Create a filesystem tree
 # 3) Verify that the 'quota' for descendent doesnot inherit the value.
-#
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-17)
-#
-# __stc_assertion_end
 #
 ###############################################################################  
 

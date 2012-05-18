@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/rsend/rsend.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: rsend_003_pos
 #
 # DESCRIPTION:
 #	zfs send -I dataset@init to clone@snap can create a clone
@@ -42,15 +37,6 @@
 #	3. Verify the clone and snapshot can be recovered via receive
 #	4. Verify the similar operating in filesystem and volume
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

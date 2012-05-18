@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_rollback/zfs_rollback_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_rollback_002_pos
 #
 # DESCRIPTION:
 #	'zfs rollback -f' will force unmount any filesystems. 
@@ -43,15 +38,6 @@
 #	3. Write the mountpoint directory of this file system.
 #	4. Make sure 'zfs rollback -f' succeeds.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-29)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

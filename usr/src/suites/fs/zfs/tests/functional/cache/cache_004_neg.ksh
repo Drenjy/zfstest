@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cache/cache.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: cache_004_neg
 #
 # DESCRIPTION:
 #	Attaching a cache device fails.
@@ -41,15 +36,6 @@
 #	2. Attaching a cache device for existing cache device
 #	3. Verify the operation fails
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-03-26)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 verify_disk_count "$LDEV2"

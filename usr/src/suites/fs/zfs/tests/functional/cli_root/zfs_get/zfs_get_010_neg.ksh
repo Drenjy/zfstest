@@ -28,11 +28,6 @@
 . $STF_SUITE/tests/functional/cli_root/zfs_get/zfs_get_common.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_get/zfs_get_list_d.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_get_010_neg
 #
 # DESCRIPTION:
 # A negative depth or a non numeric depth should fail in 'zfs get -d <n>'
@@ -41,15 +36,6 @@
 # 1. Run zfs get -d with negative depth or non numeric depth
 # 2. Verify that zfs get returns error
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-05-22)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

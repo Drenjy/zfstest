@@ -26,11 +26,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/xattr/xattr_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  xattr_006_pos
 #
 # DESCRIPTION:
 # Xattrs present on a file in a snapshot should be visible.
@@ -40,15 +35,6 @@
 #       2. Take a snapshot of the filesystem
 #	3. Verify that we can take a snapshot of it.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup {
 

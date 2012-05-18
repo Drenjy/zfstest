@@ -25,11 +25,6 @@
 # Use is subject to license terms.
 #
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: userquota_011_pos
 #
 # DESCRIPTION:
 #       the userquota and groupquota will not change during zfs actions, such as
@@ -43,15 +38,6 @@
 #       4. Check the user|group quota can not change during zfs clone
 #       5. Check the user|group quota can not change during zfs send/receive
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2009-04-16)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/userquota/userquota_common.kshlib

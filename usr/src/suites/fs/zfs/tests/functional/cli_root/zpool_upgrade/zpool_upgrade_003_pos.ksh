@@ -29,11 +29,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zpool_upgrade/zpool_upgrade.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_upgrade_003_pos
 #
 # DESCRIPTION:
 # Upgrading a pool that has already been upgraded succeeds.
@@ -42,15 +37,6 @@
 # 1. Upgrade a pool, then try to upgrade it again
 # 2. Verify a 0 exit status
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-07)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

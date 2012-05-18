@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_create/zfs_create_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_create_022_pos
 #
 # DESCRIPTION:
 # 'zpool create -O property=value pool' can successfully create a pool
@@ -43,15 +38,6 @@
 # 2. Verify the pool created successfully
 # 3. Verify the properties are correctly set
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-04-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

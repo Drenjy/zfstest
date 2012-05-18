@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_share_001_pos
 #
 # DESCRIPTION:
 # Verify that 'zfs set sharenfs' and 'zfs share' shares a given dataset.
@@ -44,15 +39,6 @@
 # 5. Verify that a shared filesystem cannot be shared again.
 # 6. Verify that share -a succeeds.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

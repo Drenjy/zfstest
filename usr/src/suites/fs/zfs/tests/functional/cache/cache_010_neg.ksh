@@ -28,11 +28,6 @@
 
 . $STF_SUITE/tests/functional/cache/cache.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: cache_010_neg
 #
 # DESCRIPTION:
 #	Verify cache device must be a block device.
@@ -42,15 +37,6 @@
 #	2. Add different object as cache
 #	3. Verify character devices and files fail
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-04-24)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

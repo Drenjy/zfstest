@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_set/zfs_set_common.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: property_alias_001_pos
 #
 # DESCRIPTION:
 # Verify the properties with aliases also work with those aliases
@@ -42,15 +37,6 @@
 # 2. Set or retrieve property via alias with datasets.
 # 3. Verify the result should be successful.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

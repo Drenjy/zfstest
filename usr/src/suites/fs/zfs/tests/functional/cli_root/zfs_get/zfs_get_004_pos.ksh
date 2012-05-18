@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_get_004_pos
 #
 # DESCRIPTION:
 # Verify 'zfs get all' can get all properties for all datasets in the system
@@ -41,15 +36,6 @@
 #	2. Issue 'zfs get all' command
 #	3. Verify the command gets all available properties of all datasets 
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-31)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

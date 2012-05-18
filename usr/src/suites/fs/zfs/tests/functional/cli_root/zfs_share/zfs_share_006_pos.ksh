@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_share_006_pos
 #
 # DESCRIPTION:
 # Verify that a dataset could not be shared but filesystems are shared.
@@ -43,15 +38,6 @@
 # 4. Add a new file system to the dataset.
 # 5. Verify that the newly added file system be shared.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

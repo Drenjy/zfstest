@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/cli_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_receive_002_pos
 #
 # DESCRIPTION:
 #	Verifying 'zfs receive <volume>' works.
@@ -42,15 +37,6 @@
 #	3. Restore the send stream  
 #	4. Verify the restoring results.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-09-06)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

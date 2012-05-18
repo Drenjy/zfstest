@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: sparse_001_pos
 #
 # DESCRIPTION:
 # Holes in ZFS files work correctly.
@@ -42,15 +37,6 @@
 # 3. Read each block back to check for correctness.
 # 4. Repeat steps 2 and 3 lots of times
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

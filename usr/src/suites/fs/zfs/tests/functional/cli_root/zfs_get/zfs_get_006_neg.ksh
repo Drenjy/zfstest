@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/zfs_get/zfs_get_common.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_get_006_neg
 #
 # DESCRIPTION:
 # Verify 'zfs get all' can deal with invalid scenarios
@@ -41,15 +36,6 @@
 # 2. Run zfs get with those invalid scenarios
 # 3. Verify that zfs get fails with invalid scenarios
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-31)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

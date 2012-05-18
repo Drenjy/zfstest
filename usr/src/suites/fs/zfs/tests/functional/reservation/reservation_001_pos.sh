@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.shlib
 . $STF_SUITE/tests/functional/reservation/reservation.shlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: reservation_001_pos
 #
 # DESCRIPTION:
 #
@@ -49,15 +44,6 @@
 # 5) Reset the reservation to 'none'
 # 6) Repeat steps 2-5 for both volume types
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-19)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "both"
 

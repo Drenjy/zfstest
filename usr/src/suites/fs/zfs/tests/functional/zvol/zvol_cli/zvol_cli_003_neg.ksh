@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zvol_cli_003_neg
 #
 # DESCRIPTION:
 # Try each ZFS volume sub-command without parameters to make sure
@@ -42,15 +37,6 @@
 # 2. For each parameter in the array, execute the sub-command
 # 3. Verify an error is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

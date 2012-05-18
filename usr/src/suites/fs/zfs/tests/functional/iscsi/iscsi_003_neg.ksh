@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: iscsi_003_neg
 #
 # DESCRIPTION:
 #	Verify invalid value of shareiscsi can not be set
@@ -39,15 +34,6 @@
 # STRATEGY:
 #	1) verify a set of invalid value of shareiscsi can not be set
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-21)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

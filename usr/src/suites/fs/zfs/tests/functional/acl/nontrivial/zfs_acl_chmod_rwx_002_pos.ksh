@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_chmod_rwx_002_pos
 #
 # DESCRIPTION:
 #	chmod A{+|-|=} read_data|write_data|execute for owner@ group@ or everyone@
@@ -44,15 +39,6 @@
 #	4. Separately chmod +|-|= read_data|write_data|execute
 #	5. Check map bits 
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-10-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

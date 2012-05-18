@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_create/properties.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_create_010_neg
 #
 # DESCRIPTION:
 # 'zfs create [-b <blocksize> ] -V <size> <volume>' fails with badly formed 
@@ -49,15 +44,6 @@
 # 2. For each argument, execute 'zfs create -V <size> <volume>'
 # 3. Verify an error is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

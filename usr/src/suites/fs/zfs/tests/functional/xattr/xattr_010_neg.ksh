@@ -26,11 +26,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/xattr/xattr_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  xattr_010_neg
 #
 # DESCRIPTION:
 # Verify that mkdir and various mknods fail inside the xattr namespace
@@ -41,15 +36,6 @@
 #	3. Verify that various mknods fails inside the xattr namespace
 #
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-13)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup {
 

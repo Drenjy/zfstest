@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/zfs_set/zfs_set_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: user_property_004_neg
 #
 # DESCRIPTION:
 #	User property has no effect to snapshot until 'Snapshot properties' supported.
@@ -40,15 +35,6 @@
 #	1. Verify user properties could be transformed by 'zfs snapshot'
 #	2. Verify user properties could be set upon snapshot.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

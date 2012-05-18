@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_unshare_002_pos
 #
 # DESCRIPTION:
 # Verify that 'zfs unshare [-a] <filesystem|mountpoint>' is aware of legacy share.
@@ -42,15 +37,6 @@
 # 3. Verify that 'zfs unshare <filesystem|mountpoint>' is aware of legacy share
 # 4. Verify that 'zfs unshare -a' is aware of legacy share.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-28)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

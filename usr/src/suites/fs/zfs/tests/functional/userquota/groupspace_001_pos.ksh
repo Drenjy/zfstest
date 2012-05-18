@@ -25,11 +25,6 @@
 # Use is subject to license terms.
 #
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: groupspace_001_pos
 #
 # DESCRIPTION:
 #       Check the zfs groupspace with all parameters
@@ -40,15 +35,6 @@
 #       2. write some data to the fs with specified user and group
 #	3. use zfs groupspace with all possible parameters to check the result
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2009-04-16)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/userquota/userquota_common.kshlib

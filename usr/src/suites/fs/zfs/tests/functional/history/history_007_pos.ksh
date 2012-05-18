@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: history_007_pos
 #
 # DESCRIPTION:
 #	Verify command history moves with pool while pool being migrated
@@ -41,15 +36,6 @@
 #	2. Contract the command history of the imported pool
 #	3. Compare imported history log with the previous log.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-10-25)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

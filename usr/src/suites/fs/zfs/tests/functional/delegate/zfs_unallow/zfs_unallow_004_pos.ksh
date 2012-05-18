@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_unallow_004_pos
 #
 # DESCRIPTION:
 #	Verify '-s' will remove permissions from the named set.
@@ -42,15 +37,6 @@
 #	2. Verify $STAFF1 have @basic permissions.
 #	3. Verify '-s' will remove permission from the named set.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-29)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

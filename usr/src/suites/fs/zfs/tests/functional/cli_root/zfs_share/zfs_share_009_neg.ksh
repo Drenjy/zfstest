@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_share_009_neg
 #
 # DESCRIPTION:
 # Verify that zfs share should fail when sharing a shared zfs filesystem 
@@ -41,15 +36,6 @@
 # 2. Use zfs share to share the filesystem
 # 3. Verify that zfs share returns error
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-9)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

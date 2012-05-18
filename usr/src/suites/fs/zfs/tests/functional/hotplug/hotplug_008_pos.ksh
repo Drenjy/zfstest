@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/hotplug/hotplug.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotplug_008_pos
 #
 # DESCRIPTION:
 #	After hot spare device is revoved, the devices state will be 'REMOVED'. 
@@ -44,15 +39,6 @@
 #	4. Verify the device's status is 'REMOVED'.
 #	5. Verify no FMA fault was generated.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 log_unsupported "Hotplugging of hotspare devices is not supported."
 

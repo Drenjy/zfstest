@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cachefile/cachefile.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: cachefile_002_pos
 #
 # DESCRIPTION:
 #
@@ -48,15 +43,6 @@
 # 7. Import the pool -o cachefile=<cachefile>
 # 8. Verify the pool doesn't have an entry in zpool.cache
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-09-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup
 {

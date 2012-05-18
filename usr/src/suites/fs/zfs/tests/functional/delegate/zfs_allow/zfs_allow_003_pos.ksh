@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_allow_003_pos
 #
 # DESCRIPTION:
 #	Verify option '-l' only allow permission to the dataset itself.
@@ -43,15 +38,6 @@
 #	4. Verify the permissions are only allow on $ROOT_TESTFS or
 #	   $ROOT_TESTVOL.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-19)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

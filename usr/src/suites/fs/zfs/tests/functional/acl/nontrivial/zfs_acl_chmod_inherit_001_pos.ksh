@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_chmod_inherit_001_pos
 #
 # DESCRIPTION:
 #	Verify chmod have correct behaviour to directory and file when setting
@@ -61,15 +56,6 @@
 #	5. Verify each directories and files have the correct access control
 #	   capability.
 #	
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-11-15)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

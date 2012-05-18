@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_chmod_delete_001_pos
 #
 # DESCRIPTION:
 #	Verify that the combined delete_child/delete permission for 
@@ -66,15 +61,6 @@
 # 3. Try to remove the file
 # 4. Verify that combined permissions for owner/group/everyone are correct.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-10-24)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

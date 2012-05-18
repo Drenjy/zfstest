@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_history_002_pos
 #
 # DESCRIPTION:
 #	Verify zpool history can handle options [-il] correctly.
@@ -40,15 +35,6 @@
 #	1. Create varied combinations of option -i & -l.
 #	2. Verify 'zpool history' can cope with these combination correctly.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-11-24)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

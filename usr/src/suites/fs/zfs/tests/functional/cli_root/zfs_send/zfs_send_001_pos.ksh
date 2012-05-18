@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/cli_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_send_001_pos
 #
 # DESCRIPTION:
 #	Verify 'zfs send' can create valid send streams as expected. 
@@ -44,15 +39,6 @@
 #	5. Create an incremental send stream with the fs
 #	6. Receive the incremental send stream and verify the data integrity.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-09-06)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

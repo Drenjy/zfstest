@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/quota/quota.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: quota_003_pos
 #
 # DESCRIPTION:
 # A ZFS file system quota limits the amount of pool space
@@ -46,15 +41,6 @@
 # 2) Create a file which is larger than the set quota
 # 3) Verify that the resulting file size is less than the quota limit
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

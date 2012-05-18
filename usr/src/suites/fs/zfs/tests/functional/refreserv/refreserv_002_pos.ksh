@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: refreserv_002_pos
 #
 # DESCRIPTION:
 #	Setting full size as refreservation, verify no snapshot can be created.
@@ -42,15 +37,6 @@
 #	3. Setting full size as refreservation on filesystem
 #	4. Verify no snapshot can be created on it and its subfs
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-11-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

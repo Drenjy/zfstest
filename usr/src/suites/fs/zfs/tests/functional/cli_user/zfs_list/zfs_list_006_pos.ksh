@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/tests/functional/cli_user/zfs_list/zfs_list.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_list_006_pos
 #
 # DESCRIPTION:
 #	Verify 'zfs list' exclude list of snapshot.
@@ -43,15 +38,6 @@
 #		zfs list [-r] -t all
 #		zfs list <snapshot>
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-04-24)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

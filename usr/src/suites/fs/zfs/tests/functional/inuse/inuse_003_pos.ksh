@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: inuse_003_pos
 #
 # DESCRIPTION:
 # ZFS will not interfere with devices that are in use by ufsdump or
@@ -47,15 +42,6 @@
 # 7. ufsrestore the disk from backup
 # 8. try to create a zpool during the ufsrestore
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

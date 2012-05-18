@@ -28,11 +28,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  rootpool_002_neg
 #
 # DESCRIPTION:
 #
@@ -44,15 +39,6 @@
 # 3) try to destroy the rootpool, which should fail.
 # 4) try to destroy the rootpool filesystem, which should fail.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-01-21)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 log_assert "zpool/zfs destory <rootpool> should return error"

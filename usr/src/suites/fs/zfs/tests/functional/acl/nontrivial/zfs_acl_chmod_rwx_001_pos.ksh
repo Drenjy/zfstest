@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_chmod_rwx_001_pos
 #
 # DESCRIPTION:
 #	chmod A{+|-|=} have the correct behaviour to the ACL list. 	
@@ -42,15 +37,6 @@
 #	3. get ACE after behaviours of chmod
 #	4. compare specified ACE and excpect ACE
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-09-30)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: snapshot_009_pos
 #
 # DESCRIPTION:
 #	Verify 'snapshot -r' and 'destroy -r' can correctly create and destroy 
@@ -42,15 +37,6 @@
 # 3. Use destroy -r to destroy the top level snapshot
 # 4. Verify that all children snapshots are destroyed too.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-20)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

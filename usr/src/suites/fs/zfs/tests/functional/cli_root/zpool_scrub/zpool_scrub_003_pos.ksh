@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_scrub_003_pos
 #
 # DESCRIPTION:
 #	scrub command terminates the existing scrub process and starts
@@ -43,15 +38,6 @@
 #	3. Check the completed percent and invoke another scrub
 #	4. Check the percent again, verify a new scrub started.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

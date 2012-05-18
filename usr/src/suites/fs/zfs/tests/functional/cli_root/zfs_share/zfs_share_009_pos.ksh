@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_share_009_pos
 #
 # DESCRIPTION:
 # Verify that umount/rollback/destroy fails does not unshare the shared 
@@ -43,15 +38,6 @@
 # 3. Try rollback failure, and verify that the file system is still shared.
 # 4. Try destroy failure, and verify that the file system is still shared.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-04-28)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

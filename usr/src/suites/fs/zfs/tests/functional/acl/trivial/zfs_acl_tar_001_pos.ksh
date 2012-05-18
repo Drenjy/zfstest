@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_tar_001_pos
 #
 # DESCRIPTION:
 #	Verifies that tar will include file attribute when @ flag is present.
@@ -44,15 +39,6 @@
 #	5. Record all the directories informat in derectory C.
 #	6. Verify the two records should be identical.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

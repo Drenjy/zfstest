@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_create_019_pos
 #
 # DESCRIPTION:
 #
@@ -42,15 +37,6 @@
 # 1. Attempt to create a pool, specifying each readonly property in turn
 # 2. Verify the pool was not created
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-24)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup
 {

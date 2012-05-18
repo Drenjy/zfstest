@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  privilege_001_pos
 #
 # DESCRIPTION:
 #
@@ -54,15 +49,6 @@
 #	6. Remove the Storage profile, then attempt to recreate the pool, which
 #	   should fail.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 # We can only run this in the global zone
 verify_runnable "global"

@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/remote/cross_endian/cross_endian_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: cross_endian_002_pos
 #
 # DESCRIPTION:
 #	ZFS filesystem data can be backuped to remote host with any architecture.
@@ -42,15 +37,6 @@
 #	2. Backup the data and restore it in a remote host  
 #	3. verify the data integrity
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-05-26)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

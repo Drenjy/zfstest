@@ -28,11 +28,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  rootpool_004_pos
 #
 # DESCRIPTION:
 #
@@ -45,15 +40,6 @@
 # 3) get the canmount value of rootfs
 # 4) check to see if the upper value equal to noauto or not.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-01-21)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 log_assert "rootfs's canmount property must be noauto"

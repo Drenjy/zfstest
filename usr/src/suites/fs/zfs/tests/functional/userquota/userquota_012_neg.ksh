@@ -25,11 +25,6 @@
 # Use is subject to license terms.
 #
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: userquota_012_neg
 #
 # DESCRIPTION:
 #       userquota and groupquota can not be set against snapshot
@@ -39,15 +34,6 @@
 #       1. Set userquota on snap and check the zfs get 
 #       2. Set groupquota on snap and check the zfs get 
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2009-04-16)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/userquota/userquota_common.kshlib

@@ -27,11 +27,6 @@
 
 . ${STF_SUITE}/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: truncate_002_pos
 #
 # DESCRIPTION:
 # Tests file truncation within ZFS while a sync operation is in progress.
@@ -41,15 +36,6 @@
 # 2. Copy /dev/null to same file on ZFS filesystem
 # 3. Execute a sync command
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

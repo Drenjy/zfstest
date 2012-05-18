@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: history_004_pos
 #
 # DESCRIPTION:
 #	'zpool history' can cope with simultaneous commands.
@@ -42,15 +37,6 @@
 #	3. Wait for all the command execution complete.
 #	4. Make sure all the commands was logged by 'zpool history'.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-07-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

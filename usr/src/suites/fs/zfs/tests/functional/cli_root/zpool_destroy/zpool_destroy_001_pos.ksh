@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_destroy_001_pos
 #
 # DESCRIPTION: 
 #	'zpool destroy <pool>' can successfully destroy the specified pool.
@@ -40,15 +35,6 @@
 #	2. Destroy the pool
 #	3. Verify the is destroyed successfully
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "global"
 

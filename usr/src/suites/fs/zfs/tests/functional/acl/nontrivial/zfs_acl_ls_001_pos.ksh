@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_ls_001_pos
 #
 # DESCRIPTION:
 # Verify that '/usr/bin/ls' command option supports ZFS ACL 
@@ -44,15 +39,6 @@
 # 4. Verify that 'ls -l' can use the '+' to indicate the non-trivial
 #    acl. 
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-10-11)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

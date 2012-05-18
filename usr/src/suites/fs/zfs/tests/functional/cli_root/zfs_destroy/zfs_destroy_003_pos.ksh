@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion__start
-#
-# ID: zfs_destroy_003_pos
 #
 # DESCRIPTION: 
 #	Verify 'zfs destroy [-rR]' succeeds as root.
@@ -43,15 +38,6 @@
 #	5. Verify 'zfs destroy -R' succeeds to destroy dataset with clone outside it
 #	6. Verify 'zfs destroy -r' succeeds to destroy dataset without clone outside it.  
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-08-02)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "both"
 

@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/scrub_mirror/scrub_mirror_common.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: scrub_mirror_002_pos
 #
 # DESCRIPTION:
 # The secondary side of a zpool mirror can be zeroed without causing damage
@@ -43,15 +38,6 @@
 # 2) dd from /dev/zero over the secondary side of the mirror
 # 3) verify that all the file contents are unchanged on the file system
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-10-20)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

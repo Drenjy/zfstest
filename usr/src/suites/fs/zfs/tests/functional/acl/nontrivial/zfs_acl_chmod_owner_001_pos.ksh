@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_chmod_owner_001_pos
 #
 # DESCRIPTION:
 #	Verify that the write_owner for 
@@ -48,15 +43,6 @@
 #	(2) Owner will ignore permission of (1) even write_owner not granted.
 #	(3) Superuser will always permit whatever they do.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-10-26)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

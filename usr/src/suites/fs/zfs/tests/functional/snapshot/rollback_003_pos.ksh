@@ -28,11 +28,6 @@
 . $STF_SUITE/tests/functional/cli_root/zfs_rollback/zfs_rollback_common.kshlib
 
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: rollback_003_pos
 #
 # DESCRIPTION:
 # Verify that rollbacks succeed when there are nested file systems.
@@ -44,15 +39,6 @@
 # 4) Create a nested file system with the same name as the file created in (2)
 # 5) Verify a rollback succeeds
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-01-17)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

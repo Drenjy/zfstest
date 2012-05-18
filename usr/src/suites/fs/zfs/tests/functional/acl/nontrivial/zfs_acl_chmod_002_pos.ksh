@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_chmod_002_pos
 #
 # DESCRIPTION:
 # 	Verify acl after upgrading.
@@ -41,15 +36,6 @@
 #	3. Upgrade the fs.
 #	4. Create a file under the directory and list it.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-06-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

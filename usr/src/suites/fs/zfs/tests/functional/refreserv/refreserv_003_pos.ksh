@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: refreserv_003_pos
 #
 # DESCRIPTION:
 #	Verify a snapshot will only be allowed if there is enough free pool 
@@ -42,15 +37,6 @@
 #	2. Verify snapshot can be created, when used =< quota - refreserv
 #	3. Verify failed to create snapshot, when used > quota - refreserv
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-11-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

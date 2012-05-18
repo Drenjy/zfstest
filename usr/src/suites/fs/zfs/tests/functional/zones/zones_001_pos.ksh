@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  zones_001_pos
 #
 # DESCRIPTION:
 #
@@ -43,15 +38,6 @@
 #       2. Perform a basic sanity check for that object in the local zone.
 #	3. Check that the top level dataset is read only.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-10-18)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "local"
 

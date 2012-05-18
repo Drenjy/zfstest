@@ -30,11 +30,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_destroy/zfs_destroy_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_destroy_005_neg
 #
 # DESCRIPTION:
 #	Seperately verify 'zfs destroy -f|-r|-rf|-R|-rR <dataset>' will fail in
@@ -49,15 +44,6 @@
 #	6. Write file to filesystem or enter snapshot mountpoint.
 #	7. Invoke 'zfs destroy -R|-rR <dataset>', it should fail.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-08-03)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

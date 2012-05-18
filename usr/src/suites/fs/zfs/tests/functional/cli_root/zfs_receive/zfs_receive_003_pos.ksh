@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_receive_003_pos
 #
 # DESCRIPTION:
 #	'zfs recv -F' to force rollback. 
@@ -44,15 +39,6 @@
 #	5. fs rollback to snapshot1 and modify fs.
 #	6. Verify 'zfs recv -F' can force rollback.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-07-18)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/zfs_set/zfs_set_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: user_property_002_pos
 #
 # DESCRIPTION:
 #	User defined property are always inherited from its parent dataset
@@ -44,15 +39,6 @@
 #	4. Set intermediate dataset and verify its children will inherit user
 #	   property from it directly.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

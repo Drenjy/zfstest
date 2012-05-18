@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_import_010_pos
 #
 # DESCRIPTION:
 #	'zpool -D -a' can import all the specified directories destroyed pools.
@@ -44,15 +39,6 @@
 #	5. Create a stripe pool E with dev4. Then destroy it.
 #	6. Verify 'zpool import -D -a' recover all the pools.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-12)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

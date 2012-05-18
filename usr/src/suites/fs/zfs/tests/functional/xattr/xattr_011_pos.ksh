@@ -26,11 +26,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/xattr/xattr_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  xattr_011_pos
 #
 # DESCRIPTION:
 #
@@ -42,15 +37,6 @@
 #	3. Also check that when appropriate flag is not used, the xattr
 #	   doesn't get copied
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-15)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup {
 

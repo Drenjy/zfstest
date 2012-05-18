@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/zfs_get/zfs_get_common.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_get_002_pos
 #
 # DESCRIPTION:
 # Setting the valid option and properties 'zfs get' return correct value.
@@ -43,15 +38,6 @@
 # 3. Using the combination as the parameters of 'zfs get' to check the
 # command line return value.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

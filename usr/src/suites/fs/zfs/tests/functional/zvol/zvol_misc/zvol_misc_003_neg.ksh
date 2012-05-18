@@ -32,11 +32,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zvol_misc_003_neg
 #
 # DESCRIPTION:
 #	Verify creating a storage pool or running newfs on a zvol used as a
@@ -47,15 +42,6 @@
 # 2. Use dumpadm to set the volume as dump device
 # 3. Verify creating a pool & running newfs on the zvol returns an error.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-01-07)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

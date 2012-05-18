@@ -31,11 +31,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_upgrade_001_pos
 #
 # DESCRIPTION:
 # Executing 'zpool upgrade -v' command succeeds, prints a description of legacy
@@ -46,15 +41,6 @@
 # 2. Verify a 0 exit status
 # 3. Grep for version descriptions and 'feature flags'
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-07)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

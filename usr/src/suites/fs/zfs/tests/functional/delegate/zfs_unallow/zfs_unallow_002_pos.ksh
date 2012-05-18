@@ -27,29 +27,15 @@
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_unallow_002_pos
 #
 # DESCRIPTION:
 #	Verify '-d' only remove the permissions on descendent filesystem.
-
+#
 # STRATEGY:
 #	1. Set up unallow test model.
 #	2. Implement unallow -d to $ROOT_TESTFS
 #	3. Verify '-d' only remove the permissions on descendent filesystem.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-09-29)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

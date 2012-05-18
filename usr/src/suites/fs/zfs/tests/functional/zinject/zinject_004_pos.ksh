@@ -25,11 +25,6 @@
 # Use is subject to license terms.
 #
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zinject_004_pos
 #
 # DESCRIPTION:
 #
@@ -46,15 +41,6 @@
 #	io		ereport.fs.zfs.probe_failure
 # 4) Verify the fault class of "fault.fs.zfs.vdev.io" be generated.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-05-31)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 . $STF_SUITE/tests/functional/zinject/zinject.kshlib
 

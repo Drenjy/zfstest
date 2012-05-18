@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_import_005_pos
 #
 # DESCRIPTION:
 #	Destroyed pools devices was renamed, it still can be imported correctly.
@@ -41,15 +36,6 @@
 #	2. Destroy pool A and rename devices name.
 #	3. Verify 'zpool import -D' succeed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-12)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

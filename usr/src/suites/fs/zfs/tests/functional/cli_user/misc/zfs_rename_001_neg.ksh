@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_rename_001_neg
 #
 # DESCRIPTION:
 #
@@ -42,15 +37,6 @@
 # 2. Verify that the renamed dataset does not exist.
 #
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 log_assert "zfs rename returns an error when run as a user"
 

@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_001_neg
 #
 # DESCRIPTION:
 # A badly formed sub-command passed to zpool(1) should
@@ -41,15 +36,6 @@
 # 2. For each element, execute the sub-command.
 # 3. Verify it returns an error.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

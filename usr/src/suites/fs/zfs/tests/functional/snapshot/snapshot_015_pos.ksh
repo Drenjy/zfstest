@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_rollback/zfs_rollback_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: snapshot_015_pos
 #
 # DESCRIPTION:
 #	Verify snapshot can be created or destroy via mkdir or rm 
@@ -45,15 +40,6 @@
 #	3. Verify rollback to previous snapshot can succeed.
 #	4. Verify remove directory in snapdir can destroy snapshot.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-10-17)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

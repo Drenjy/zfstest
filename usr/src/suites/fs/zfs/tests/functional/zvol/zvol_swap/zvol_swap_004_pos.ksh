@@ -31,11 +31,6 @@
 
 . $STF_SUITE/include/libtest.shlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zvol_swap_004_pos
 #
 # DESCRIPTION:
 #	When a swap zvol is added it is resized to be equal to 1/4 c_max,
@@ -46,15 +41,6 @@
 #	2. Create a zvols in a variety of sizes.
 #	3. Add them as swap, and verify the volsize is resized correctly.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-12)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

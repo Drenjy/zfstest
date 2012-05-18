@@ -25,11 +25,6 @@
 # Use is subject to license terms.
 #
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: userquota_002_pos
 #
 # DESCRIPTION:
 #       the userquota and groupquota can be set during zpool or zfs creation"
@@ -38,15 +33,6 @@
 # STRATEGY:
 #       1. Set userquota and groupquota via "zpool -O or zfs create -o"
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2009-04-16)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/userquota/userquota_common.kshlib

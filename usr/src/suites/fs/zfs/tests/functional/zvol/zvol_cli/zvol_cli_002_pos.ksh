@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zvol_cli_002_pos
 #
 # DESCRIPTION:
 # Creating a volume with a 50 letter name should work.
@@ -40,15 +35,6 @@
 # 1. Using a very long name, create a zvol
 # 2. Verify volume exists
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

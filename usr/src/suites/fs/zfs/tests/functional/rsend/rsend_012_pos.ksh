@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/rsend/rsend.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: rsend_012_pos
 #
 # DESCRIPTION:
 #	zfs send -R will backup all the filesystem properties correctly.
@@ -42,15 +37,6 @@
 #	3. Restore all the data in POOL2
 #	4. Verify all the perperties in two pools are same
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

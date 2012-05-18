@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_unmount_008_neg
 #
 # DESCRIPTION:
 # Verify that zfs unmount should fail with bad parameters or scenarios:
@@ -48,15 +43,6 @@
 # 2. Use zfs unmount to unmount the filesystem
 # 3. Verify that zfs unmount returns error
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-9)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

@@ -32,11 +32,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zvol_swap_006_pos
 #
 # DESCRIPTION:
 #	A volume can be added as several segments, but overlapping segments
@@ -47,15 +42,6 @@
 #	2. Verify different volume segments can be added correctly.
 #	3. Verify overlapping swap volume are not allowed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-13)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

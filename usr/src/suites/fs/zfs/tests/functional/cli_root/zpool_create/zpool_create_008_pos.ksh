@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zpool_create/zpool_create.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_create_008_pos
 #
 # DESCRIPTION:
 # 'zpool create' have to use '-f' scenarios
@@ -41,15 +36,6 @@
 # 2. Create pool without '-f' and verify it fails
 # 3. Create pool with '-f' and verify it succeeds
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-17)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

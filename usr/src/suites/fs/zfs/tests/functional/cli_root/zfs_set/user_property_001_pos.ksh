@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/zfs_set/zfs_set_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: user_property_001_pos
 #
 # DESCRIPTION:
 # 	ZFS can set any valid user defined property to the non-readonly dataset.
@@ -44,15 +39,6 @@
 #	4. Verify all the valid user defined properties can be set to the
 #	   dataset in #1.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-31)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

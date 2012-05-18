@@ -28,11 +28,6 @@
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 . $STF_SUITE/tests/functional/acl/cifs/cifs.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: cifs_attr_003_pos
 #
 # DESCRIPTION:
 #	Verify the DOS attributes (Readonly, Hidden, Archive, System)
@@ -68,15 +63,6 @@
 #	3. Set the file/dir with each kind of special attribute.
 #	4. Verify the access limitation works as expected.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-11-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

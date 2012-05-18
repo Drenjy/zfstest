@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_rename/zfs_rename.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_rename_004_neg
 #
 # DESCRIPTION:
 #       'zfs rename' should fail when this dataset was changed to an existed 
@@ -43,15 +38,6 @@
 #       2. Rename each dataset object to a different type.
 #       3. Verify that only the original name is displayed by zfs list.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-06-29)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "both"
 

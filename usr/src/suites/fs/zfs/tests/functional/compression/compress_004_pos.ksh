@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: compress_004_pos
 #
 # DESCRIPTION:
 # With 'compression' set, a file with non-power-of-2 blocksize storage space 
@@ -42,15 +37,6 @@
 #	3. Repeatedly using 'randfree_file' to create a file and then free its  
 #	   storage space with different range, the system should work normally.  
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-07-26)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

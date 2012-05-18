@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_002_pos
 #
 # DESCRIPTION:
 # With ZFS_ABORT set, all zpool commands should be able to abort and generate a core file.
@@ -40,15 +35,6 @@
 # 2. Execute each command in the array
 # 3. Verify the command aborts and generate a core file 
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-29)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

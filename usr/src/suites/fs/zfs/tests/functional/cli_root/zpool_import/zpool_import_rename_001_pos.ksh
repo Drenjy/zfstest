@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_mount/zfs_mount.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_import_rename_001_pos
 #
 # DESCRIPTION:
 # An exported pool can be imported under a different name. Hence
@@ -49,15 +44,6 @@
 #	6. Verify the default file system is mounted and that the file
 #	   from step (1) is present.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

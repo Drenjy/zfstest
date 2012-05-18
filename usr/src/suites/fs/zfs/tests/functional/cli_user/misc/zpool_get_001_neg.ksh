@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_get_001_neg
 #
 # DESCRIPTION:
 #
@@ -42,15 +37,6 @@
 # 1. For each property, get that property
 # 2. Verify the property was the same as that set in setup
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

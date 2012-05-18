@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_snapshot_002_neg
 #
 # DESCRIPTION: 
 #	"zfs snapshot -r" fails with invalid arguments or scenarios.
@@ -43,15 +38,6 @@
 #	2. Execute 'zfs snapshot -r' with each argument in the array, 
 #	3. Verify an error is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-19)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

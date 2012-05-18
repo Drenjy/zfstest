@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/zvol/zvol_common.shlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zvol_swap_005_pos
 #
 # DESCRIPTION:
 #	swaplow + swaplen must be less than or equal to the volume size.
@@ -42,15 +37,6 @@
 #	2. Random get swaplow and swaplen.
 #	3. Verify swap -a should succeed when swaplow + swaplen <= volume size.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-12)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

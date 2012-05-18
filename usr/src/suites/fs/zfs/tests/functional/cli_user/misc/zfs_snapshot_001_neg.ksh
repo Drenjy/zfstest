@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_snapshot_001_neg
 #
 # DESCRIPTION:
 #
@@ -42,15 +37,6 @@
 # 2. Verify the snapshot wasn't taken
 #
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 log_assert "zfs snapshot returns an error when run as a user"
 

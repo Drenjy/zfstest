@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  bootfs_006_pos
 #
 # DESCRIPTION:
 #
@@ -41,15 +36,6 @@
 # 1. create pools of each vdev type (raid, raidz, raidz2, mirror + hotspares)
 # 2. verify we can set bootfs on each pool type according to design
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-03-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

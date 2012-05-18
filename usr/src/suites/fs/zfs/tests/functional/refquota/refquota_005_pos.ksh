@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: refquota_005_pos
 #
 # DESCRIPTION:
 #	refquotas are not limited by sub-filesystem snapshots.
@@ -41,15 +36,6 @@
 #	2. Create file in sub-filesytem, take snapshot and remove the file
 #	3. Verify sub-filesystem snapshot will not consume refquota 
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-11-02)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

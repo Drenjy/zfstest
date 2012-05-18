@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cachefile/cachefile.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: cachefile_003_pos
 #
 # DESCRIPTION:
 #
@@ -43,15 +38,6 @@
 # 2. Verify the command succeed
 #
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-09-10)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 TESTDIR=/altdir.$$
 

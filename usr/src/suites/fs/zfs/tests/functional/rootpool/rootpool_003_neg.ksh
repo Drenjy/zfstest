@@ -28,11 +28,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  rootpool_003_neg
 #
 # DESCRIPTION:
 #
@@ -47,15 +42,6 @@
 # 5) try to destroy the rootfs with -f which should fail
 # 6) try to destroy the rootfs with -fR which should fail
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-01-21)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 log_assert "system related filesytems can not be renamed or destroyed"

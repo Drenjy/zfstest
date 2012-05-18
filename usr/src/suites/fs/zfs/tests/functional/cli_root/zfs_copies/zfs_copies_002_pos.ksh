@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_copies/zfs_copies.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_copies_002_pos
 #
 # DESCRIPTION:
 # 	Verify that the space used by multiple copies is charged correctly
@@ -43,15 +38,6 @@
 #	3. Verify that the space is charged as expected with zfs list, ls -s, df(1m),
 #	   du(1) commands;
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-05-31)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

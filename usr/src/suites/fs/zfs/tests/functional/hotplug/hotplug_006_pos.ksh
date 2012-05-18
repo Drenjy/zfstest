@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/hotplug/hotplug.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotplug_006_pos
 #
 # DESCRIPTION:
 #	When unsetting/setting autoreplace, then replacing offlined device,
@@ -44,15 +39,6 @@
 #	4. Offline one of device, remove it and insert a new device.
 #	5. Verify device status's is 'UNAVAIL/ONLINE' with/without FMA fault.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

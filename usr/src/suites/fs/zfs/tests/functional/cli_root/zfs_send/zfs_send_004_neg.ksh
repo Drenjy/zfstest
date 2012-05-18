@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/cli_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_send_004_neg
 #
 # DESCRIPTION:
 #	Verify 'zfs send' fails with malformed parameters.
@@ -41,15 +36,6 @@
 #	2. Feed the parameters to 'zfs send' 
 #	3. Verify the result
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-09-06)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

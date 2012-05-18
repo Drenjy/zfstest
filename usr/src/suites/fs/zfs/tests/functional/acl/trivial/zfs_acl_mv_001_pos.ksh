@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_mv_001_pos
 #
 # DESCRIPTION:
 #	Verifies that mv will include file attribute.
@@ -43,15 +38,6 @@
 #	4. Calculate all the files and attribute files cksum
 #	5. Verify all the cksum are identical
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

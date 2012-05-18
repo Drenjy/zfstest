@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_remove_003_pos
 #
 # DESCRIPTION:
 # Verify that 'zpool can remove hotspare devices from pool when it state
@@ -42,15 +37,6 @@
 # 3. Try to detach active (spare) device to make it inactive
 # 3. Verify that the zpool remove succeed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-18)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup
 {

@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_create/zfs_create.cfg
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_create_013_pos
 #
 # DESCRIPTION:
 # 'zfs create -s -V <size> <volume>' can create various-size sparse volume
@@ -41,15 +36,6 @@
 # 1. Create a volume in the storage pool.
 # 2. Verify the volume is created correctly.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-08-07)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

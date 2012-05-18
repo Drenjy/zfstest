@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cache/cache.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: cache_008_neg
 #
 # DESCRIPTION:
 #	A mirror/raidz/raidz2 cache can not be added to existed pool.
@@ -41,15 +36,6 @@
 #	2. Add a mirror/raidz/raidz2 cache to this pool.
 #	3. Verify failed to add.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2008-04-24)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 verify_disk_count "$LDEV2"

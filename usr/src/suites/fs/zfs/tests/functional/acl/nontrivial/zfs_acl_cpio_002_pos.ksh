@@ -29,11 +29,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_cpio_002_pos
 #
 # DESCRIPTION:
 # Verify that '$CPIO' command with -P@ option supports to archive ZFS ACLs
@@ -47,15 +42,6 @@
 # 6. Verify that the restored ACLs of file and directory identify
 #    with the origional ones. 
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-09-26)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

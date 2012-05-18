@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/tests/functional/hotspare/hotspare.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotspare_remove_003_neg
 #
 # DESCRIPTION:
 # Executing 'zpool remove' command with bad options fails.
@@ -40,15 +35,6 @@
 # 2. Execute each element of the array.
 # 3. Verify an error code is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-19)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

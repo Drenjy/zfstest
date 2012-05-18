@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/quota/quota.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: quota_004_pos
 #
 # DESCRIPTION:
 # A zfs file system quota limits the amount of pool space
@@ -46,15 +41,6 @@
 # 4) Verify the attempt fails with error code 49 (EDQUOTA)
 #
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

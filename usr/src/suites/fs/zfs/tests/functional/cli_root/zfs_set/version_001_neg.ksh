@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_upgrade/zfs_upgrade.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: version_001_neg
 #
 # DESCRIPTION:
 # Valid version values should be positive integers only.
@@ -45,15 +40,6 @@
 # 3) Verify that attempt fails and the version value remains
 # unchanged
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

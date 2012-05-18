@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_chmod_xattr_002_pos
 #
 # DESCRIPTION:
 #	Verify that the write_xattr for remove the extended attributes of
@@ -43,15 +38,6 @@
 # 3. Try to remove the extended attributes of the file and directory
 # 4. Verify above operation is successful.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-11-29)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

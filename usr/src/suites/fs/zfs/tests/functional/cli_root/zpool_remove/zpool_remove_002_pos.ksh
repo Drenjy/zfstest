@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_remove_002_pos
 #
 # DESCRIPTION:
 # Verify that 'zpool can only remove inactive hot spare devices from pool'
@@ -40,15 +35,6 @@
 # 2. Try to remove the inactive hotspare device from the pool
 # 3. Verify that the remove succeed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-18)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup
 {

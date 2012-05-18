@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/hotplug/hotplug.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotplug_009_pos
 #
 # DESCRIPTION:
 #	We unload ZFS module to simulate system is powered off. Replacing device
@@ -49,15 +44,6 @@
 #	8. Set autoreplace = on, redo steps 4 - 5. 
 #	9. Verify the device's status is 'ONLINE'. No FMA fault was generated.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

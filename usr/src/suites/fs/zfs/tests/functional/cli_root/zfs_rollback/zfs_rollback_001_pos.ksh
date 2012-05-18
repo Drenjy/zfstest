@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_rollback/zfs_rollback_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_rollback_001_pos
 #
 # DESCRIPTION:
 # 	'zfs rollback -r|-rf|-R|-Rf' will recursively destroy any snapshots 
@@ -47,15 +42,6 @@
 #	6. Separately create two snapshots for fs & volume.
 #	7. Roll back to the first snapshot and check the results.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-29)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

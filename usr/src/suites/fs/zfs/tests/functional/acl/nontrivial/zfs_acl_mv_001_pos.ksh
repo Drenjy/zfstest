@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_mv_001_pos
 #
 # DESCRIPTION:
 # Verify that '/usr/bin/mv' supports ZFS ACL
@@ -41,15 +36,6 @@
 # 3. Copy the file/directory within and across zfs file system
 # 4. Verify that the ACL of file/directroy is not changed
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-10-11)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

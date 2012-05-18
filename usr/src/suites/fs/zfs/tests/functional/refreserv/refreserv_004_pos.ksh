@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: refreserv_004_pos
 #
 # DESCRIPTION:
 #	Verify refreservation is limited by available space.
@@ -41,15 +36,6 @@
 #	2. Get available space on sub-filesystem.
 #	3. Verify refreservation is limited by available on it.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-11-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

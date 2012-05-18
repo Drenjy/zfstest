@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_create_023_neg
 #
 # DESCRIPTION:
 # 'zpool create -O' should return an error with badly formed parameters.
@@ -40,15 +35,6 @@
 # 2. For each parameter in the array, execute 'zpool create -O'
 # 3. Verify an error is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-04-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

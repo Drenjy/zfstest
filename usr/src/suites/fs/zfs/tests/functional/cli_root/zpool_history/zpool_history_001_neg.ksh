@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_history_001_neg
 #
 # DESCRIPTION:
 #	Verify 'zpool history' can deal with non-existent pools and garbage 
@@ -41,15 +36,6 @@
 #	1. Create pool, volume & snap
 #	2. Verify 'zpool history' can cope with incorret arguments.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-07-07)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

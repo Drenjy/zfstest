@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_share_007_neg
 #
 # DESCRIPTION:
 # Verify that invalid share parameters and options are caught.
@@ -41,15 +36,6 @@
 # 2. For each option in the list, set the sharenfs property.
 # 3. Verify that the error code and sharenfs property.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

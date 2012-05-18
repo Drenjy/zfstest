@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: compress_003_pos
 #
 # DESCRIPTION:
 # With 'compression' or 'compress'  set, changing filesystem blocksize cannot 
@@ -42,15 +37,6 @@
 #	3. Use 'mkfile' create single block and multi-block files
 #	4. Verify the system continued work
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-07-26)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

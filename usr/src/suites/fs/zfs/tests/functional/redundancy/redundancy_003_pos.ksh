@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/redundancy/redundancy.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: redundancy_003_pos
 #
 # DESCRIPTION:
 #	A mirrored pool can withstand N-1 device are failing or missing.
@@ -45,15 +40,6 @@
 #	6. Verify the data are correct to prove mirror can withstand N-1 devices
 #	   are failing.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-21)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

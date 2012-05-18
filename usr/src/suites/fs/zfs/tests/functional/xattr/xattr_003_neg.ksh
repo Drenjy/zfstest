@@ -26,11 +26,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/xattr/xattr_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  xattr_003_neg
 #
 # DESCRIPTION:
 #
@@ -43,15 +38,6 @@
 #	3. Check that we're unable to read the xattr as a non-root user
 #	4. Check that we're unable to write an xattr as a non-root user
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup {
 

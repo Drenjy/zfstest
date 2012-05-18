@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: clone_001_pos
 #
 # DESCRIPTION:
 #	Create a snapshot from regular filesystem, volume, 
@@ -45,15 +40,6 @@
 # 	2. Clone a new file system from the snapshot
 # 	3. Verify the cloned file system is writable
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-08-25)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

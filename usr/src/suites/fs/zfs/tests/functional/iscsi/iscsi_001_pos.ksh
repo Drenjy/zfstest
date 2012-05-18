@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: iscsi_001_pos
 #
 # DESCRIPTION:
 #	Verify setting shareiscsi property on volume will make it an iSCSI
@@ -44,15 +39,6 @@
 #	   filesystem at first
 #	4) Then create the volume, check if the target is created or not
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-21)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

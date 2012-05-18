@@ -28,11 +28,6 @@
 
 . $STF_SUITE/tests/functional/delegate/delegate_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_allow_010_pos
 #
 # DESCRIPTION:
 #	Scan the following permissions one by one to verify privileged user 
@@ -43,15 +38,6 @@
 #	2. Verify privileged user has correct permission without any other
 #	   permissions allowed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-11-02)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

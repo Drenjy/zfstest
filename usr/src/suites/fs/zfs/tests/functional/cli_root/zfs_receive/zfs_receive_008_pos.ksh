@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/cli_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_receive_008_pos
 #
 # DESCRIPTION:
 #	Verifying 'zfs receive -vn [<filesystem|snapshot>] 
@@ -45,15 +40,6 @@
 #	3. Dryrun zfs receive with -vn -d option
 #	4. Verify receive output and result
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-14)
-#
-# __stc_assertion_end
-#
-################################################################################
 function cleanup
 {
 	for dset in $rst_snap $rst_fs $orig_snap; do

@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_promote_001_pos
 #
 # DESCRIPTION: 
 #	'zfs promote' can promote a clone filesystem to no longer be dependent
@@ -41,15 +36,6 @@
 #	2. Promote the clone filesystem
 #	3. Verify the promoted filesystem become independent
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-05-16)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

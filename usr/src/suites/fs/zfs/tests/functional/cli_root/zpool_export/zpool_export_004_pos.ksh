@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_export_004_pos 
 #
 # DESCRIPTION:
 #	Verify zpool export succeed or fail with spare.
@@ -48,15 +43,6 @@
 #	9. Verify zpool export the pool with "-f" succeed.
 #	10. Import the pool.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-03-10)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

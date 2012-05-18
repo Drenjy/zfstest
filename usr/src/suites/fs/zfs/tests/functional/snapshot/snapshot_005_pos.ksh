@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: snapshot_005_pos
 #
 # DESCRIPTION:
 # to the originally snapshot'd file system, after the file
@@ -43,15 +38,6 @@
 # 4) Append to the original file
 # 5) Verify both checksums match
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "both"
 

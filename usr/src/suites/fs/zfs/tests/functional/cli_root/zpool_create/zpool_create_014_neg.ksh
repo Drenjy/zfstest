@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_create_014_neg
 #
 #
 # DESCRIPTION:
@@ -41,15 +36,6 @@
 # 2. Try to create a new pool with regular file in swap
 # 3. Verify the creation is failed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-04-17)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

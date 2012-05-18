@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: rollback_001_pos
 #
 # DESCRIPTION:
 # Populate a file system and take a snapshot. Add some more files to the
@@ -45,15 +40,6 @@
 # 5. Perform a rollback
 # 6. Verify the snapshot and file system agree
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

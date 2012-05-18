@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: snapshot_002_pos
 #
 # DESCRIPTION:
 # An archive of a zfs file system and an archive of its snapshot
@@ -45,15 +40,6 @@
 # 5) Create a tarball of the snapshot
 # 6) Extract each tarball and compare directory structures
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

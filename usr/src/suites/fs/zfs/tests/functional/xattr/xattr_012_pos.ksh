@@ -26,11 +26,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/xattr/xattr_common.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  xattr_012_pos
 #
 # DESCRIPTION:
 # xattr file sizes count towards normal disk usage
@@ -41,15 +36,6 @@
 #	3. Check pool and filesystem usage, to ensure it reflects the size
 #	   of the xattr
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-15)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup {
 	log_must $RM $TESTDIR/myfile.$$

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_create_009_neg
 #
 # DESCRIPTION:
 #	Create a pool with same devices twice or create two pools with same
@@ -45,15 +40,6 @@
 #	2. Create two pools but using the same disks, expect failed. 
 #	3. Create one pool but using the same disks twice, expect failed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-08-15)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

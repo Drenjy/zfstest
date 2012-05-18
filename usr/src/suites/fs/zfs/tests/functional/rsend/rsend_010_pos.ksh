@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/rsend/rsend.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: rsend_010_pos
 #
 # DESCRIPTION:
 #	ZFS can handle stream with multiple identical (same GUID) snapshots
@@ -42,15 +37,6 @@
 #	3. Resend the snapshot again
 #	4. Verify this stream can be restore to this filesystem again
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-10-11)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

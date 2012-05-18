@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_copies/zfs_copies.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_copies_005_neg
 #
 # DESCRIPTION:
 # 	Verify that copies cannot be set with pool version 1
@@ -41,15 +36,6 @@
 #	1. Create filesystems with copies set in a pool with version 1
 #	2. Verify that the create operations fail
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-05-31)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

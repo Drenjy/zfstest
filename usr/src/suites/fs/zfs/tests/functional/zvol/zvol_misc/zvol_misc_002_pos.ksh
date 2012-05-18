@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zvol_misc_002_pos
 #
 # DESCRIPTION:
 # Verify that ZFS volume snapshot could be fscked
@@ -41,15 +36,6 @@
 # 2. Copy some files and create snapshot
 # 3. Verify fsck on the snapshot is OK
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-10-13)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

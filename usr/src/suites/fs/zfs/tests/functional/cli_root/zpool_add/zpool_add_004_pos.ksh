@@ -27,11 +27,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zpool_add/zpool_add.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_add_004_pos
 #
 # DESCRIPTION: 
 # 	'zpool add <pool> <vdev> ...' can successfully add a zfs volume 
@@ -42,15 +37,6 @@
 #	2. Add the volume to the pool
 #	3. Verify the devices are added to the pool successfully
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2005-09-29)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "global"
 

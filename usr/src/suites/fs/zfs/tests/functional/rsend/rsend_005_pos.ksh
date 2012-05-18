@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/rsend/rsend.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: rsend_005_pos
 #
 # DESCRIPTION:
 #	zfs send -R -I send all the incremental between fs@init with fs@final
@@ -43,15 +38,6 @@
 #	4. Verify receive can restore all the snapshots and data
 #	5. Do the same test on filesystem and volume
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_snapshot_003_neg
 #
 # DESCRIPTION: 
 #	"zfs snapshot" fails with bad options,too many arguments or too long 
@@ -41,15 +36,6 @@
 #	2. Execute 'zfs snapshot' with each argument in the array, 
 #	3. Verify an error is returned.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-19)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

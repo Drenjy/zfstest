@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-# __stc_assertion_start
-#
-# ID: iscsi_006_neg
-#
 # DESCRIPTION:
 #	Verify iscsioptions can not be changed by zfs command
 #
@@ -39,15 +34,6 @@
 #	1) Save iscsioptions first, then change it on purpose
 #	2) Check if the value is really changed
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-21)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

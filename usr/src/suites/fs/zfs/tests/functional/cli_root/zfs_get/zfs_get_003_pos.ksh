@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_get_003_pos
 #
 # DESCRIPTION:
 #	'zfs get' should get consistent report with different options. 
@@ -42,15 +37,6 @@
 #	3. Verify the value of 'zfs get atime' and 'zfs get all | grep atime'
 #	   are identical.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-07-18)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

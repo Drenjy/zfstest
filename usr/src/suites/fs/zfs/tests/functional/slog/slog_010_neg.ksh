@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/slog/slog.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: slog_010_neg
 #
 # DESCRIPTION:
 #	Slog device can not be replaced with spare device
@@ -42,15 +37,6 @@
 #	3. Create pool2 with hotspare
 #	4. Verify slog device can not be replaced with hotspare device in pool2.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-20)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

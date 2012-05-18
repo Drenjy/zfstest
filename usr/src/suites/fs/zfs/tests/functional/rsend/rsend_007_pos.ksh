@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/rsend/rsend.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: rsend_007_pos
 #
 # DESCRIPTION:
 #	Rename parent filesystem name will not change the dependent order.
@@ -41,15 +36,6 @@
 #	2. Send -R all the POOL
 #	3. Verify renamed dataset will not change the snapshot dependent order.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

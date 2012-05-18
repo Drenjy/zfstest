@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/cli_root/zfs_mount/zfs_mount.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_mount_008_pos
 #
 # DESCRIPTION:
 #	'zfs mount -O' allow the file system to be mounted over an existing
@@ -43,15 +38,6 @@
 #	3. Verify 'zfs mount -O' will make the underlying filesystem fs
 #	   inaccessible.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-02)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup
 {

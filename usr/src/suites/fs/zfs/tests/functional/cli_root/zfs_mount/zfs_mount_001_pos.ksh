@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_mount/zfs_mount.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_mount_001_pos
 #
 # DESCRIPTION:
 # Invoke "zfs mount <filesystem>" with a regular name of filesystem,
@@ -43,15 +38,6 @@
 # 2. Invoke 'zfs mount <filesystem>'.
 # 3. Verify that the filesystem is mounted.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

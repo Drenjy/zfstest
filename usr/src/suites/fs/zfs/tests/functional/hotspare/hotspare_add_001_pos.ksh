@@ -26,11 +26,6 @@
 #
 . $STF_SUITE/tests/functional/hotspare/hotspare.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotspare_add_001_pos
 #
 # DESCRIPTION: 
 # 	'zpool add <pool> spare <vdev> ...' can successfully add the specified 
@@ -42,15 +37,6 @@
 #	3. Verify the devices are added to the spare list 
 #		of the given pool successfully
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING STATUS: COMPLETED (2006-06-07)
-#
-# __stc_assertion_end
-#
-###############################################################################
 
 verify_runnable "global"
 

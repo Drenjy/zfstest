@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/hotplug/hotplug.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: hotplug_011_pos
 #
 # DESCRIPTION:
 #	Removing device offlined, verify device status is UNAVAIL, when the 
@@ -46,15 +41,6 @@
 #	6. Load ZFS module and verify device the device's status is 'UNAVAIL'.
 #	7. Verify no FMA fault was generated.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-06-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID:  bootfs_001_pos
 #
 # DESCRIPTION:
 #
@@ -41,15 +36,6 @@
 # 1. Create a set of datasets in a test pool
 # 2. Try setting them as boot filesystems
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-03-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

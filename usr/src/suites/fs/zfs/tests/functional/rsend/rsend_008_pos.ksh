@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/rsend/rsend.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: rsend_008_pos
 #
 # DESCRIPTION:
 #	Changes made by 'zfs promote' can be properly received.
@@ -41,15 +36,6 @@
 #	2. Recursively backup all the POOL and restore in POOL2
 #	3. Verify all the datesets and property be properly received.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

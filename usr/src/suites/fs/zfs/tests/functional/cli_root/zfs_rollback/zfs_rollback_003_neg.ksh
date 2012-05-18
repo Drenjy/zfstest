@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_rollback/zfs_rollback_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_rollback_003_neg
 #
 # DESCRIPTION:
 #	Seperately verify 'zfs rollback ''|-f|-r|-rf|-R|-rR will fail in 
@@ -45,15 +40,6 @@
 #	4. Create 'clone1' based on 'snap1'.
 #	5. Run 'zfs rollback -r|-rf <snap>' and it should fail.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-20)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

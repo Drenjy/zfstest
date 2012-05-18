@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: large_files_001_pos
 #
 # DESCRIPTION:
 # Write a file to the allowable ZFS fs size.
@@ -43,15 +38,6 @@
 # 3. Writing beyond the maximum file size generates an 'errno' of
 # EFBIG.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

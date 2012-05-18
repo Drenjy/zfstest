@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_import_007_pos
 #
 # DESCRIPTION:
 #	For raidz, one destroyed pools devices was removed or used by other
@@ -43,15 +38,6 @@
 #	3. Create another pool B with 1 disk which was used by pool A.
 #	4. Verify import this raidz pool can succeed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-06-12)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

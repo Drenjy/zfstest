@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: iscsi_005_pos
 #
 # DESCRIPTION:
 #	Verify export/import pool with iSCSI
@@ -42,15 +37,6 @@
 #	3) Import the pool, check the target is back and its scsi name
 #	   not changed
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-12-21)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

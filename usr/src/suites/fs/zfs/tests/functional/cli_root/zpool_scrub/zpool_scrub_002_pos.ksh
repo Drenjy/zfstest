@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zpool_scrub_002_pos
 #
 # DESCRIPTION:
 #	Verify scrub -s works correctly.
@@ -41,15 +36,6 @@
 #	2. zpool scrub the pool
 #	3. Verify zpool scrub -s succeed when the system is scrubbing.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-08-08)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

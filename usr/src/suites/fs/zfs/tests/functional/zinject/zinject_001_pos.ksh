@@ -25,11 +25,6 @@
 # Use is subject to license terms.
 #
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: zinject_001_pos
 #
 # DESCRIPTION:
 #
@@ -47,15 +42,6 @@
 #			ereport.fs.zfs.data
 #	checksum	ereport.fs.zfs.data		Stripe pool only
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-02-01)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 . $STF_SUITE/tests/functional/zinject/zinject.kshlib
 

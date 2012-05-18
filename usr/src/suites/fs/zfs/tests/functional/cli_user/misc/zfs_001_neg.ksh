@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_001_neg
 #
 # DESCRIPTION:
 #
@@ -41,15 +36,6 @@
 # 1. Run zfs as a user
 # 2. Verify it produces a usage message
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2007-07-27)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 function cleanup
 {

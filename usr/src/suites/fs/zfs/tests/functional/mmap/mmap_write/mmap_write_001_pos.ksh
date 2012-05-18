@@ -28,10 +28,6 @@
 
 # ##########################################################################
 #
-# __stc_assertion_start
-#
-# ID: mmap_write_001_pos
-#
 # DESCRIPTION:
 # Writing to a file and mmaping that file at the
 # same time does not result in a deadlock.
@@ -41,15 +37,6 @@
 # 2. Call mmapwrite binary.
 # 3. wait 120s and make sure the test file existed.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

@@ -31,11 +31,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-################################################################################
-#
-# __stc_assertion_start
-#
-# ID: history_005_neg
 #
 # DESCRIPTION:
 #	Verify the following zpool subcommands are not logged.
@@ -50,15 +45,6 @@
 #	2. Separately invoke zpool list|status|iostat
 #	3. Verify they was not recored in pool history.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-07-05)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 

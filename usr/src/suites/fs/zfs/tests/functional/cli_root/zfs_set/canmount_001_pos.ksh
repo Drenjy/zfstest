@@ -28,11 +28,6 @@
 . $STF_SUITE/include/libtest.kshlib
 . $STF_SUITE/tests/functional/cli_root/zfs_set/zfs_set_common.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: canmount_001_pos
 #
 # DESCRIPTION:
 # Setting valid canmount to filesystem, it is successful.
@@ -44,15 +39,6 @@
 # 2. Loop all the valid mountpoint value.
 # 3. Check the return value.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2006-08-30)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

@@ -27,11 +27,6 @@
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
-#################################################################################
-#
-# __stc_assertion_start
-#
-# ID: zfs_acl_chmod_inherit_004_pos
 #
 # DESCRIPTION:
 #	Verify aclinherit=passthrough-x will inherit the 'x' bits while mode request.
@@ -42,15 +37,6 @@
 #	3. Set aclinherit=passthrough-x
 #	4. Verify only passthrough-x will inherit the 'x' bits while mode request.
 #	
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2009-04-29)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

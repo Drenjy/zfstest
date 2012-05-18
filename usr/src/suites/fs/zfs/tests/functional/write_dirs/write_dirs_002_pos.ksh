@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###########################################################################
-#
-# __stc_assertion_start
-#
-# ID: write_dirs_002_pos
 #
 # DESCRIPTION:
 # Create as many directories with 5000 files each until the file system
@@ -43,15 +38,6 @@
 # 3. Create 5000 files in each directories
 # 4. Test case exit when the disk is full
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-07-04)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "both"
 

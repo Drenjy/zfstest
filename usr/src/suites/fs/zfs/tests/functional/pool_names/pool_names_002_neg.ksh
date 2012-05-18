@@ -27,11 +27,6 @@
 
 . $STF_SUITE/include/libtest.kshlib
 
-###############################################################################
-#
-# __stc_assertion_start
-#
-# ID: pool_names_002_neg
 #
 # DESCRIPTION:
 #
@@ -43,15 +38,6 @@
 # 2) Given a list of invalid pool names, ensure the pools are not
 # created.
 #
-# TESTABILITY: explicit
-#
-# TEST_AUTOMATION_LEVEL: automated
-#
-# CODING_STATUS: COMPLETED (2005-11-21)
-#
-# __stc_assertion_end
-#
-################################################################################
 
 verify_runnable "global"
 
