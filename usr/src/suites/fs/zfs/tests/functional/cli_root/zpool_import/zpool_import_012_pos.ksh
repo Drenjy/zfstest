@@ -50,8 +50,6 @@
 
 verify_runnable "global"
 
-log_unsupported "Temporarily disabling this test again"
-
 set -A pools "$TESTPOOL" "$TESTPOOL1"
 set -A devs "" "-d $DEVICE_DIR"
 set -A options "" "-R $ALTER_ROOT"
@@ -166,9 +164,17 @@ for option in "" "-Df"; do
 					fi
 					log_note "Import with $nfs_flag and " \
 					    "$guid_flag"
-					log_must $ZPOOL import $option \
-					    ${devs[i]} ${options[j]} $target
-
+					$ZPOOL import $option ${devs[i]} \
+					    ${options[j]} $target
+					#import by GUID if import by pool name fails
+					if [[ $? != 0 ]]; then
+						log_note "Possible pool name" \
+						    "duplicates. Try GUID import"
+						target=$guid
+						log_must $ZPOOL import $option \
+						    ${devs[i]} ${options[j]} \
+						    $target
+					fi
 					log_must poolexists $pool
 
 					for fs in $mount_fs; do

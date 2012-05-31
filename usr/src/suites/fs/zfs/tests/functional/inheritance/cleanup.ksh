@@ -28,5 +28,5 @@
 . ${STF_SUITE}/include/libtest.kshlib
 
 verify_runtime $RT_MEDIUM
-
+$RM -rf $TESTDIR.*
 default_cleanup
