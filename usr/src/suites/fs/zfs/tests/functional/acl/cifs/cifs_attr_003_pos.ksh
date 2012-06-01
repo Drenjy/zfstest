@@ -25,6 +25,10 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 . $STF_SUITE/tests/functional/acl/cifs/cifs.kshlib
 
@@ -95,7 +99,6 @@ function set_attribute
 			attr="${attr}q"
 		fi
 	fi
-
 	$CHMOD S+c${attr} $object
 	return $?
 }
@@ -195,12 +198,11 @@ function unit_writefile
 	typeset object=$1
 	typeset user=$2
 	typeset expect=${3:-0}
-
 	if [[ -f $object ]]; then
 		verify_expect $expect $CHG_USR_EXEC $user \
-			$CP $TESTFILE $object
+		    $CP $TESTFILE $object
 		verify_expect $expect $CHG_USR_EXEC $user \
-			$EVAL "$ECHO '$TESTSTR' > $object"
+		    $EVAL "$ECHO '$TESTSTR' > $object"
 	fi
 }
 
@@ -219,9 +221,9 @@ function unit_writedir
 
 	if [[ -d $object ]]; then
 		verify_expect $expect $CHG_USR_EXEC $user \
-			$CP $TESTFILE $object
+		    $CP $TESTFILE $object
 		verify_expect $expect $CHG_USR_EXEC $user \
-			$MKDIR -p $object/$TESTDIR
+		    $MKDIR -p $object/$TESTDIR
 	fi
 }
 
@@ -233,7 +235,7 @@ function unit_appenddata
 
 	if [[ ! -d $object ]]; then
 		verify_expect $expect $CHG_USR_EXEC $user \
-			$EVAL "$ECHO '$TESTSTR' >> $object"
+		    $EVAL "$ECHO '$TESTSTR' >> $object"
 	fi
 }
 
@@ -254,9 +256,9 @@ function unit_deletecontent
 		for target in $object/${TESTFILE##*/} $object/$TESTDIR ; do
 			if [[ -e $target ]]; then
 				verify_expect $expect $CHG_USR_EXEC $user \
-					$EVAL "$MV $target $target.new"
+				    $EVAL "$MV $target $target.new"
 				verify_expect $expect $CHG_USR_EXEC $user \
-					$EVAL "$ECHO y | $RM -r $target.new"
+				    $EVAL "$ECHO y | $RM -r $target.new"
 			fi
 		done
 	fi
@@ -276,7 +278,7 @@ function unit_deletedata
 	typeset expect=${3:-0}
 
 	verify_expect $expect $CHG_USR_EXEC $user \
-		$EVAL "$ECHO y | $RM -r $object"
+	    $EVAL "$ECHO y | $RM -r $object"
 
 }
 
@@ -294,14 +296,14 @@ function unit_writexattr
 	typeset expect=${3:-0}
 
 	verify_expect $expect $CHG_USR_EXEC $user \
-		$RUNAT $object "$CP $TESTFILE $TESTATTR"
+	    $RUNAT $object "$CP $TESTFILE $TESTATTR"
 	verify_expect $expect $CHG_USR_EXEC $user \
-		$EVAL "$RUNAT $object \"$ECHO '$TESTSTR' > $TESTATTR\""
+	    $EVAL "$RUNAT $object \"$ECHO '$TESTSTR' > $TESTATTR\""
 	verify_expect $expect $CHG_USR_EXEC $user \
-		$EVAL "$RUNAT $object \"$ECHO '$TESTSTR' >> $TESTATTR\""
+	    $EVAL "$RUNAT $object \"$ECHO '$TESTSTR' >> $TESTATTR\""
 	if [[ $expect -eq 0 ]]; then
 		verify_expect $expect $CHG_USR_EXEC $user \
-			$RUNAT $object "$RM -f $TESTATTR"
+		    $RUNAT $object "$RM -f $TESTATTR"
 	fi
 }
 
@@ -337,9 +339,9 @@ function unit_updatetime
 	typeset object=$1
 	typeset user=$2
 	typeset expect=${3:-0}
-
+	typeset immutable_expect=${4:-$expect}
 	verify_expect $expect $CHG_USR_EXEC $user $TOUCH $object
-	verify_expect $expect $CHG_USR_EXEC $user $TOUCH -a $object
+	verify_expect $immutable_expect $CHG_USR_EXEC $user $TOUCH -a $object
 	verify_expect $expect $CHG_USR_EXEC $user $TOUCH -m $object
 }
 
@@ -356,12 +358,12 @@ function unit_writeacl
 	typeset user=$2
 	typeset expect=${3:-0}
 
-	verify_expect $expect $CHG_USR_EXEC $user chmod A+$TESTACL $object
-	verify_expect $expect $CHG_USR_EXEC $user chmod A+$TESTACL $object
-	verify_expect $expect $CHG_USR_EXEC $user chmod A0- $object
-	verify_expect $expect $CHG_USR_EXEC $user chmod A0- $object
+	verify_expect $expect $CHG_USR_EXEC $user $CHMOD A+$TESTACL $object
+	verify_expect $expect $CHG_USR_EXEC $user $CHMOD A+$TESTACL $object
+	verify_expect $expect $CHG_USR_EXEC $user $CHMOD A0- $object
+	verify_expect $expect $CHG_USR_EXEC $user $CHMOD A0- $object
 	oldmode=$(get_mode $object)
-	verify_expect $expect $CHG_USR_EXEC $user chmod $TESTMODE $object
+	verify_expect $expect $CHG_USR_EXEC $user $CHMOD $TESTMODE $object
 }
 
 #
@@ -381,11 +383,11 @@ function test_readonly
 
 	for user in $ZFS_ACL_CUR_USER root $ZFS_ACL_STAFF2; do
 		if [[ -d $object ]]; then
-			log_must usr_exec chmod \
-				A+user:$user:${ace_dir}:allow $object
+			log_must usr_exec $CHMOD \
+			    A+user:$user:${ace_dir}:allow $object
 		else
-			log_must usr_exec chmod \
-				A+user:$user:${ace_file}:allow $object
+			log_must usr_exec $CHMOD \
+			    A+user:$user:${ace_file}:allow $object
 		fi
 
 		log_must set_attribute $object "R"
@@ -431,11 +433,11 @@ function test_immutable
 
 	for user in $ZFS_ACL_CUR_USER root $ZFS_ACL_STAFF2; do
 		if [[ -d $object ]]; then
-			log_must usr_exec chmod \
-				A+user:$user:${ace_dir}:allow $object
+			log_must usr_exec $CHMOD \
+			    A+user:$user:${ace_dir}:allow $object
 		else
-			log_must usr_exec chmod \
-				A+user:$user:${ace_file}:allow $object
+			log_must usr_exec $CHMOD \
+			    A+user:$user:${ace_file}:allow $object
 		fi
 		log_must set_attribute $object "i"
 
@@ -444,7 +446,7 @@ function test_immutable
 		unit_appenddata $object $user 1
 		unit_writexattr $object $user 1
 		unit_accesstime $object $user
-		unit_updatetime $object $user 1
+		unit_updatetime $object $user 1 0
 		unit_writeacl $object $user 1
 		unit_deletecontent $object $user 1
 		unit_deletedata $object $user 1
@@ -474,11 +476,11 @@ function test_nounlink
 
 	for user in $ZFS_ACL_CUR_USER root $ZFS_ACL_STAFF2; do
 		if [[ -d $object ]]; then
-			log_must usr_exec chmod \
-				A+user:$user:${ace_dir}:allow $object
+			log_must usr_exec $CHMOD \
+			    A+user:$user:${ace_dir}:allow $object
 		else
-			log_must usr_exec chmod \
-				A+user:$user:${ace_file}:allow $object
+			log_must usr_exec $CHMOD \
+			    A+user:$user:${ace_file}:allow $object
 		fi
 		log_must set_attribute $object "u"
 
@@ -517,11 +519,11 @@ function test_appendonly
 
 	for user in $ZFS_ACL_CUR_USER root $ZFS_ACL_STAFF2; do
 		if [[ -d $object ]]; then
-			log_must usr_exec chmod \
-				A+user:$user:${ace_dir}:allow $object
+			log_must usr_exec $CHMOD \
+			    A+user:$user:${ace_dir}:allow $object
 		else
-			log_must usr_exec chmod \
-				A+user:$user:${ace_file}:allow $object
+			log_must usr_exec $CHMOD \
+			    A+user:$user:${ace_file}:allow $object
 		fi
 		log_must set_attribute $object "a"
 
@@ -565,7 +567,7 @@ ace_file="write_data/append_data/write_xattr/write_acl/write_attributes"
 ace_dir="add_file/add_subdirectory/${ace_file}"
 
 log_assert "Verify DOS & BSD'ish attributes will provide the " \
-	"access limitation as expected."
+    "access limitation as expected."
 log_onexit cleanup
 
 $ECHO "$TESTSTR" > $TESTFILE

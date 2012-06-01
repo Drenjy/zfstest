@@ -25,6 +25,10 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 . $STF_SUITE/tests/functional/acl/cifs/cifs.kshlib
 
@@ -130,16 +134,16 @@ function grant_attr
 	# Only grant the user explicitly while it's not root neither owner.
 
 	if [[ $user == "root" ]]; then
-		log_must chmod A+user:root:write_attributes:deny $object
+		log_must $CHMOD A+user:root:write_attributes:deny $object
 	elif [[ $user == $(get_owner $object) ]]; then
 		if (((RANDOM % 2) == 0)); then
-			log_must chmod A+owner@:write_attributes:deny $object
+			log_must $CHMOD A+owner@:write_attributes:deny $object
 		else
-			log_must chmod A+user:$user:write_attributes:deny \
+			log_must $CHMOD A+user:$user:write_attributes:deny \
 			    $object
 		fi
 	else
-		log_must chmod A+user:$user:write_attributes:allow $object
+		log_must $CHMOD A+user:$user:write_attributes:allow $object
 	fi
 	attr_mod="write_attributes"
 }
@@ -159,7 +163,7 @@ function revoke_attr
 		log_fail "User($user), Object($object) not defined."
 	fi
 
-	log_must chmod A0- $object
+	log_must $CHMOD A0- $object
 	attr_mod=
 }
 
@@ -181,7 +185,7 @@ function verify_attr
 
 	if [[ -z $func || -z $object ]]; then
 		log_fail "Func($func), Object($object), User($user), \
-			Opt($opt) not defined."
+		    Opt($opt) not defined."
 	fi
 
 	# If user is superuser or has write_attributes permission or
