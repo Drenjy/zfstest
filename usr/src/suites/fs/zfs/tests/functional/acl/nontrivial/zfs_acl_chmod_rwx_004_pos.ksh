@@ -25,6 +25,10 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
 #
@@ -55,7 +59,7 @@ function check_access #log user node access rflag
 		# So,'cannot execute' means user has the permission to
 		# execute, just the file can't be execute.
 		#
-		if [[ $ZFS_ACL_ERR_STR == *"cannot execute" ]]; then
+		if [[ $ZFS_ACL_ERR_STR == *"cannot execute"* ]]; then
 			log_note "SUCCESS: rwx_node $user $node $access"
 		else
 			log_fail "FAIL: rwx_node $user $node $access"
@@ -67,10 +71,9 @@ function check_access #log user node access rflag
 
 function verify_explicit_ACL_rule #node access flag
 {
-	set -A a_access "read_data" "write_data" "execute"
 	typeset node=$1
 	typeset access=$2
-	typeset flag=$3 
+	typeset flag=$3
 	typeset log rlog rflag
 
 	# Get the expect log check

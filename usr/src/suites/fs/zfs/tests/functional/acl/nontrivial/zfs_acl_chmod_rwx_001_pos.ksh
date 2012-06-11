@@ -25,17 +25,21 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
 #
 # DESCRIPTION:
-#	chmod A{+|-|=} have the correct behaviour to the ACL list. 	
+#	chmod A{+|-|=} have the correct behaviour to the ACL list.
 #
 # STRATEGY:
 #	1. loop check root and non-root users
 #	2. chmod file or dir with specified options
 #	3. get ACE after behaviours of chmod
-#	4. compare specified ACE and excpect ACE
+#	4. compare specified ACE and expect ACE
 #
 
 verify_runnable "both"
@@ -43,20 +47,20 @@ verify_runnable "both"
 log_assert "chmod A{+|-|=} have the correct behaviour to the ACL list."
 log_onexit cleanup
 
-typeset -i trival_count=6 head=0 mid end
+typeset -i trival_count=3 head=0 mid end
 ((mid = RANDOM % $trival_count))
 ((end = trival_count - 1))
 
 opts="+ - ="
 nums="$head $mid $end"
 set -A file_ACEs \
-	"user:$ZFS_ACL_STAFF1:read_data:allow" \
-	"user:$ZFS_ACL_STAFF2:write_data:allow" \
-	"user:$ZFS_ACL_OTHER1:execute:allow"
+    "user:$ZFS_ACL_STAFF1:read_data:allow" \
+    "user:$ZFS_ACL_STAFF2:write_data:allow" \
+    "user:$ZFS_ACL_OTHER1:execute:allow"
 set -A dir_ACEs \
-	"user:$ZFS_ACL_STAFF1:list_directory/read_data:allow" \
-	"user:$ZFS_ACL_STAFF2:add_file/write_data:allow" \
-	"user:$ZFS_ACL_OTHER1:execute:allow"
+    "user:$ZFS_ACL_STAFF1:list_directory/read_data:allow" \
+    "user:$ZFS_ACL_STAFF2:add_file/write_data:allow" \
+    "user:$ZFS_ACL_OTHER1:execute:allow"
 
 function test_chmod_ACE_list #$opt $num $ace-spec $node
 {
@@ -116,6 +120,6 @@ for user in root $ZFS_ACL_STAFF1 $ZFS_ACL_OTHER1; do
 			done
 		done
 	done
-done	
+done
 
 log_pass "chmod A{+|-|=} behave to the ACL list passed."
