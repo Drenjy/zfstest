@@ -33,8 +33,11 @@ STF_USER_SETUP=
 STF_ROOT_CLEANUP=cleanup
 STF_USER_CLEANUP=
 
-STF_ROOT_TESTCASES=zfs_send_001_pos zfs_send_002_pos \
-	zfs_send_003_pos zfs_send_004_neg 
+STF_ROOT_TESTCASES=zfs_send_001_pos \
+	zfs_send_002_pos \
+	zfs_send_003_pos \
+	zfs_send_004_neg \
+	zfs_send_005_pos
 STF_USER_TESTCASES=
 
 STF_ENVFILES=zfs_send.cfg
