@@ -24,6 +24,10 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved
+#
+
 STF_ROOT_CONFIGURE=
 STF_USER_CONFIGURE=
 
@@ -42,10 +46,11 @@ STF_ROOT_TESTCASES=zfs_acl_cp_001_pos zfs_acl_cp_002_pos \
 	zfs_acl_chmod_xattr_001_pos zfs_acl_chmod_xattr_002_pos \
 	zfs_acl_chmod_aclmode_001_pos zfs_acl_chmod_rwacl_001_pos \
 	zfs_acl_chmod_inherit_001_pos zfs_acl_chmod_inherit_002_pos \
+	zfs_acl_chmod_inherit_002_neg \
 	zfs_acl_chmod_inherit_003_pos zfs_acl_chmod_inherit_004_pos \
 	zfs_acl_chmod_delete_001_pos zfs_acl_chmod_owner_001_pos \
 	zfs_acl_chmod_compact_001_pos zfs_acl_chmod_001_neg zfs_acl_chmod_002_pos
-	
+
 STF_USER_TESTCASES=
 
 STF_BUILD_SUBDIRS=
