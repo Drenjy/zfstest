@@ -24,6 +24,11 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
+
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/include/libtest.kshlib
 
 #
@@ -38,14 +43,14 @@
 
 verify_runnable "both"
 
-if ! is_global_zone ; then
+if ! is_global_zone; then
 	TESTPOOL=${TESTPOOL%%/*}
 fi
 
 set -A args "list $TESTPOOL" "list -H $TESTPOOL" "list" "list -H" \
-	"list -H -o name $TESTPOOL" "list -o name $TESTPOOL" \
-	"list -o name,size,used,available,capacity,health,altroot $TESTPOOL" \
-	"list -H -o name,size,used,available,capacity,health,altroot $TESTPOOL"
+    "list -H -o name $TESTPOOL" "list -o name $TESTPOOL" \
+    "list -o name,size,capacity,health,altroot $TESTPOOL" \
+    "list -H -o name,size,capacity,health,altroot $TESTPOOL"
 
 log_assert "zpool list [-H] [-o filed[,filed]*] [<pool_name> ...]"
 

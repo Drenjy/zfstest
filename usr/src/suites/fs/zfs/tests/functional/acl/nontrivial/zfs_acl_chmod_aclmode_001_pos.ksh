@@ -1,4 +1,4 @@
-#!/bin/ksh -p
+#!/usr/bin/ksh -p
 #
 # CDDL HEADER START
 #
@@ -24,23 +24,29 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
+#
+
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
 #
 # DESCRIPTION:
-#	Verify chmod have correct behaviour to directory and file when
+#	Verify chmod have correct behaviour on directories and files when
 #	filesystem has the different aclmode setting
-#	
+#
 # STRATEGY:
 #	1. Loop super user and non-super user to run the test case.
 #	2. Create basedir and a set of subdirectores and files within it.
 #	3. Separately chmod basedir with different aclmode options,
-#	 	combine with the variable setting of aclmode:
-#		"discard", "groupmask", or "passthrough".
+#	   combine with the variable setting of aclmode:
+#	   "discard", "groupmask", or "passthrough".
 #	4. Verify each directories and files have the correct access control
 #	   capability.
-#	
+#
 
 verify_runnable "both"
 
@@ -98,83 +104,92 @@ allnodes="$nfile $ndir"
 # expect bits after 'chmod A0{+|=}'.
 #
 # $1 isdir indicate if the target is a directory
-# $1 bits which was make up of three bit 'rwx'
-# $2 bits_limit which was make up of three bit 'rwx'
-# $3 ACE access which is read_data, write_data or execute
-# $4 ACE type which is allow or deny
+# $2 bits which was make up of three bit 'rwx'
+# $3 bits_limit which was make up of three bit 'rwx'
+# $4 ACE access which is read_data, write_data or execute
+# $5 ctrl which is to determine allow or deny according to owner/group bit
 #
-function cal_bits #isdir bits bits_limit acl_access ctrl
+function cal_bits # isdir bits bits_limit acl_access ctrl
 {
 	typeset -i isdir=$1
 	typeset -i bits=$2
 	typeset -i bits_limit=$3
 	typeset acl_access=$4
 	typeset -i ctrl=${5:-0}
-	typeset flagr=0; flagw=0; flagx=0
+	typeset flagr=0 flagw=0 flagx=0
 	typeset tmpstr
 
-	if (( ctrl == 0 )); then 
-		if (( (( bits & 4 )) == 0 )); then
+	if (( ctrl == 0 )); then
+		if (( (( bits & 4 )) != 0 )); then
 			flagr=1
 		fi
-		if (( (( bits & 2 )) == 0 )); then
+		if (( (( bits & 2 )) != 0 )); then
 			flagw=1
 		fi
-		if (( (( bits & 1 )) == 0 )); then
+		if (( (( bits & 1 )) != 0 )); then
 			flagx=1
 		fi
 	else
-		#
-		# Tricky here: 
-		# (1) flagr is always set to be 1,
-		# (2) flagw & flagx is set to be 0 only while
-		#	bits_limit has lower permissions than bits
-		#
-
+		#Determine ACE as per owner/group bit
 		flagr=1
 		flagw=1
 		flagx=1
 
-		if (( (( bits & 2 )) != 0 )) && \
-			(( (( bits_limit & 2 )) == 0 )) ; then
+		if (( ((bits & 4)) != 0 )) && \
+			(( ((bits_limit & 4)) != 0 )); then
+			flagr=0
+		fi
+		if (( ((bits & 2)) != 0 )) && \
+			(( ((bits_limit & 2)) != 0 )); then
 			flagw=0
 		fi
-		if (( (( bits & 1 )) != 0 )) && \
-			(( (( bits_limit & 1 )) == 0 )) ; then
+		if (( ((bits & 1)) != 0 )) && \
+			(( ((bits_limit & 1)) != 0 )); then
 			flagx=0
 		fi
 	fi
-
-	if (( flagr != 0 )); then
+	if ((flagr != 0)); then
 		if [[ $acl_access == *"read_data"* ]]; then
-			if (( isdir == 0 )) ; then
-				tmpstr=${tmpstr}/read_data
+			if [[ $acl_access == *"allow"*  && $passthrough == 0 ]]; then
+					tmpstr=${tmpstr}
 			else
-				tmpstr=${tmpstr}/list_directory/read_data
+				if ((isdir == 0)); then
+					tmpstr=${tmpstr}/read_data
+				else
+					tmpstr=${tmpstr}/list_directory/read_data
+				fi
 			fi
 		fi
 	fi
 
-	if (( flagw != 0 )); then
-		if [[ $acl_access == *"write_data"* ]]; then
-			if (( isdir == 0 )); then
-				tmpstr=${tmpstr}/write_data
-			else
-				tmpstr=${tmpstr}/add_file/write_data
+	if ((flagw != 0)); then
+		if [[ $acl_access == *"allow"* && $passthrough == 0 ]]; then
+			tmpstr=${tmpstr}
+		else
+			if [[ $acl_access == *"write_data"* ]]; then
+				if ((isdir == 0)); then
+					tmpstr=${tmpstr}/write_data
+				else
+					tmpstr=${tmpstr}/add_file/write_data
+				fi
 			fi
-		fi
-
-		if [[ $acl_access == *"append_data"* ]]; then
-			if (( isdir == 0 )); then
-				tmpstr=${tmpstr}/append_data
-			else
-				tmpstr=${tmpstr}/add_subdirectory/append_data
+			if [[ $acl_access == *"append_data"* ]]; then
+				if ((isdir == 0)); then
+					tmpstr=${tmpstr}/append_data
+				else
+					tmpstr=${tmpstr}/add_subdirectory/append_data
+				fi
 			fi
 		fi
 	fi
-	if (( flagx != 0 )); then
-		[[ $acl_access == *"execute"* ]] && \
-			tmpstr=${tmpstr}/execute
+	if ((flagx != 0)); then
+		if [[ $acl_access == *"execute"* ]]; then
+			if [[ $acl_access == *"allow"* && $passthrough == 0 ]]; then
+				tmpstr=${tmpstr}
+			else
+				tmpstr=${tmpstr}/execute
+			fi
+		fi
 	fi
 
 	tmpstr=${tmpstr#/}
@@ -188,30 +203,99 @@ function cal_bits #isdir bits bits_limit acl_access ctrl
 # $1 isdir indicate if the target is a directory
 # $2 acl to be translated
 #
-function translate_acl #isdir acl
+function translate_acl # isdir acl
 {
 	typeset -i isdir=$1
 	typeset acl=$2
 	typeset who prefix acltemp action
-	
-	if (( isdir != 0 )); then
+
+	if ((isdir != 0)); then
 		who=${acl%%:*}
 		prefix=$who
 		acltemp=${acl#*:}
 		acltemp=${acltemp%%:*}
 		prefix=$prefix:$acltemp
 		action=${acl##*:}
-
-		acl=$prefix:$(cal_bits $isdir 7 7 $acl 1):$action
+		acl=$prefix:$(cal_bits $isdir 7 7 $acl 0):$action
 	fi
 	$ECHO "$acl"
+}
+
+#
+# To verify if a new ACL is generated as result of
+# chmod operation.
+#
+# $1 bit indicates whether owner/group bit
+# $2 newmode indicates the mode changed using chmod
+# $3 isdir indicate if the target is a directory
+#
+function check_new_acl # bit newmode isdir
+{
+	typeset bits=$1
+	typeset mode=$2
+	typeset -i isdir=$3
+	typeset new_acl
+	typeset gbit
+	typeset ebit
+	typeset str=":"
+	gbit=$(get_substr $mode 2 1)
+	ebit=$(get_substr $mode 3 1)
+	if (( ((bits & 4)) == 0 )); then
+		if (( ((gbit & 4)) != 0 || \
+		    ((ebit & 4)) != 0 )); then
+			if ((isdir == 0)); then
+				new_acl=${new_acl}${str}read_data
+			else
+				new_acl=${new_acl}${str}list_directory/read_data
+			fi
+			str="/"
+		fi
+	fi
+	if (( ((bits & 2)) == 0 )); then
+		if (( ((gbit & 2)) != 0 || \
+		    ((ebit & 2)) != 0 )); then
+			if ((isdir == 0)); then
+				new_acl=${new_acl}${str}write_data/append_data
+			else
+				new_acl=${new_acl}${str}add_file/write_data/
+				new_acl=${new_acl}add_subdirectory/append_data
+			fi
+			str="/"
+		fi
+	fi
+	if (( ((bits & 1)) == 0 )); then
+		if (( ((gbit & 1)) != 0 || \
+		    ((ebit & 1)) != 0 )); then
+				new_acl=${new_acl}${str}execute
+		fi
+	fi
+	$ECHO "$new_acl"
+}
+
+function build_new_acl # newmode isdir
+{
+	typeset newmode=$1
+	typeset isdir=$2
+	typeset expect
+	if ((flag == 0)); then
+		prefix="owner@"
+		bit=$(get_substr $newmode 1 1)
+		status=$(check_new_acl $bit $newmode $isdir)
+
+	else
+		prefix="group@"
+		bit=$(get_substr $newmode 2 1)
+		status=$(check_new_acl $bit $newmode $isdir)
+	fi
+	expect=$prefix$status:deny
+	$ECHO $expect
 }
 
 #
 # According to inherited flag, verify subdirectories and files within it has
 # correct inherited access control.
 #
-function verify_aclmode #<aclmode> <node> <newmode>
+function verify_aclmode # <aclmode> <node> <newmode>
 {
 	# Define the nodes which will be affected by inherit.
 	typeset aclmode=$1
@@ -220,60 +304,76 @@ function verify_aclmode #<aclmode> <node> <newmode>
 
 	# count: the ACE item to fetch
 	# pass: to mark if the current ACE should apply to the target
-	# passcnt: counter, if it achieves to maxnumber, 
+	# passcnt: counter, if it achieves to maxnumber,
 	#	then no additional ACE should apply.
-	# step: indicate if the ACE be split during aclmode.
 
-	typeset -i count=0 pass=0 passcnt=0 step=0
+	typeset -i count=0 pass=0 passcnt=0
 	typeset -i bits=0 obits=0 bits_owner=0 isdir=0
+	typeset -i total_acl
+	typeset -i acl_count=$(count_ACE $node)
+
+	((total_acl = maxnumber + 3))
 
 	if [[ -d $node ]]; then
-		(( isdir = 1 ))
-	fi 
+		((isdir = 1))
+	fi
 
-	(( i = maxnumber - 1 ))
+	((i = maxnumber - 1))
 	count=0
 	passcnt=0
-	while (( i >= 0 )); do
+	flag=0
+	while ((i >= 0)); do
 		pass=0
-		step=0
 		expect1=${acls[$i]}
-		expect2=""
-
+		passthrough=0
 		#
 		# aclmode=passthrough,
-		# no changes will be made to the ACL other than 
+		# no changes will be made to the ACL other than
 		# generating the necessary ACL entries to represent
-		# the new mode of the file or directory. 
+		# the new mode of the file or directory.
 		#
 		# aclmode=discard,
-		# delete all ACL entries that don't represent 
+		# delete all ACL entries that don't represent
 		# the mode of the file.
 		#
 		# aclmode=groupmask,
-		# reduce user or group permissions.  The permissions are 
-		# reduced, such that they are no greater than the group 
-		# permission bits, unless it is a user entry that has the 
+		# reduce user or group permissions.  The permissions are
+		# reduced, such that they are no greater than the group
+		# permission bits, unless it is a user entry that has the
 		# same UID as the owner of the file or directory.
-		# Then, the ACL permissions are reduced so that they are 
+		# Then, the ACL permissions are reduced so that they are
 		# no greater than owner permission bits.
 		#
 
 		case $aclmode in
 			passthrough)
-				expect1=$(translate_acl $isdir $expect1)
+				if ((acl_count > total_acl)); then
+					expect1=$(build_new_acl $newmode $isdir)
+					flag=1
+					((total_acl = total_acl + 1))
+					((i = i + 1))
+				else
+					passthrough=1
+					expect1=$(translate_acl $isdir $expect1)
+				fi
 				;;
 			groupmask)
-				if [[ $expect1 == *":allow" ]]; then
-					expect2=$expect1
+				if ((acl_count > total_acl)); then
+					expect1=$(build_new_acl $newmode $isdir)
+					flag=1
+					((total_acl = total_acl + 1))
+					((i = i + 1))
+
+				elif [[ $expect1 == *":allow"* ]]; then
 					who=${expect1%%:*}
+					aclaction=${expect1##*:}
 					prefix=$who
 					acltemp=""
 					reduce=0
-
+					#
 					# To determine the mask bits
 					# according to the entry type.
-
+					#
 					case $who in
 						owner@)
 							pos=1
@@ -289,11 +389,12 @@ function verify_aclmode #<aclmode> <node> <newmode>
 							acltemp=${acltemp%%:*}
 							owner=$(get_owner $node)
 							group=$(get_group $node)
-							if [[ $acltemp == $owner ]]; then
+							if [[ $acltemp == \
+							    $owner ]]; then
 								pos=1
 							else
 								pos=2
-							fi							
+							fi
 							prefix=$prefix:$acltemp
 							;;
 						group)
@@ -304,32 +405,36 @@ function verify_aclmode #<aclmode> <node> <newmode>
 							reduce=1
 							;;
 					esac
-						
 					obits=$(get_substr $newmode $pos 1)
-					(( bits = obits ))
-		#
-		# permission should no greater than the group permission bits
-		#
-					if (( reduce != 0 )); then
-						(( bits &= $(get_substr $newmode 2 1) ))
+					((bits = $obits))
+					#
+					# permission should no greater than the
+					# group permission bits
+					#
+					if ((reduce != 0)); then
+						((bits &= \
+						    $(get_substr $newmode 2 1)))
+					# The ACL permissions are reduced so
+                			# that they are no greater than owner
+					# permission bits.
 
-		# The ACL permissions are reduced so that they are
-                # no greater than owner permission bits.
-
-						(( bits_owner = $(get_substr $newmode 1 1) ))
-						(( bits &= bits_owner ))
+						((bits_owner = \
+						    $(get_substr $newmode 1 1)))
+						((bits &= $bits_owner))
 					fi
 
-					if (( bits < obits )) && [[ -n $acltemp ]]; then
-						expect2=$prefix:$(cal_bits $isdir $obits $bits_owner $expect2 1):allow
+					if ((bits < obits)) && \
+					    [[ -n $acltemp ]]; then
+						expect2=$prefix:
+						new_bit=$(cal_bits $isdir $obits $bits_owner $expect1 1)
+						expect2=${expect2}${new_bit}:allow
 					else
-						expect2=$prefix:$(cal_bits $isdir $obits $obits $expect2 1):allow
-		
+						expect2=$prefix:
+						new_bit=$(cal_bits $isdir $obits $obits $expect1 1)
+						expect2=${expect2}${new_bit}:allow
 					fi
-
 					priv=$(cal_bits $isdir $obits $bits_owner $expect2 0)
-					expect1=$prefix:$priv:deny
-					step=1
+					expect1=$prefix:$priv:$aclaction
 				else
 					expect1=$(translate_acl $isdir $expect1)
 				fi
@@ -340,45 +445,27 @@ function verify_aclmode #<aclmode> <node> <newmode>
 				;;
 		esac
 
-		if (( pass == 0 )) ; then
+		if ((pass == 0)) ; then
 			# Get the first ACE to do comparison
 
 			aclcur=$(get_ACE $node $count)
 			aclcur=${aclcur#$count:}
 			if [[ -n $expect1 && $expect1 != $aclcur ]]; then
 				$LS -vd $node
-				log_fail "$i #$count " \
+				log_fail "$aclmode $i #$count " \
 					"ACE: $aclcur, expect to be " \
 					"$expect1"
 			fi
-
-			# Get the second ACE (if should have) to do comparison
-
-			if (( step > 0 )); then
-				(( count = count + step ))
-
-				aclcur=$(get_ACE $node $count)
-				aclcur=${aclcur#$count:}
-				if [[ -n $expect2 && \
-					$expect2 != $aclcur ]]; then
-
-					$LS -vd $node
-					log_fail "$i #$count " \
-						"ACE: $aclcur, expect to be " \
-						"$expect2"
-				fi
-			fi
-			(( count = count + 1 ))
+		((count = count + 1))
 		fi
-		(( i = i - 1 ))
+		((i = i - 1))
 	done
 
 	#
 	# If there's no any ACE be checked, it should be identify as
 	# an normal file/dir, verify it.
 	#
- 
-	if (( passcnt == maxnumber )); then
+	if ((passcnt == maxnumber)); then
 		if [[ -d $node ]]; then
 			compare_acls $node $odir
 		elif [[	-f $node ]]; then
@@ -397,7 +484,8 @@ function verify_aclmode #<aclmode> <node> <newmode>
 typeset -i maxnumber=0
 typeset acl
 typeset target
-
+typeset -i passthrough=0
+typeset -i flag=0
 cwd=$PWD
 cd $TESTDIR
 
@@ -415,17 +503,17 @@ for mode in "${aclmode_flag[@]}"; do
 		log_must usr_exec $MKDIR $basedir
 
 		log_must usr_exec $MKDIR $odir
-		log_must usr_exec $TOUCH $ofile 
+		log_must usr_exec $TOUCH $ofile
 		log_must usr_exec $MKDIR $ndir
-		log_must usr_exec $TOUCH $nfile 
+		log_must usr_exec $TOUCH $nfile
 
-		for obj in $allnodes ; do
+		for obj in $allnodes; do
 			maxnumber=0
 			for preset in "${ace_file_preset[@]}"; do
 				for prefix in "${ace_prefix[@]}"; do
 					acl=$prefix:$preset
 
-					case $(( maxnumber % 2 )) in
+					case $((maxnumber % 2)) in
 						0)
 							acl=$acl:deny
 							;;
@@ -440,25 +528,23 @@ for mode in "${aclmode_flag[@]}"; do
 					log_must usr_exec $CHMOD A+$acl $obj
 					acls[$maxnumber]=$acl
 
-					(( maxnumber = maxnumber + 1 ))
+					((maxnumber = maxnumber + 1))
 				done
 			done
-
 			# Archive the file and directory
-			log_must $TAR cpf@ $TARFILE basedir
+			log_must $TAR cpf@ $TARFILE $basedir
 
 			if [[ -d $obj ]]; then
 				target=$odir
 			elif [[ -f $obj ]]; then
 				target=$ofile
-               		fi
-
-			for newmode in "${argv[@]}" ; do
+			fi
+			for newmode in "${argv[@]}"; do
 				log_must usr_exec $CHMOD $newmode $obj
 				log_must usr_exec $CHMOD $newmode $target
-				verify_aclmode $mode $obj $newmode
+				log_must verify_aclmode $mode $obj $newmode
 
-			 	# Restore the tar archive
+				# Restore the tar archive
 				log_must $TAR xpf@ $TARFILE
 			done
 		done

@@ -25,6 +25,10 @@
 # Use is subject to license terms.
 #
 
+#
+# Copyright (c) 2012 by Delphix. All rights reserved.
+#
+
 . $STF_SUITE/tests/functional/acl/acl_common.kshlib
 
 #
@@ -46,7 +50,7 @@ log_onexit cleanup
 typeset a_flag=('owner' 'group' 'everyone')
 typeset a_access=('r' 'w' 'x' 'p' 'd' 'D' 'a' 'A' 'R' 'W' 'c' 'C' 'o' 's')
 typeset a_inherit_object=('f' 'd')
-typeset a_inherit_strategy=(i'i' 'n')
+typeset a_inherit_strategy=('i' 'n')
 typeset a_type=('allow' 'deny')
 
 #
